@@ -3,7 +3,7 @@ package org.jullaene.walkmong_back.common.user;
 import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.jullaene.walkmong_back.api.auth.domain.Member;
+import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
