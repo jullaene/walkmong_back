@@ -41,6 +41,9 @@ public class Request extends BaseEntity {
     @Comment("동 주소")
     private String dongAddress;
 
+    @Comment("주소 상세 정보")
+    private String addressDetail;
+
     @Comment("주소 메모")
     private String addressMemo;
 
@@ -58,7 +61,7 @@ public class Request extends BaseEntity {
 
     @Comment("사전만남 진행 여부")
     @Column(columnDefinition = "VARCHAR(1) default 'Y'")
-    private String preMeetYn;
+    private String preMeetingYn;
 
     @Comment("반려인에게 전달할 메시지")
     private String memoToOwner;

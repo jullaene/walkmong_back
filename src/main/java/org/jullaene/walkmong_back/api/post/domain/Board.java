@@ -12,14 +12,14 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.post.domain.enums.WalkingStatus;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
-@Table(name = "post")
+@Table(name = "board")
 @Entity
 @DynamicUpdate
-public class Post extends BaseEntity {
+public class Board extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_id")
-    private Long postId;
+    @Column(name = "board_id")
+    private Long boardId;
 
     @Comment("반려동물 아이디")
     private Long dogId;
@@ -43,17 +43,11 @@ public class Post extends BaseEntity {
     @Comment("산책용품 제공 가능 여부")
     private String suppliesProvideYn;
 
-    @Comment("만남 장소 협의 가능 여부")
-    private String locationNegotiableYn;
+    @Comment("만남 장소 협의 여부")
+    private String locationNegotiationYn;
 
     @Comment("사전 만남 가능 여부")
     private String preMeetAvailableYn;
-
-    @Comment("주소 메모")
-    private String addressMemo;
-
-    @Comment("메모")
-    private String memo;
 
     @Comment("산책 진행 여부")
     private WalkingStatus walkingStatus;

@@ -13,7 +13,7 @@ import com.querydsl.core.types.Path;
  * QPost is a Querydsl query type for Post
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QPost extends EntityPathBase<Post> {
+public class QPost extends EntityPathBase<Board> {
 
     private static final long serialVersionUID = -294090118L;
 
@@ -57,15 +57,15 @@ public class QPost extends EntityPathBase<Post> {
     public final EnumPath<org.jullaene.walkmong_back.api.post.domain.enums.WalkingStatus> walkingStatus = createEnum("walkingStatus", org.jullaene.walkmong_back.api.post.domain.enums.WalkingStatus.class);
 
     public QPost(String variable) {
-        super(Post.class, forVariable(variable));
+        super(Board.class, forVariable(variable));
     }
 
-    public QPost(Path<? extends Post> path) {
+    public QPost(Path<? extends Board> path) {
         super(path.getType(), path.getMetadata());
     }
 
     public QPost(PathMetadata metadata) {
-        super(Post.class, metadata);
+        super(Board.class, metadata);
     }
 
 }
