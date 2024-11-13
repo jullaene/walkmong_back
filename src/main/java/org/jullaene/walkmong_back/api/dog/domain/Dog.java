@@ -68,7 +68,7 @@ public class Dog extends BaseEntity {
     @Comment("산책 요청 사항")
     private String walkNote;
 
-    @Comment("기타 요청 사항")
+    @Comment("추가 안내 사항")
     private String additionalRequest;
 
 }
