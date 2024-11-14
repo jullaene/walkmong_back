@@ -1,4 +1,4 @@
-package org.jullaene.walkmong_back.api.request.domain;
+package org.jullaene.walkmong_back.api.apply.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,20 +11,20 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
-import org.jullaene.walkmong_back.api.request.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
-@Table(name = "request")
+@Table(name = "apply")
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @DynamicUpdate
-public class Request extends BaseEntity {
+public class Apply extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "request_id")
-    private Long requestId;
+    @Column(name = "apply_id")
+    private Long applyId;
 
     @Comment("산책자 아이디")
     private Long memberId;
