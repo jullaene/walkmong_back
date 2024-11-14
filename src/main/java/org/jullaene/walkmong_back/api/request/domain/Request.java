@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.request.domain.enums.MatchingStatus;
@@ -13,6 +16,9 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "request")
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @DynamicUpdate
 public class Request extends BaseEntity {
     @Id
@@ -24,7 +30,7 @@ public class Request extends BaseEntity {
     private Long memberId;
 
     @Comment("게시글 아이디")
-    private Long postId;
+    private Long boardId;
 
     @Comment("매칭 상태")
     private MatchingStatus matchingStatus;
