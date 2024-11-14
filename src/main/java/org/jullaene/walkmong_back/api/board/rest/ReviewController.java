@@ -1,8 +1,8 @@
-package org.jullaene.walkmong_back.api.post.rest;
+package org.jullaene.walkmong_back.api.board.rest;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.jullaene.walkmong_back.api.post.service.ReviewService;
+import org.jullaene.walkmong_back.api.board.service.ReviewService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

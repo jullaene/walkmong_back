@@ -1,4 +1,4 @@
-package org.jullaene.walkmong_back.api.post.domain;
+package org.jullaene.walkmong_back.api.board.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
-import org.jullaene.walkmong_back.api.post.domain.enums.WalkingStatus;
+import org.jullaene.walkmong_back.api.board.domain.enums.WalkingStatus;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "board")

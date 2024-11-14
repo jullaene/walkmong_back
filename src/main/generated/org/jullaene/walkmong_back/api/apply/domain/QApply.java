@@ -27,6 +27,8 @@ public class QApply extends EntityPathBase<Apply> {
 
     public final NumberPath<Long> applyId = createNumber("applyId", Long.class);
 
+    public final NumberPath<Long> boardId = createNumber("boardId", Long.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
@@ -50,8 +52,6 @@ public class QApply extends EntityPathBase<Apply> {
     public final StringPath nuzzleYn = createString("nuzzleYn");
 
     public final StringPath poopBagYn = createString("poopBagYn");
-
-    public final NumberPath<Long> postId = createNumber("postId", Long.class);
 
     public final StringPath preMeetingYn = createString("preMeetingYn");
 
