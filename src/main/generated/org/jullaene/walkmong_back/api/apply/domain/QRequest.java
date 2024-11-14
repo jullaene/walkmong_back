@@ -1,4 +1,4 @@
-package org.jullaene.walkmong_back.api.request.domain;
+package org.jullaene.walkmong_back.api.apply.domain;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -13,7 +13,7 @@ import com.querydsl.core.types.Path;
  * QRequest is a Querydsl query type for Request
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QRequest extends EntityPathBase<Request> {
+public class QRequest extends EntityPathBase<Apply> {
 
     private static final long serialVersionUID = 632574242L;
 
@@ -37,7 +37,7 @@ public class QRequest extends EntityPathBase<Request> {
 
     public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
 
-    public final EnumPath<org.jullaene.walkmong_back.api.request.domain.enums.MatchingStatus> matchingStatus = createEnum("matchingStatus", org.jullaene.walkmong_back.api.request.domain.enums.MatchingStatus.class);
+    public final EnumPath<org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus> matchingStatus = createEnum("matchingStatus", org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus.class);
 
     public final NumberPath<Long> memberId = createNumber("memberId", Long.class);
 
@@ -59,15 +59,15 @@ public class QRequest extends EntityPathBase<Request> {
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QRequest(String variable) {
-        super(Request.class, forVariable(variable));
+        super(Apply.class, forVariable(variable));
     }
 
-    public QRequest(Path<? extends Request> path) {
+    public QRequest(Path<? extends Apply> path) {
         super(path.getType(), path.getMetadata());
     }
 
     public QRequest(PathMetadata metadata) {
-        super(Request.class, metadata);
+        super(Apply.class, metadata);
     }
 
 }

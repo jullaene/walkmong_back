@@ -1,4 +1,4 @@
-package org.jullaene.walkmong_back.api.request.domain.enums;
+package org.jullaene.walkmong_back.api.apply.domain.enums;
 
 public enum MatchingStatus {
     PENDING,   // 매칭 대기 중
