@@ -1,4 +1,4 @@
-package org.jullaene.walkmong_back.api.post.domain;
+package org.jullaene.walkmong_back.api.board.domain;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.Comment;
