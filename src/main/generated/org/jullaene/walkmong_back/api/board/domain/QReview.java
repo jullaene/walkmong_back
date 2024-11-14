@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QReview extends EntityPathBase<Review> {
 
-    private static final long serialVersionUID = 895343282L;
+    private static final long serialVersionUID = -1058761988L;
 
     public static final QReview review = new QReview("review");
 

@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QBoard extends EntityPathBase<Board> {
 
-    private static final long serialVersionUID = -539805620L;
+    private static final long serialVersionUID = -741388606L;
 
     public static final QBoard board = new QBoard("board");
 
