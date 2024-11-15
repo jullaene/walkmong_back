@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApplyRepository extends JpaRepository<Apply, Long> {
+    boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn);
 }

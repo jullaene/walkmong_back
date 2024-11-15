@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApplyRequestDto {
@@ -20,5 +19,5 @@ public class ApplyRequestDto {
     private String muzzleYn;
     private String dogCollarYn;
     private String preMeetingYn;
-    private String memoToOwner;
+    private String messageToOwner;
 }

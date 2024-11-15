@@ -1,11 +1,6 @@
 package org.jullaene.walkmong_back.api.apply.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,8 +15,6 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @DynamicUpdate
 public class Apply extends BaseEntity {
     @Id
@@ -36,6 +29,7 @@ public class Apply extends BaseEntity {
     private Long boardId;
 
     @Comment("매칭 상태")
+    @Enumerated(EnumType.STRING)
     private MatchingStatus matchingStatus;
 
     @Comment("위도")
@@ -75,20 +69,22 @@ public class Apply extends BaseEntity {
     @Comment("반려인에게 전달할 메시지")
     private String memoToOwner;
 
-    public static Apply toEntity(ApplyRequestDto applyRequestDto) {
-        return Apply.builder()
-                .dongAddress(applyRequestDto.getDongAddress())
-                .roadAddress(applyRequestDto.getRoadAddress())
-                .latitude(applyRequestDto.getLatitude())
-                .longitude(applyRequestDto.getLongitude())
-                .addressDetail(applyRequestDto.getAddressDetail())
-                .addressMemo(applyRequestDto.getAddressMemo())
-                .poopBagYn(applyRequestDto.getPoopBagYn())
-                .muzzleYn(applyRequestDto.getMuzzleYn())
-                .dogCollarYn(applyRequestDto.getDogCollarYn())
-                .preMeetingYn(applyRequestDto.getPreMeetingYn())
-                .memoToOwner(applyRequestDto.getMemoToOwner())
-                .build();
+    @Builder
+    public Apply (Long memberId, Long boardId, ApplyRequestDto applyRequestDto) {
+        this.memberId = memberId;
+        this.boardId = boardId;
+        matchingStatus = MatchingStatus.PENDING;
+        dongAddress = applyRequestDto.getDongAddress();
+        roadAddress = applyRequestDto.getRoadAddress();
+        latitude = applyRequestDto.getLatitude();
+        longitude = applyRequestDto.getLongitude();
+        addressDetail = applyRequestDto.getAddressDetail();
+        addressMemo = applyRequestDto.getAddressMemo();
+        poopBagYn = applyRequestDto.getPoopBagYn();
+        muzzleYn = applyRequestDto.getMuzzleYn();
+        dogCollarYn = applyRequestDto.getDogCollarYn();
+        preMeetingYn = applyRequestDto.getPreMeetingYn();
+        memoToOwner = applyRequestDto.getMessageToOwner();
     }
 
 }
