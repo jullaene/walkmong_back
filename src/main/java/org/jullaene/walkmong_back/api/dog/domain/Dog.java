@@ -9,20 +9,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
+import org.jullaene.walkmong_back.api.dog.dto.res.DogProfileResponseDto;
 import org.jullaene.walkmong_back.common.enums.Gender;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "dog")
 @Entity
-@Getter
-@NoArgsConstructor
 @DynamicUpdate
 public class Dog extends BaseEntity {
     @Id
@@ -82,4 +77,24 @@ public class Dog extends BaseEntity {
     @Comment("추가 안내 사항")
     private String additionalRequest;
 
+
+    public final DogProfileResponseDto toDogProfileResponseDto() {
+        int currentYear = LocalDate.now().getYear();
+        int dogAge = currentYear - this.birthYear + 1; // 나이 계산
+
+        return DogProfileResponseDto.builder()
+                .dogId(this.dogId)
+                .dogName(this.name)
+                .dogProfile(this.profile)
+                .dogGender(this.gender)
+                .dogAge(dogAge)
+                .breed(this.breed)
+                .weight(this.weight)
+                .neuteringYn(this.neuteringYn)
+                .bite(this.bite)
+                .friendly(this.friendly)
+                .barking(this.barking)
+                .rabiesYn(this.rabiesYn)
+                .build();
+    }
 }
