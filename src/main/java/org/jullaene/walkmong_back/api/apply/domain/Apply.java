@@ -1,11 +1,6 @@
 package org.jullaene.walkmong_back.api.apply.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,6 +31,7 @@ public class Apply extends BaseEntity {
     private Long boardId;
 
     @Comment("매칭 상태")
+    @Enumerated(EnumType.STRING)
     private MatchingStatus matchingStatus;
 
     @Comment("위도")
