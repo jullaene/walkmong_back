@@ -6,7 +6,6 @@ import org.jullaene.walkmong_back.api.apply.service.ApplyService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/walking/apply")

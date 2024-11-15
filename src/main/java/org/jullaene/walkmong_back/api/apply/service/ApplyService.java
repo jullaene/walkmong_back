@@ -40,6 +40,7 @@ public class ApplyService {
                 .applyRequestDto(applyRequestDto)
                 .build();
 
+
         return  applyRepository.save(apply).getApplyId();
     }
 }
