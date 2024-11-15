@@ -36,7 +36,7 @@ public class BoardService {
             address = getBasicAddressAndDelYn(member.getMemberId(), "N");
             }
         else {
-            address = getAddressByIdAndDelYn(addressId, "Y");
+            address = getAddressByIdAndDelYn(addressId, "N");
         }
         return boardRepository.getBoardsWithFilters(date, address, distance, dogSize, matchingYn);
     }
