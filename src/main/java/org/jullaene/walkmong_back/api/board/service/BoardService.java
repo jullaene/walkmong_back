@@ -2,6 +2,7 @@ package org.jullaene.walkmong_back.api.board.service;
 
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardRes;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.api.member.domain.Address;
@@ -38,7 +39,6 @@ public class BoardService {
         else {
             address = getAddressByIdAndDelYn(addressId, "Y");
         }
-
         return boardRepository.getBoardsWithFilters(date, address, distance, dogSize, matchingYn);
     }
 
