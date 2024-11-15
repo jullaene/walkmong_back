@@ -15,9 +15,9 @@ public class DogService {
     private final DogRepository dogRepository;
 
     public DogProfileResponseDto getDogProfile(Long dogId) {
-        Dog dog = dogRepository.findById(dogId)
+        Dog dog = dogRepository.findByDogIdAndDelYn(dogId, "N")
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.DOG_NOT_FOUND));
 
-        return DogProfileResponseDto.fromDog(dog);
+        return dog.toDogProfileResponseDto();
     }
 }
