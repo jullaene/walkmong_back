@@ -1,9 +1,9 @@
 package org.jullaene.walkmong_back.api.member.domain.enums;
 
 public enum DistanceRange {
-    SMALL(0.5),
-    MEDIUM(1.0),
-    BIG(1.5),
+    SMALL(500.0),
+    MEDIUM(1000.0),
+    BIG(1500.0),
     ;
 
     private final Double range;
