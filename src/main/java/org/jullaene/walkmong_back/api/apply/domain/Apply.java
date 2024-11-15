@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
@@ -16,6 +17,7 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
 @Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -59,7 +61,7 @@ public class Apply extends BaseEntity {
 
     @Comment("입마개 필요 여부")
     @Column(columnDefinition = "VARCHAR(1) default 'Y'")
-    private String nuzzleYn;
+    private String muzzleYn;
 
     @Comment("리드줄 필요 여부")
     @Column(columnDefinition = "VARCHAR(1) default 'Y'")
