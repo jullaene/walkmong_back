@@ -15,7 +15,6 @@ public class ApplyService {
     @Transactional
     public Long saveApply(ApplyRequestDto applyRequestDto){
         Apply apply=Apply.toEntity(applyRequestDto);
-
         return  applyRepository.save(apply).getApplyId();
     }
 }
