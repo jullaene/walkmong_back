@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface BoardRepositoryCustom {
     List<BoardResponseDto> getBoardsWithFilters(LocalDate date, Address walkerAddress, DistanceRange distance, DogSize dogSize, String matchingYn);
+    boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn);
 }
