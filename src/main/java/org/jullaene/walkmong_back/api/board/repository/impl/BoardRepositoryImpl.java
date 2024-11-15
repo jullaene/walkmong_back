@@ -10,7 +10,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
-import org.jullaene.walkmong_back.api.board.dto.res.BoardRes;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepositoryCustom;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
@@ -32,7 +32,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     }
 
     @Override
-    public List<BoardRes> getBoardsWithFilters(LocalDate date, Address walkerAddress, DistanceRange distance, DogSize dogSize, String matchingYn) {
+    public List<BoardResponseDto> getBoardsWithFilters(LocalDate date, Address walkerAddress, DistanceRange distance, DogSize dogSize, String matchingYn) {
         QBoard board = QBoard.board;
         QDog dog = QDog.dog;
         QAddress ownerAddress = QAddress.address;
@@ -85,7 +85,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         StringTemplate endTimeExpression = Expressions.stringTemplate("DATE_FORMAT({0}, '%H:%i')", board.endTime);
 
         return queryFactory.select(
-                        Projections.constructor(BoardRes.class,
+                        Projections.constructor(BoardResponseDto.class,
                                 startTimeExpression.as("startTime"),
                                 endTimeExpression.as("endTime"),
                                 board.matchingYn.as("matchingYn"),
