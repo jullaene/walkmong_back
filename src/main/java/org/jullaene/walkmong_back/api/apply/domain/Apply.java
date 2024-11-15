@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
@@ -75,4 +76,21 @@ public class Apply extends BaseEntity {
 
     @Comment("반려인에게 전달할 메시지")
     private String memoToOwner;
+
+    public static Apply toEntity(ApplyRequestDto applyRequestDto) {
+        return Apply.builder()
+                .dongAddress(applyRequestDto.getDongAddress())
+                .roadAddress(applyRequestDto.getRoadAddress())
+                .latitude(applyRequestDto.getLatitude())
+                .longitude(applyRequestDto.getLongitude())
+                .addressDetail(applyRequestDto.getAddressDetail())
+                .addressMemo(applyRequestDto.getAddressMemo())
+                .poopBagYn(applyRequestDto.getPoopBagYn())
+                .muzzleYn(applyRequestDto.getMuzzleYn())
+                .dogCollarYn(applyRequestDto.getDogCollarYn())
+                .preMeetingYn(applyRequestDto.getPreMeetingYn())
+                .memoToOwner(applyRequestDto.getMemoToOwner())
+                .build();
+    }
+
 }
