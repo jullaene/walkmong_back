@@ -18,6 +18,7 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 @DynamicUpdate
 public class Apply extends BaseEntity {
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "apply_id")
     private Long applyId;
