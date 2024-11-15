@@ -1,11 +1,7 @@
 package org.jullaene.walkmong_back.api.member.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
@@ -16,6 +12,7 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 @DynamicUpdate
 public class Address extends BaseEntity {
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_id")
     private Long addressId;
@@ -23,9 +20,11 @@ public class Address extends BaseEntity {
     @Comment("사용자 아이디")
     private Long memberId;
 
+    @Getter
     @Comment("위도")
     private Double latitude;
 
+    @Getter
     @Comment("경도")
     private Double longitude;
 
@@ -35,6 +34,7 @@ public class Address extends BaseEntity {
     @Comment("동 주소")
     private String dongAddress;
 
+    @Getter
     @Comment("거리 범위")
     private DistanceRange distanceRange;
 
