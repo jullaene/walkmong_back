@@ -1,7 +1,6 @@
 package org.jullaene.walkmong_back.api.board.repository;
 
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
-import org.jullaene.walkmong_back.api.board.dto.res.BoardRes;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.api.member.domain.Address;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
