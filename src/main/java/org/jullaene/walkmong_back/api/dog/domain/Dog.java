@@ -2,10 +2,13 @@ package org.jullaene.walkmong_back.api.dog.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
@@ -14,6 +17,7 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "dog")
 @Entity
+@Getter
 @DynamicUpdate
 public class Dog extends BaseEntity {
     @Id
@@ -28,6 +32,7 @@ public class Dog extends BaseEntity {
     private String name;
 
     @Comment("성별")
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Comment("출생년도")
@@ -40,6 +45,7 @@ public class Dog extends BaseEntity {
     private String breed;
 
     @Comment("사이즈")
+    @Enumerated(EnumType.STRING)
     private DogSize dogSize;
 
     @Comment("프로필 url")

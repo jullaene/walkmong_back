@@ -18,6 +18,7 @@ public enum ErrorType {
     INVALID_TOKEN("유효하지 않은 토큰입니다."),
     INTERNAL_SERVER("서버 오류입니다."),
     UNAUTHORIZED_UPDATE("수정 권한이 없는 유저입니다."),
+    DOG_NOT_FOUND("존재하지 않는 강아지입니다."),
     ;
 
     private String message;
