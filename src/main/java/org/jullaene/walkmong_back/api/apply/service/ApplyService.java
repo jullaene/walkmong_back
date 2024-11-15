@@ -14,20 +14,7 @@ public class ApplyService {
 
     @Transactional
     public Long saveApply(ApplyRequestDto applyRequestDto){
-        Apply apply=Apply.builder()
-                .dongAddress(applyRequestDto.getDongAddress())
-                .roadAddress(applyRequestDto.getRoadAddress())
-                .latitude(applyRequestDto.getLatitude())
-                .longitude(applyRequestDto.getLongitude())
-                .addressDetail(applyRequestDto.getAddressDetail())
-                .addressMemo(applyRequestDto.getAddressMemo())
-                .poopBagYn(applyRequestDto.getPoopBagYn())
-                .muzzleYn(applyRequestDto.getMuzzleYn())
-                .dogCollarYn(applyRequestDto.getDogCollarYn())
-                .preMeetingYn(applyRequestDto.getPreMeetingYn())
-                .memoToOwner(applyRequestDto.getMemoToOwner())
-                .build();
-
+        Apply apply=Apply.toEntity(applyRequestDto);
         return  applyRepository.save(apply).getApplyId();
     }
 }
