@@ -2,13 +2,9 @@ package org.jullaene.walkmong_back.api.apply.service;
 
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.apply.domain.Apply;
-import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
-import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
-import org.jullaene.walkmong_back.api.dog.domain.Dog;
 import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
@@ -47,19 +43,5 @@ public class ApplyService {
                 .build();
 
         return applyRepository.save(apply).getApplyId();
-    }
-
-    @Transactional(readOnly = true)
-    public void isValidWalkerByBoardIdAndMatchingStatus(Long memberId, Long boardId, MatchingStatus matchingStatus) {
-        if (!applyRepository.existsByBoardIdAndMemberIdAndMatchingStatusAndDelYn(boardId, memberId, matchingStatus, "N")) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
-        }
-    }
-
-    @Transactional
-    public ApplyInfoDto getApplyInfo(Long boardId) {
-        Member member = memberService.getMemberFromUserDetail();
-        return applyRepository.getApplyInfoResponse(boardId,member.getMemberId(),"N")
-                .orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_ADDRESS));
     }
 }
