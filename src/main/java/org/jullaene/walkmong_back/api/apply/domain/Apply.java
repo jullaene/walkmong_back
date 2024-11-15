@@ -13,7 +13,6 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
 @Entity
-@Getter
 @NoArgsConstructor
 @DynamicUpdate
 public class Apply extends BaseEntity {
