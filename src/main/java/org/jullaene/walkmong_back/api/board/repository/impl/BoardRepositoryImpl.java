@@ -31,6 +31,10 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         this.queryFactory = queryFactory;
     }
 
+    /**
+     * 게시글 리스트 조회
+     *  date, walkerAddress, distance, dogSize, matchingYn을 기준으로 적용
+     * */
     @Override
     public List<BoardResponseDto> getBoardsWithFilters(LocalDate date, Address walkerAddress, DistanceRange distance, DogSize dogSize, String matchingYn) {
         QBoard board = QBoard.board;
@@ -107,5 +111,28 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .where(isWithinRange)
                 .orderBy(board.startTime.asc())
                 .fetch();
+    }
+
+    /**
+     * boardId와 memberId를 기준으로 해당 게시글의 작성자인지 확인
+     * */
+    @Override
+    public boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn) {
+        QBoard board = QBoard.board;
+        QDog dog = QDog.dog;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(board.boardId.eq(boardId));
+        builder.and(board.delYn.eq(delYn));
+        builder.and(dog.memberId.eq(memberId));
+
+        long count = queryFactory
+                .selectFrom(board)
+                .join(dog).on(board.dogId.eq(dog.dogId).and(dog.delYn.eq(delYn)))
+                .where(builder)
+                .fetch()
+                .size();
+
+        return count > 0;
     }
 }
