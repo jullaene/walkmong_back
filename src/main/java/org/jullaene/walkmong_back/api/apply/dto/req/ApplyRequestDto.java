@@ -20,5 +20,4 @@ public class ApplyRequestDto {
     private String dogCollarYn;
     private String preMeetingYn;
     private String messageToOwner;
-    private String memoToOwner;
 }

@@ -68,7 +68,7 @@ public class Apply extends BaseEntity {
 
     @Comment("반려인에게 전달할 메시지")
     private String memoToOwner;
-  
+
     @Builder
     public Apply (Long memberId, Long boardId, ApplyRequestDto applyRequestDto) {
         this.memberId = memberId;
