@@ -1,10 +1,6 @@
 package org.jullaene.walkmong_back.api.member.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,9 +36,11 @@ public class Member extends BaseEntity {
     private Integer birthDate;
 
     @Comment("성별")
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Comment("역할")
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Comment("자기소개")
