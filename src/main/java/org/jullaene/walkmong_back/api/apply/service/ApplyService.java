@@ -39,7 +39,7 @@ public class ApplyService {
                 .boardId(boardId)
                 .applyRequestDto(applyRequestDto)
                 .build();
-
+      
         return  applyRepository.save(apply).getApplyId();
     }
 }

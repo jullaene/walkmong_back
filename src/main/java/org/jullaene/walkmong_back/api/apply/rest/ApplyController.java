@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class ApplyController {
     private final ApplyService applyService;
 
-    @PostMapping("/{boardId}")
     public ResponseEntity<BasicResponse<Long>> saveApply(
             @PathVariable("boardId") Long boardId,
             @RequestBody ApplyRequestDto applyRequestDto){
