@@ -31,10 +31,6 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         this.queryFactory = queryFactory;
     }
 
-    /**
-     * 게시글 리스트 조회
-     *  date, walkerAddress, distance, dogSize, matchingYn을 기준으로 적용
-     * */
     @Override
     public List<BoardResponseDto> getBoardsWithFilters(LocalDate date, Address walkerAddress, DistanceRange distance, DogSize dogSize, String matchingYn) {
         QBoard board = QBoard.board;
@@ -48,7 +44,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
             date = LocalDate.now();
         }
         LocalDateTime startOfDay = date.atStartOfDay();
-        LocalDateTime endOfDay = date.atTime(23, 59, 59, 999_999_999); // 23:59:59.999999
+        LocalDateTime endOfDay = date.atTime(23, 59, 59, 999_999_999);
 
         builder.and(board.startTime.between(startOfDay, endOfDay));
 
@@ -76,18 +72,23 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                         .where(ownerAddress.addressId.eq(board.ownerAddressId)),
                 JPAExpressions.select(ownerAddress.latitude)
                         .from(ownerAddress)
-                        .where(ownerAddress.addressId.eq(board.ownerAddressId)), walkerAddress.getLongitude(), walkerAddress.getLatitude()
+                        .where(ownerAddress.addressId.eq(board.ownerAddressId)),
+                walkerAddress.getLongitude(),
+                walkerAddress.getLatitude()
         );
 
         BooleanExpression isWithinRange = distanceExpression.lt(distance.getRange());
 
-        // 거리 결과를 실제로 조회할 때
-        Double distanceResult = queryFactory.select(distanceExpression).from(board).fetchOne();
-        log.info("Calculated Distance: " + distanceResult);
+        StringTemplate startTimeExpression = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, '%H:%i')",
+                board.startTime
+        );
+        StringTemplate endTimeExpression = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, '%H:%i')",
+                board.endTime
+        );
 
-        StringTemplate startTimeExpression = Expressions.stringTemplate("DATE_FORMAT({0}, '%H:%i')", board.startTime);
-        StringTemplate endTimeExpression = Expressions.stringTemplate("DATE_FORMAT({0}, '%H:%i')", board.endTime);
-
+        // 필터링된 board들을 바로 결과로 조회
         return queryFactory.select(
                         Projections.constructor(BoardResponseDto.class,
                                 startTimeExpression.as("startTime"),
