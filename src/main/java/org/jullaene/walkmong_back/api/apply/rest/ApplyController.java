@@ -18,6 +18,8 @@ public class ApplyController {
 
     @PostMapping("/{boardId}")
     public ResponseEntity<BasicResponse<Long>> saveApply(@RequestBody ApplyRequestDto applyRequestDto){
+        applyService.saveApply(applyRequestDto);
+
         return ResponseEntity.ok(BasicResponse.ofCreateSuccess(applyService.saveApply(applyRequestDto)));
     }
 }
