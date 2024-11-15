@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
+import org.jullaene.walkmong_back.api.member.dto.res.AddressResponseDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "address")
@@ -35,11 +36,19 @@ public class Address extends BaseEntity {
     private String dongAddress;
 
     @Getter
+    @Enumerated(EnumType.STRING)
     @Comment("거리 범위")
     private DistanceRange distanceRange;
 
     @Comment("기본 주소 유무")
     @Column(columnDefinition = "VARCHAR(1) default 'Y'")
     private String basicAddressYn;
+
+    public final AddressResponseDto toAddressResponseDto() {
+        return AddressResponseDto.builder()
+                .addressId(this.addressId)
+                .dongAddress(this.dongAddress)
+                .build();
+    }
 
 }
