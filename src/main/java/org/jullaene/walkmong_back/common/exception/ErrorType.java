@@ -20,6 +20,8 @@ public enum ErrorType {
     UNAUTHORIZED_UPDATE("수정 권한이 없는 유저입니다."),
     DOG_NOT_FOUND("존재하지 않는 강아지입니다."),
     INVALID_ADDRESS("유효하지 않은 주소입니다."),
+    CANNOT_SELF_APPLY("본인의 게시글에는 지원할 수 없습니다."),
+    CANNOT_DUPLICATED_APPLY("한 게시글에 여러 번 지원할 수 없습니다."),
     ;
 
     private String message;

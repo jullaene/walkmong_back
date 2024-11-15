@@ -38,7 +38,6 @@ public class BoardService {
         else {
             address = getAddressByIdAndDelYn(addressId, "Y");
         }
-
         return boardRepository.getBoardsWithFilters(date, address, distance, dogSize, matchingYn);
     }
 

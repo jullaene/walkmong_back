@@ -13,13 +13,11 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
 @Entity
-@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @DynamicUpdate
 public class Apply extends BaseEntity {
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "apply_id")
     private Long applyId;
@@ -71,20 +69,22 @@ public class Apply extends BaseEntity {
     @Comment("반려인에게 전달할 메시지")
     private String memoToOwner;
 
-    public static Apply toEntity(ApplyRequestDto applyRequestDto) {
-        return Apply.builder()
-                .dongAddress(applyRequestDto.getDongAddress())
-                .roadAddress(applyRequestDto.getRoadAddress())
-                .latitude(applyRequestDto.getLatitude())
-                .longitude(applyRequestDto.getLongitude())
-                .addressDetail(applyRequestDto.getAddressDetail())
-                .addressMemo(applyRequestDto.getAddressMemo())
-                .poopBagYn(applyRequestDto.getPoopBagYn())
-                .muzzleYn(applyRequestDto.getMuzzleYn())
-                .dogCollarYn(applyRequestDto.getDogCollarYn())
-                .preMeetingYn(applyRequestDto.getPreMeetingYn())
-                .memoToOwner(applyRequestDto.getMemoToOwner())
-                .build();
+    @Builder
+    public Apply (Long memberId, Long boardId, ApplyRequestDto applyRequestDto) {
+        this.memberId = memberId;
+        this.boardId = boardId;
+        matchingStatus = MatchingStatus.PENDING;
+        dongAddress = applyRequestDto.getDongAddress();
+        roadAddress = applyRequestDto.getRoadAddress();
+        latitude = applyRequestDto.getLatitude();
+        longitude = applyRequestDto.getLongitude();
+        addressDetail = applyRequestDto.getAddressDetail();
+        addressMemo = applyRequestDto.getAddressMemo();
+        poopBagYn = applyRequestDto.getPoopBagYn();
+        muzzleYn = applyRequestDto.getMuzzleYn();
+        dogCollarYn = applyRequestDto.getDogCollarYn();
+        preMeetingYn = applyRequestDto.getPreMeetingYn();
+        memoToOwner = applyRequestDto.getMessageToOwner();
     }
 
 }
