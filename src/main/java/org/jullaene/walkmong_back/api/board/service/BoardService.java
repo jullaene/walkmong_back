@@ -1,6 +1,7 @@
 package org.jullaene.walkmong_back.api.board.service;
 
 import lombok.RequiredArgsConstructor;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
@@ -41,6 +42,13 @@ public class BoardService {
         return boardRepository.getBoardsWithFilters(date, address, distance, dogSize, matchingYn);
     }
 
+    public BoardDetailResponseDto getBoardDetail(Long boardId) {
+        Member member = memberService.getMemberFromUserDetail();
+
+        return boardRepository.getBoardDetailResponse(boardId,member.getMemberId(), "N")
+                .orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_ADDRESS));
+    }
+
     /**
      * 주어진 멤버가 가진 기본 address를 반환
      * */
@@ -53,6 +61,7 @@ public class BoardService {
      * 주어진 addressId를 이용하여 address 반환
      * */
     private Address getAddressByIdAndDelYn (Long addressId, String delYn) {
+
         return addressRepository.findByAddressIdAndDelYn(addressId, delYn)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
 
