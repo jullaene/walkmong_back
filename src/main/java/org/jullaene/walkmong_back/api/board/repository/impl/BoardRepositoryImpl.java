@@ -102,7 +102,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                 dog.dogSize.as("dogSize"),
                                 board.content.as("content"),
                                 ownerAddress.dongAddress.as("dongAddress"),
-                                distanceExpression.as("distance")
+                                distanceExpression.as("distance"),
+                                board.createdAt.as("createdAt")
                         )
                 )
                 .from(board)
