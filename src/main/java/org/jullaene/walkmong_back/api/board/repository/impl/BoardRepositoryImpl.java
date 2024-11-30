@@ -1,6 +1,7 @@
 package org.jullaene.walkmong_back.api.board.repository.impl;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -205,7 +206,6 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                         startTimeExpression.as("startTime"),
                                         endTimeExpression.as("endTime"),
                                         board.locationNegotiationYn.as("locationNegotiationYn"),
-                                        board.suppliesProvideYn.as("suppliesProvideYn"),
                                         board.preMeetAvailableYn.as("preMeetAvailableYn"),
                                         dog.walkNote.as("walkNote"),
                                         dog.walkRequest.as("walkRequest"),

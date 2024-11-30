@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.board.domain.enums.WalkingStatus;
+import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "board")
@@ -56,5 +57,17 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private WalkingStatus walkingStatus;
 
+    @Builder
+    public Board (BoardRequestDto boardRequestDto, String content) {
+        this.dogId = boardRequestDto.getDogId();
+        this.ownerAddressId = boardRequestDto.getAddressId();
+        this.content = content;
+        this.matchingYn = "N";
+        this.startTime = boardRequestDto.getStartTime();
+        this.endTime = boardRequestDto.getEndTime();
+        this.locationNegotiationYn = boardRequestDto.getLocationNegotiationYn();
+        this.preMeetAvailableYn = boardRequestDto.getPreMeetAvailableYn();
+        this.walkingStatus = WalkingStatus.BEFORE;
+    }
 
 }
