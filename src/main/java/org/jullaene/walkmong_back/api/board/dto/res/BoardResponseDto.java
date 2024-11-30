@@ -6,7 +6,7 @@ import org.jullaene.walkmong_back.common.enums.Gender;
 
 import java.time.LocalDateTime;
 
-public record BoardResponseDto(String startTime, String endTime, String matchingYn,
+public record BoardResponseDto(Long boardId, String startTime, String endTime, String matchingYn,
                                String dogName, String dogProfile,
                                Gender dogGender, String breed, Double weight,
                                DogSize dogSize, String content,
