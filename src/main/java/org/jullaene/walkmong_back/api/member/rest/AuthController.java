@@ -8,6 +8,9 @@ import org.jullaene.walkmong_back.api.member.dto.req.LoginReq;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
 import org.jullaene.walkmong_back.api.member.service.AuthService;
 import org.jullaene.walkmong_back.common.BasicResponse;
+import org.jullaene.walkmong_back.common.exception.CustomException;
+import org.jullaene.walkmong_back.common.exception.ErrorType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,5 +43,27 @@ public class AuthController {
     @PostMapping("/nickname/duplicate")
     public ResponseEntity<BasicResponse<String>> nicknameDuplicate (@RequestParam(name = "nickname") String nickname) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(authService.duplicateNickname(nickname)));
+    }
+
+    @Operation(summary = "이메일 인증 요청", description = "이메일 인증 요청")
+    @PostMapping("/email/code/request")
+    public ResponseEntity<BasicResponse<String>> requestVerification(@RequestParam(name = "email") String email) {
+        try {
+            return ResponseEntity.ok(BasicResponse.ofSuccess(authService.requestEmailVerification(email)));
+        } catch (Exception e) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.INTERNAL_SERVER);
+        }
+    }
+
+    @PostMapping("/email/code/verify")
+    public ResponseEntity<BasicResponse<String>> verifyCode(@RequestParam(name = "email") String email,
+                                             @RequestParam(name = "code") String code) {
+        boolean isVerified = authService.verifyCode(email, code);
+
+        if (isVerified) {
+            return ResponseEntity.ok(BasicResponse.ofSuccess("인증에 성공했습니다."));
+        } else {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_VERIFICATION_CODE);
+        }
     }
 }
