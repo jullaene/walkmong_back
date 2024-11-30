@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 public class WalkExperienceReq {
-
     private String dogOwnershipYn;
     private String dogWalkingExperienceYn;
     private String availabilityWithSize;
+    private String introduction;
 }
