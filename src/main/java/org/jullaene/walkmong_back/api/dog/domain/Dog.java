@@ -58,6 +58,9 @@ public class Dog extends BaseEntity {
     @Comment("짖음 여부")
     private String barking;
 
+    @Comment("성견 여부")
+    private String adultYn;
+
     @Comment("광견병 접종 여부")
     @Column(columnDefinition = "VARCHAR(1) default 'N'")
     private String rabiesYn;
