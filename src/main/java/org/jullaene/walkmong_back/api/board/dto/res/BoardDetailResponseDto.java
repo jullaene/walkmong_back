@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.common.enums.Gender;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +27,6 @@ public class BoardDetailResponseDto {
     private String startTime;
     private String endTime;
     private String locationNegotiationYn;
-    private String suppliesProvidedYn;
     private String preMeetAvailableYn;
     private String walkNote;
     private String walkRequest;
