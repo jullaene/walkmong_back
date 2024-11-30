@@ -86,7 +86,7 @@ public class Member extends BaseEntity {
         this.dogOwnership=walkExperienceReq.getDogOwnershipYn();
         this.dogWalkingExperienceYn=walkExperienceReq.getDogWalkingExperienceYn();
         this.availabilityWithSize=walkExperienceReq.getAvailabilityWithSize();
-
+        this.introduce=walkExperienceReq.getIntroduction();
         return this;
     }
 }
