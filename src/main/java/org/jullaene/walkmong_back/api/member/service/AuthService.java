@@ -8,10 +8,21 @@ import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.jullaene.walkmong_back.common.utils.JwtTokenUtil;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.security.SecureRandom;
+import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -19,6 +30,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     /**
      * 로그인
@@ -69,6 +81,21 @@ public class AuthService {
     }
 
     /**
+     * 이메일 인증 번호 요청
+     * */
+    public String requestEmailVerification(String email) {
+        emailService.sendVerificationCode(email);
+        return "인증 번호 전송 완료";
+    }
+
+    /**
+     * 이메일 인증 번호 확인
+     * */
+    public boolean verifyCode(String email, String code) {
+        return emailService.verifyCode(email, code);
+    }
+
+    /**
      * 이메일을 이용하여 Account 정보를 찾는 API
      */
     private Member findByAccountEmail(String email){
@@ -77,4 +104,5 @@ public class AuthService {
                 .orElseThrow(
                         () -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_USER));
     }
+
 }
