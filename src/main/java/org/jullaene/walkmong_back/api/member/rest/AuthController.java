@@ -9,10 +9,7 @@ import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
 import org.jullaene.walkmong_back.api.member.service.AuthService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth", description = "인증 관련 api 입니다.")
 @RestController
@@ -33,4 +30,15 @@ public class AuthController {
         return ResponseEntity.ok(BasicResponse.ofSuccess(authService.login(loginReq)));
     }
 
+    @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인")
+    @PostMapping("/email/duplicate")
+    public ResponseEntity<BasicResponse<String>> emailDuplicate (@RequestParam(name = "email") String email) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(authService.duplicateEmail(email)));
+    }
+
+    @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복 확인")
+    @PostMapping("/nickname/duplicate")
+    public ResponseEntity<BasicResponse<String>> nicknameDuplicate (@RequestParam(name = "nickname") String nickname) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(authService.duplicateNickname(nickname)));
+    }
 }
