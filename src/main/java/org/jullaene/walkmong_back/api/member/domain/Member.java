@@ -10,6 +10,8 @@ import org.jullaene.walkmong_back.api.member.domain.enums.Role;
 import org.jullaene.walkmong_back.common.BaseEntity;
 import org.jullaene.walkmong_back.common.enums.Gender;
 
+import java.time.LocalDate;
+
 @Table(name = "member")
 @Entity
 @Getter
@@ -33,7 +35,7 @@ public class Member extends BaseEntity {
     private String name;
 
     @Comment("생일")
-    private Integer birthDate;
+    private LocalDate birthDate;
 
     @Comment("성별")
     @Enumerated(EnumType.STRING)
@@ -49,14 +51,21 @@ public class Member extends BaseEntity {
     @Comment("프로필 url")
     private String profile;
 
+    @Comment("반려견 키운 경험")
+    private String dogOwnership;
+
+    @Comment("산책 경험 여부")
+    private String dogWalkingExperienceYn;
+
     @Comment("산책 가능 반려동물 크기")
     private String availabilityWithSize;
 
 
     @Builder
     public Member (Long memberId, String email, String password, String nickname,
-                  String name, Integer birthDate, Gender gender, Role role,
-                  String introduce, String profile, String availabilityWithSize) {
+                   String name, LocalDate birthDate, Gender gender, Role role,
+                   String introduce, String profile, String dogOwnership,
+                   String dogWalkingExperienceYn, String availabilityWithSize) {
         this.memberId = memberId;
         this.email = email;
         this.password = password;
@@ -67,6 +76,8 @@ public class Member extends BaseEntity {
         this.role = role;
         this.introduce = introduce;
         this.profile = profile;
+        this.dogOwnership = dogOwnership;
+        this.dogWalkingExperienceYn = dogWalkingExperienceYn;
         this.availabilityWithSize = availabilityWithSize;
     }
 }
