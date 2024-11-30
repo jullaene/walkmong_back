@@ -20,15 +20,7 @@ public class MemberController {
 
     @Operation(summary = "산책추가정보등록", description = "산책추가정보등록")
     @PostMapping("/experience")
-    public ResponseEntity<BasicResponse<Member>> registerWalkExperienceInfo(@Valid @RequestBody WalkExperienceReq walkExperienceReq) {
+    public ResponseEntity<BasicResponse<Long>> registerWalkExperienceInfo(@Valid @RequestBody WalkExperienceReq walkExperienceReq) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.registerWalkingExperience(walkExperienceReq)));
     }
-
-    @PatchMapping("/experience")
-    public ResponseEntity<BasicResponse<Member>> modifyWalkExperienceInfo(@Valid @RequestBody WalkExperienceReq walkExperienceReq) {
-        return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.registerWalkingExperience(walkExperienceReq)));
-    }
-
-
-
 }

@@ -31,10 +31,9 @@ public class MemberService {
         throw new CustomException(HttpStatus.UNAUTHORIZED, USER_NOT_AUTHENTICATED);
     }
 
-    public Member registerWalkingExperience(@Valid WalkExperienceReq walkExperienceReq) {
-        Member member=getMemberFromUserDetail().addWalkingExperience(walkExperienceReq);
-        memberRepository.save(member);
+    public Long registerWalkingExperience(@Valid WalkExperienceReq walkExperienceReq) {
+        getMemberFromUserDetail().addWalkingExperience(walkExperienceReq);
 
-        return member;
+        return getMemberFromUserDetail().getMemberId();
     }
 }
