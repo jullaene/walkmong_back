@@ -37,5 +37,9 @@ public class AuthController {
         return ResponseEntity.ok(BasicResponse.ofSuccess(authService.duplicateEmail(email)));
     }
 
-
+    @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복 확인")
+    @PostMapping("/nickname/duplicate")
+    public ResponseEntity<BasicResponse<String>> nicknameDuplicate (@RequestParam(name = "nickname") String nickname) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(authService.duplicateNickname(nickname)));
+    }
 }
