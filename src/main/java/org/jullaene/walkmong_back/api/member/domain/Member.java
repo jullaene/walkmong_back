@@ -82,11 +82,10 @@ public class Member extends BaseEntity {
         this.availabilityWithSize = availabilityWithSize;
     }
 
-    public Member addWalkingExperience(WalkExperienceReq walkExperienceReq) {
+    public void addWalkingExperience(WalkExperienceReq walkExperienceReq) {
         this.dogOwnership=walkExperienceReq.getDogOwnershipYn();
         this.dogWalkingExperienceYn=walkExperienceReq.getDogWalkingExperienceYn();
         this.availabilityWithSize=walkExperienceReq.getAvailabilityWithSize();
         this.introduce=walkExperienceReq.getIntroduction();
-        return this;
     }
 }
