@@ -1,8 +1,16 @@
 package org.jullaene.walkmong_back.api.member.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
+import org.jullaene.walkmong_back.common.BasicResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,4 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/member")
 public class MemberController {
     private final MemberService memberService;
+
+    @Operation(summary = "산책추가정보등록", description = "산책추가정보등록")
+    @PostMapping("/experience")
+    public ResponseEntity<BasicResponse<Member>> registerWalkExperienceInfo(@Valid @RequestBody WalkExperienceReq walkExperienceReq){
+        return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.registerWalkingExperience(walkExperienceReq)));
+
+    }
+
 }
