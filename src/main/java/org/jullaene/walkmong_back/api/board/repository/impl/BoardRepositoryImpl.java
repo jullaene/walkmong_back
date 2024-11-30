@@ -97,9 +97,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 board.endTime
         );
 
+
         // 필터링된 board들을 바로 결과로 조회
         return queryFactory.select(
                         Projections.constructor(BoardResponseDto.class,
+                                board.boardId.as("boardId"),
                                 startTimeExpression.as("startTime"),
                                 endTimeExpression.as("endTime"),
                                 board.matchingYn.as("matchingYn"),
@@ -166,6 +168,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 board.endTime
         );
 
+        StringTemplate dateExpression = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, '%Y-%m-%d')",
+                board.startTime
+        );
+
         // 숫자 형식의 생년월일에서 연도 추출 (YYYYMMDD / 10000 = YYYY)
         NumberTemplate<Integer> birthYearExpression = Expressions.numberTemplate(Integer.class,
                 "FLOOR({0} / 10000)",
@@ -202,6 +209,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                         dog.dogSize.as("dogSize"),
                                         address.dongAddress.as("dongAddress"),
                                         Expressions.constant(distance),
+                                        dateExpression.as("date"),
                                         startTimeExpression.as("startTime"),
                                         endTimeExpression.as("endTime"),
                                         board.locationNegotiationYn.as("locationNegotiationYn"),
@@ -219,8 +227,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
                                 ))
                         .from(board)
-                                .leftJoin(member).on(member.memberId.eq(memberId))
                         .leftJoin(dog).on(dog.dogId.eq(board.dogId))
+                        .leftJoin(member).on(dog.memberId.eq(member.memberId))
                         .leftJoin(address).on(address.addressId.eq(board.ownerAddressId))
                         .where(board.boardId.eq(boardId)
                                 .and(board.delYn.eq(delYn)))
