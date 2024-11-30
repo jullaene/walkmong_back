@@ -1,7 +1,9 @@
 package org.jullaene.walkmong_back.api.member.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.user.CustomUserDetail;
@@ -27,5 +29,12 @@ public class MemberService {
             return customUserDetail.getMember(); // member 객체 가져오기
         }
         throw new CustomException(HttpStatus.UNAUTHORIZED, USER_NOT_AUTHENTICATED);
+    }
+
+    public Member registerWalkingExperience(@Valid WalkExperienceReq walkExperienceReq) {
+        Member member=getMemberFromUserDetail().addWalkingExperience(walkExperienceReq);
+        memberRepository.save(member);
+
+        return member;
     }
 }

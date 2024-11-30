@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.member.domain.enums.Role;
+import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.common.BaseEntity;
 import org.jullaene.walkmong_back.common.enums.Gender;
 
@@ -79,5 +80,13 @@ public class Member extends BaseEntity {
         this.dogOwnership = dogOwnership;
         this.dogWalkingExperienceYn = dogWalkingExperienceYn;
         this.availabilityWithSize = availabilityWithSize;
+    }
+
+    public Member addWalkingExperience(WalkExperienceReq walkExperienceReq) {
+        this.dogOwnership=walkExperienceReq.getDogOwnershipYn();
+        this.dogWalkingExperienceYn=walkExperienceReq.getDogWalkingExperienceYn();
+        this.availabilityWithSize=walkExperienceReq.getAvailabilityWithSize();
+
+        return this;
     }
 }
