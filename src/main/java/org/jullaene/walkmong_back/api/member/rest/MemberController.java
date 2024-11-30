@@ -9,10 +9,7 @@ import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Member", description = "멤버 정보 관련 api 입니다.")
 @RestController
@@ -23,9 +20,15 @@ public class MemberController {
 
     @Operation(summary = "산책추가정보등록", description = "산책추가정보등록")
     @PostMapping("/experience")
-    public ResponseEntity<BasicResponse<Member>> registerWalkExperienceInfo(@Valid @RequestBody WalkExperienceReq walkExperienceReq){
+    public ResponseEntity<BasicResponse<Member>> registerWalkExperienceInfo(@Valid @RequestBody WalkExperienceReq walkExperienceReq) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.registerWalkingExperience(walkExperienceReq)));
-
     }
+
+    @PatchMapping("/experience")
+    public ResponseEntity<BasicResponse<Member>> modifyWalkExperienceInfo(@Valid @RequestBody WalkExperienceReq walkExperienceReq) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.registerWalkingExperience(walkExperienceReq)));
+    }
+
+
 
 }
