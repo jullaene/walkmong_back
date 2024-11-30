@@ -37,11 +37,6 @@ public class AuthService {
      */
     @Transactional
     public Long createAccount(MemberCreateReq memberCreateReq) {
-
-        if (memberRepository.existsByEmail(memberCreateReq.getEmail())) {
-            throw new CustomException(HttpStatus.CONFLICT, ErrorType.ALREADY_EXIST_USER);
-        }
-
         Member member = Member.builder()
                 .email(memberCreateReq.getEmail())
                 .nickname(memberCreateReq.getNickname())
@@ -49,6 +44,17 @@ public class AuthService {
                 .build();
 
         return memberRepository.save(member).getMemberId();
+    }
+
+    /**
+     * 이메일 중복 확인
+     * */
+    @Transactional(readOnly = true)
+    public String duplicateEmail (String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new CustomException(HttpStatus.CONFLICT, ErrorType.ALREADY_EXIST_USER);
+        }
+        return "사용 가능한 이메일입니다.";
     }
 
     /**
@@ -60,5 +66,7 @@ public class AuthService {
                 .orElseThrow(
                         () -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_USER));
     }
+
+
 
 }
