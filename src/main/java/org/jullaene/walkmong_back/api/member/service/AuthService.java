@@ -58,6 +58,17 @@ public class AuthService {
     }
 
     /**
+     * 닉네임 중복 확인
+     * */
+    @Transactional(readOnly = true)
+    public String duplicateNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new CustomException(HttpStatus.CONFLICT, ErrorType.ALREADY_EXIST_NICKNAME);
+        }
+        return "사용 가능한 닉네임입니다.";
+    }
+
+    /**
      * 이메일을 이용하여 Account 정보를 찾는 API
      */
     private Member findByAccountEmail(String email){
@@ -66,7 +77,4 @@ public class AuthService {
                 .orElseThrow(
                         () -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_USER));
     }
-
-
-
 }
