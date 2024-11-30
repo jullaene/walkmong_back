@@ -1,10 +1,15 @@
 package org.jullaene.walkmong_back.api.board.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jullaene.walkmong_back.api.board.domain.Board;
+import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
+import org.jullaene.walkmong_back.api.dog.domain.Dog;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
+import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
 import org.jullaene.walkmong_back.api.member.domain.Address;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
@@ -24,6 +29,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final AddressRepository addressRepository;
     private final MemberService memberService;
+    private final DogRepository dogRepository;
 
     /**
      * 게시글 리스트 조회
@@ -66,4 +72,21 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
 
     }
+
+    @Transactional
+    public Long createBoard(BoardRequestDto boardRequestDto) {
+        Dog dog = dogRepository.findByDogIdAndDelYn(boardRequestDto.getDogId(), "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.DOG_NOT_FOUND));
+
+        addressRepository.findByAddressIdAndDelYn(boardRequestDto.getAddressId(), "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
+
+        Board board = Board.builder()
+                .boardRequestDto(boardRequestDto)
+                .content(dog.getWalkRequestContent())
+                .build();
+
+        return boardRepository.save(board).getBoardId();
+    }
+
 }
