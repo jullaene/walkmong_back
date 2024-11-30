@@ -87,6 +87,10 @@ public class Dog extends BaseEntity {
     private String additionalRequest;
 
 
+    public final String getWalkRequestContent() {
+        return this.walkRequest;
+    }
+
     public final DogProfileResponseDto toDogProfileResponseDto() {
         int currentYear = LocalDate.now().getYear();
         int dogAge = currentYear - this.birthYear + 1; // 나이 계산
