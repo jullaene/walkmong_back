@@ -4,15 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.jullaene.walkmong_back.api.member.dto.req.LoginReq;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
 import org.jullaene.walkmong_back.api.member.service.AuthService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth", description = "인증 관련 api 입니다.")
 @RestController
@@ -32,5 +30,12 @@ public class AuthController {
     public ResponseEntity<BasicResponse<String>> login(@Valid @RequestBody LoginReq loginReq) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(authService.login(loginReq)));
     }
+
+    @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인")
+    @PostMapping("/email/duplicate")
+    public ResponseEntity<BasicResponse<String>> emailDuplicate (@RequestParam(name = "email") String email) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(authService.duplicateEmail(email)));
+    }
+
 
 }
