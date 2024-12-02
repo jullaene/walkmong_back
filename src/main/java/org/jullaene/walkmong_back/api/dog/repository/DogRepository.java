@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DogRepository extends JpaRepository<Dog, Long> {
     Optional<Dog> findByDogIdAndDelYn(Long id, String delYn);
+
+    Boolean existsByNameAndDelYn(String name, String delYn);
 }
