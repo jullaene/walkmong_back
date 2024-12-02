@@ -66,11 +66,19 @@ public class BoardService {
 
     @Transactional
     public Long createBoard(BoardRequestDto boardRequestDto) {
+        Member member = memberService.getMemberFromUserDetail();
+
+        List<Address> addresses = addressRepository.findByMemberIdAndDelYn(member.getMemberId(), "N");
+
+        boolean isAddressValid = addresses.stream()
+                .anyMatch(address -> address.getAddressId().equals(boardRequestDto.getAddressId()));
+
+        if (!isAddressValid) {
+            throw new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS);
+        }
+
         Dog dog = dogRepository.findByDogIdAndDelYn(boardRequestDto.getDogId(), "N")
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.DOG_NOT_FOUND));
-
-        addressRepository.findByAddressIdAndDelYn(boardRequestDto.getAddressId(), "N")
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
 
         Board board = Board.builder()
                 .boardRequestDto(boardRequestDto)
