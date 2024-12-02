@@ -1,7 +1,6 @@
 package org.jullaene.walkmong_back.api.board.repository.impl;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -11,7 +10,6 @@ import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.jullaene.walkmong_back.api.apply.domain.QApply;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
@@ -19,7 +17,6 @@ import org.jullaene.walkmong_back.api.board.repository.BoardRepositoryCustom;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.api.member.domain.Address;
-import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.domain.QAddress;
 import org.jullaene.walkmong_back.api.member.domain.QMember;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
@@ -213,7 +210,6 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                         startTimeExpression.as("startTime"),
                                         endTimeExpression.as("endTime"),
                                         board.locationNegotiationYn.as("locationNegotiationYn"),
-                                        board.suppliesProvideYn.as("suppliesProvideYn"),
                                         board.preMeetAvailableYn.as("preMeetAvailableYn"),
                                         dog.walkNote.as("walkNote"),
                                         dog.walkRequest.as("walkRequest"),

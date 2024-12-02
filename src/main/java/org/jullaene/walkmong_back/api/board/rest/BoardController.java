@@ -2,6 +2,7 @@ package org.jullaene.walkmong_back.api.board.rest;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.service.BoardService;
@@ -36,4 +37,10 @@ public class BoardController {
     public ResponseEntity<BasicResponse<BoardDetailResponseDto>> getBoardDetails(@PathVariable("boardId") Long boardId){
         return ResponseEntity.ok(BasicResponse.ofSuccess(boardService.getBoardDetail(boardId)));
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<BasicResponse<Long>> createBoard(@RequestBody BoardRequestDto boardRequestDto) {
+        return ResponseEntity.ok(BasicResponse.ofCreateSuccess(boardService.createBoard(boardRequestDto)));
+    }
+
 }
