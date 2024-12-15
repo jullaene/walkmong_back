@@ -1,11 +1,7 @@
 package org.jullaene.walkmong_back.api.board.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
@@ -50,6 +46,7 @@ public class Board extends BaseEntity {
     private String preMeetAvailableYn;
 
     @Comment("산책 진행 여부")
+    @Enumerated(EnumType.STRING)
     private WalkingStatus walkingStatus;
 
 }
