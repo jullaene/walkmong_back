@@ -13,6 +13,7 @@ import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "board")
+@Getter
 @Entity
 @NoArgsConstructor
 @DynamicUpdate
