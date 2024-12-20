@@ -24,7 +24,9 @@ public enum ErrorType {
     INVALID_ADDRESS("유효하지 않은 주소입니다."),
     CANNOT_SELF_APPLY("본인의 게시글에는 지원할 수 없습니다."),
     CANNOT_DUPLICATED_APPLY("한 게시글에 여러 번 지원할 수 없습니다."),
-    CANNOT_DUPLICATED_DOG_PROFILE("이미 등록된 강아지입니다")
+    CANNOT_DUPLICATED_DOG_PROFILE("이미 등록된 강아지입니다"),
+    APPLY_NOT_FOUND("존재하지 않는 지원입니다"),
+    POST_NOT_FOUND("존재하지 않는 산책글입니다")
     ;
 
     private String message;

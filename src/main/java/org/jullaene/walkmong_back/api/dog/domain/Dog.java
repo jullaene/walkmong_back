@@ -20,6 +20,7 @@ import org.jullaene.walkmong_back.api.dog.dto.res.DogProfileResponseDto;
 import org.jullaene.walkmong_back.common.enums.Gender;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
+@Getter
 @Table(name = "dog")
 @Entity
 @NoArgsConstructor
