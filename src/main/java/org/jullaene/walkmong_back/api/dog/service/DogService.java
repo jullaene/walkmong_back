@@ -29,26 +29,16 @@ public class DogService {
 
     public Long registerDogProfile(DogProfileReqDto dogProfileReqDto) {
 
+        Member member = memberService.getMemberFromUserDetail();
+
         //이미 등록된 강아지 프로필이라면 예외처리
         if (dogRepository.existsByNameAndDelYn(dogProfileReqDto.getName(),"N")){
             throw new CustomException(HttpStatus.FORBIDDEN,ErrorType.CANNOT_DUPLICATED_DOG_PROFILE);
         }
 
         Dog dog=Dog.builder()
-                .name(dogProfileReqDto.getName())
-                .memberId(memberService.getMemberFromUserDetail().getMemberId())
-                .dogSize(dogProfileReqDto.getDogSize())
-                .profile(dogProfileReqDto.getProfile())
-                .gender(dogProfileReqDto.getGender())
-                .birthYear(dogProfileReqDto.getBirthYear())
-                .breed(dogProfileReqDto.getBreed())
-                .weight(dogProfileReqDto.getWeight())
-                .neuteringYn(dogProfileReqDto.getNeuteringYn())
-                .bite(dogProfileReqDto.getBite())
-                .friendly(dogProfileReqDto.getFriendly())
-                .barking(dogProfileReqDto.getBarking())
-                .rabiesYn(dogProfileReqDto.getRabiesYn())
-                .adultYn(dogProfileReqDto.getAdultYn())
+                .memberId(member.getMemberId())
+                .dogProfileReqDto(dogProfileReqDto)
                 .build();
 
         return dogRepository.save(dog).getDogId();
@@ -75,6 +65,7 @@ public class DogService {
 
         return updatedDog.toDogProfileResponseDto();
     }
+
     public List<DogProfileResponseDto> getDogProfileList() {
         Member member = memberService.getMemberFromUserDetail();
         List<Dog> dogs = dogRepository.findByMemberIdAndDelYn(member.getMemberId(), "N");
