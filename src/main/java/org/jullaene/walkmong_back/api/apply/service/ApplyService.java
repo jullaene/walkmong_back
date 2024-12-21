@@ -42,4 +42,6 @@ public class ApplyService {
 
         return  applyRepository.save(apply).getApplyId();
     }
+
+    //test
 }
