@@ -1,10 +1,12 @@
 package org.jullaene.walkmong_back.api.dog.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.dog.domain.Dog;
 import org.jullaene.walkmong_back.api.dog.dto.req.DogProfileReqDto;
 import org.jullaene.walkmong_back.api.dog.dto.res.DogProfileResponseDto;
 import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
+import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
@@ -49,5 +51,27 @@ public class DogService {
                 .build();
 
         return dogRepository.save(dog).getDogId();
+    }
+
+    public DogProfileResponseDto updateDogProfile(Long dogId, DogProfileReqDto dogProfileReqDto) {
+
+        Member member = memberService.getMemberFromUserDetail();
+
+        List<Dog> dogList = dogRepository.findByMemberIdAndDelYn(member.getMemberId(), "N");
+
+        Dog dog = dogRepository.findById(dogId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.DOG_NOT_FOUND));
+
+        boolean isDogOwnedByMember = dogList.stream()
+                .anyMatch(memberDog -> memberDog.getDogId().equals(dogId));
+
+        if (!isDogOwnedByMember) {
+            throw new CustomException(HttpStatus.FORBIDDEN, ErrorType.ACCESS_DENIED);
+        }
+
+        dog.updateProfile(dogProfileReqDto);
+        Dog updatedDog = dogRepository.save(dog);
+
+        return updatedDog.toDogProfileResponseDto();
     }
 }

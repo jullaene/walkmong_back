@@ -26,4 +26,12 @@ public class DogController {
             return ResponseEntity.ok(BasicResponse.ofSuccess(dogService.registerDogProfile(dogProfileReqDto)));
     }
 
+    @PatchMapping("/profile/update/{dogId}")
+    public ResponseEntity<BasicResponse<DogProfileResponseDto>> updateDogProfile(
+            @PathVariable Long dogId,
+            @RequestBody DogProfileReqDto dogProfileReqDto) {
+        DogProfileResponseDto updatedProfile = dogService.updateDogProfile(dogId, dogProfileReqDto);
+        return ResponseEntity.ok(BasicResponse.ofSuccess(updatedProfile));
+    }
+
 }

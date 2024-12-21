@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
+import org.jullaene.walkmong_back.api.dog.dto.req.DogProfileReqDto;
 import org.jullaene.walkmong_back.api.dog.dto.res.DogProfileResponseDto;
 import org.jullaene.walkmong_back.common.enums.Gender;
 import org.jullaene.walkmong_back.common.BaseEntity;
@@ -133,5 +134,21 @@ public class Dog extends BaseEntity {
         this.barking = barking;
         this.rabiesYn=rabiesYn;
         this.adultYn=adultYn;
+    }
+
+    public void updateProfile(DogProfileReqDto dogProfileDto) {
+        this.name = dogProfileDto.getName();
+        this.profile = dogProfileDto.getProfile();
+        this.gender = dogProfileDto.getGender();
+        this.birthYear = dogProfileDto.getBirthYear();
+        this.weight = dogProfileDto.getWeight();
+        this.breed = dogProfileDto.getBreed();
+        this.dogSize = dogProfileDto.getDogSize();
+        this.neuteringYn = dogProfileDto.getNeuteringYn();
+        this.bite = dogProfileDto.getBite();
+        this.friendly = dogProfileDto.getFriendly();
+        this.barking = dogProfileDto.getBarking();
+        this.rabiesYn = dogProfileDto.getRabiesYn();
+        this.adultYn = dogProfileDto.getAdultYn();
     }
 }
