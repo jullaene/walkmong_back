@@ -1,6 +1,7 @@
 package org.jullaene.walkmong_back.api.dog.rest;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.dog.dto.req.DogProfileReqDto;
 import org.jullaene.walkmong_back.api.dog.dto.res.DogProfileResponseDto;
@@ -26,4 +27,9 @@ public class DogController {
             return ResponseEntity.ok(BasicResponse.ofSuccess(dogService.registerDogProfile(dogProfileReqDto)));
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<BasicResponse<List<DogProfileResponseDto>>> getDogProfiles() {
+        List<DogProfileResponseDto> dogProfileList = dogService.getDogProfileList();
+        return ResponseEntity.ok(BasicResponse.ofSuccess(dogProfileList));
+    }
 }
