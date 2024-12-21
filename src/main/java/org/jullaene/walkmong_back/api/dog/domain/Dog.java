@@ -109,31 +109,32 @@ public class Dog extends BaseEntity {
                 .friendly(this.friendly)
                 .barking(this.barking)
                 .rabiesYn(this.rabiesYn)
+                .adultYn(this.adultYn)
+                .walkRequest(this.walkRequest)
+                .walkNote(this.walkNote)
+                .additionalRequest(this.additionalRequest)
                 .build();
     }
 
     @Builder
-    public Dog(Long memberId,String name,
-               DogSize dogSize, String profile,
-               Gender gender, Integer birthYear,
-               String breed, Double weight,
-               String neuteringYn, String bite,
-               String friendly, String barking,
-               String rabiesYn, String adultYn){
-        this.name=name;
-        this.memberId=memberId;
-        this.dogSize=dogSize;
-        this.profile=profile;
-        this.gender=gender;
-        this.birthYear=birthYear;
-        this.breed=breed;
-        this.weight=weight;
-        this.neuteringYn=neuteringYn;
-        this.bite = bite;
-        this.friendly=friendly;
-        this.barking = barking;
-        this.rabiesYn=rabiesYn;
-        this.adultYn=adultYn;
+    public Dog(Long memberId, DogProfileReqDto dogProfileReqDto){
+        this.name = dogProfileReqDto.getName();
+        this.memberId = memberId;
+        this.dogSize = dogProfileReqDto.getDogSize();
+        this.profile = dogProfileReqDto.getProfile();
+        this.gender = dogProfileReqDto.getGender();
+        this.birthYear = dogProfileReqDto.getBirthYear();
+        this.breed = dogProfileReqDto.getBreed();
+        this.weight = dogProfileReqDto.getWeight();
+        this.neuteringYn = dogProfileReqDto.getNeuteringYn();
+        this.bite = dogProfileReqDto.getBite();
+        this.friendly = dogProfileReqDto.getFriendly();
+        this.barking = dogProfileReqDto.getBarking();
+        this.rabiesYn = dogProfileReqDto.getRabiesYn();
+        this.adultYn = dogProfileReqDto.getAdultYn();
+        this.walkRequest = dogProfileReqDto.getWalkRequest();
+        this.walkNote = dogProfileReqDto.getWalkNote();
+        this.additionalRequest = dogProfileReqDto.getAdditionalRequest();
     }
 
     public void updateProfile(DogProfileReqDto dogProfileDto) {
@@ -150,5 +151,8 @@ public class Dog extends BaseEntity {
         this.barking = dogProfileDto.getBarking();
         this.rabiesYn = dogProfileDto.getRabiesYn();
         this.adultYn = dogProfileDto.getAdultYn();
+        this.walkRequest = dogProfileDto.getWalkRequest();
+        this.walkNote = dogProfileDto.getWalkNote();
+        this.additionalRequest = dogProfileDto.getAdditionalRequest();
     }
 }
