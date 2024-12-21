@@ -26,6 +26,9 @@ public class Board extends BaseEntity {
     @Comment("반려동물 아이디")
     private Long dogId;
 
+    @Comment("반려인 아이디")
+    private Long ownerId;
+
     @Comment("반려인 주소 아이디")
     private Long ownerAddressId;
 
