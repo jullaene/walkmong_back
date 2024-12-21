@@ -1,6 +1,7 @@
 package org.jullaene.walkmong_back.api.dog.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.dog.domain.Dog;
 import org.jullaene.walkmong_back.api.dog.dto.req.DogProfileReqDto;
@@ -73,5 +74,13 @@ public class DogService {
         Dog updatedDog = dogRepository.save(dog);
 
         return updatedDog.toDogProfileResponseDto();
+    }
+    public List<DogProfileResponseDto> getDogProfileList() {
+        Member member = memberService.getMemberFromUserDetail();
+        List<Dog> dogs = dogRepository.findByMemberIdAndDelYn(member.getMemberId(), "N");
+
+        return dogs.stream()
+                .map(Dog::toDogProfileResponseDto)
+                .collect(Collectors.toList());
     }
 }
