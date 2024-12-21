@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Table(name = "review_owner")
+@Table(name = "review_to_owner_image")
 @Entity
 @NoArgsConstructor
 @DynamicUpdate

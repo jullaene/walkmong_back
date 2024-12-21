@@ -38,12 +38,15 @@ public class ReviewToOwner extends BaseEntity {
     private String goodYn;
 
     @Comment("사회성")
+    @Enumerated(EnumType.STRING)
     private Sociality sociality;
 
     @Comment("활동량")
+    @Enumerated(EnumType.STRING)
     private Activity activity;
 
     @Comment("공격력")
+    @Enumerated(EnumType.STRING)
     private Aggressiveness aggressiveness;
 
     @Comment("아쉬운 점")
@@ -54,6 +57,7 @@ public class ReviewToOwner extends BaseEntity {
         this.boardId = reviewToOwnerReqDto.getBoardId();
         this.reviewerId = reviewerId;
         this.reviewTargetId = reviewToOwnerReqDto.getOwnerId();
+        this.goodYn = reviewToOwnerReqDto.getGoodYn();
         this.content = reviewToOwnerReqDto.getContent();
         this.sociality = reviewToOwnerReqDto.getSociality();
         this.activity = reviewToOwnerReqDto.getActivity();
