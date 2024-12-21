@@ -78,6 +78,7 @@ public class BoardService {
         Board board = Board.builder()
                 .boardRequestDto(boardRequestDto)
                 .content(dog.getWalkRequestContent())
+                .ownerId(member.getMemberId())
                 .build();
 
         return boardRepository.save(board).getBoardId();
