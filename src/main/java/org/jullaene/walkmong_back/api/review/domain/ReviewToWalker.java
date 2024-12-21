@@ -8,7 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.review.dto.req.ReviewToWalkerReqDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
-@Table(name = "review_walker")
+@Table(name = "review_to_walker")
 @Entity
 @NoArgsConstructor
 @DynamicUpdate
