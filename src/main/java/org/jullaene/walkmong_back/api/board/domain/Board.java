@@ -58,7 +58,7 @@ public class Board extends BaseEntity {
     private WalkingStatus walkingStatus;
 
     @Builder
-    public Board (BoardRequestDto boardRequestDto, String content) {
+    public Board (BoardRequestDto boardRequestDto, String content, Long ownerId) {
         this.dogId = boardRequestDto.getDogId();
         this.ownerAddressId = boardRequestDto.getAddressId();
         this.content = content;
@@ -68,6 +68,7 @@ public class Board extends BaseEntity {
         this.locationNegotiationYn = boardRequestDto.getLocationNegotiationYn();
         this.preMeetAvailableYn = boardRequestDto.getPreMeetAvailableYn();
         this.walkingStatus = WalkingStatus.BEFORE;
+        this.ownerId = ownerId;
     }
 
 
