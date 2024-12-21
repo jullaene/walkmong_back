@@ -1,6 +1,7 @@
 package org.jullaene.walkmong_back.api.board.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -82,10 +84,11 @@ public class BoardService {
     }
 
     /**
-     *
+     *  게시글 아이디와 삭제 여부로 해당 게시글의 유효한 반려인인지 확인
      * */
     @Transactional(readOnly = true)
     public void isValidOwnerByBoardIdAndDelYn (Long memberId, Long boardId, String delYn) {
+        log.info("memberId : " + memberId + " boardId : " + boardId);
        if (!boardRepository.existsByOwnerIdAndBoardIdAndDelYn(memberId, boardId, delYn)) {
            throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
        }

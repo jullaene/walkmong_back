@@ -36,7 +36,10 @@ public class ReviewToWalkerService {
         boardService.isValidOwnerByBoardIdAndDelYn(member.getMemberId(), reviewToWalkerReqDto.getBoardId(), "N");
         log.info("해당 게시글의 반려인 인증 완료");
 
-        ReviewToWalker reviewToWalker = ReviewToWalker.builder().build();
+        ReviewToWalker reviewToWalker = ReviewToWalker.builder()
+                .reviewToWalkerReqDto(reviewToWalkerReqDto)
+                .reviewerId(member.getMemberId())
+                .build();
         Long reviewToWalkerId = reviewToWalkerRepository.save(reviewToWalker).getReviewToWalkerId();
         log.info("산책자 리뷰 저장");
 
