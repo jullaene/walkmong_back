@@ -8,7 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.review.domain.enums.HashtagWalkerNm;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
-@Table(name = "hashtag_walker")
+@Table(name = "hashtag_to_walker")
 @Entity
 @NoArgsConstructor
 @DynamicUpdate
@@ -25,6 +25,7 @@ public class HashtagToWalker extends BaseEntity {
     private Long reviewTargetId;
 
     @Comment("해시태그 명")
+    @Enumerated(EnumType.STRING)
     private HashtagWalkerNm hashtagWalkerNm;
 
     @Builder
