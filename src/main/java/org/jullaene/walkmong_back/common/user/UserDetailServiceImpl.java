@@ -2,8 +2,8 @@ package org.jullaene.walkmong_back.common.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jullaene.walkmong_back.api.auth.domain.Member;
-import org.jullaene.walkmong_back.api.auth.repository.MemberRepository;
+import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
