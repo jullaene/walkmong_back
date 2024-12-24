@@ -16,7 +16,6 @@ import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
-@Getter
 @Table(name = "apply")
 @Entity
 @Getter
