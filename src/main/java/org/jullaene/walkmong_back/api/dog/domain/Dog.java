@@ -99,6 +99,7 @@ public class Dog extends BaseEntity {
         return DogProfileResponseDto.builder()
                 .dogId(this.dogId)
                 .dogName(this.name)
+                .dogSize(this.dogSize)
                 .dogProfile(this.profile)
                 .dogGender(this.gender)
                 .dogAge(dogAge)
