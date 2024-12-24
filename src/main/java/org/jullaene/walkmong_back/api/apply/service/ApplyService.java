@@ -1,8 +1,8 @@
 package org.jullaene.walkmong_back.api.apply.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.Apply;
+import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
@@ -18,9 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApplyService {
@@ -30,7 +27,7 @@ public class ApplyService {
     private final MemberService memberService;
 
     @Transactional
-    public Long saveApply(Long boardId, ApplyRequestDto applyRequestDto){
+    public Long saveApply(Long boardId, ApplyRequestDto applyRequestDto) {
         Member member = memberService.getMemberFromUserDetail();
 
         // 본인이 쓴 게시글에는 지원 불가
@@ -49,7 +46,14 @@ public class ApplyService {
                 .applyRequestDto(applyRequestDto)
                 .build();
 
-        return  applyRepository.save(apply).getApplyId();
+        return applyRepository.save(apply).getApplyId();
+    }
+
+    @Transactional(readOnly = true)
+    public void isValidWalkerByBoardIdAndMatchingStatus(Long memberId, Long boardId, MatchingStatus matchingStatus) {
+        if (!applyRepository.existsByBoardIdAndMemberIdAndMatchingStatusAndDelYn(boardId, memberId, matchingStatus, "N")) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
+        }
     }
 
     public ApplyInfoDto getApplyInfo(Long boardId) {
@@ -57,21 +61,22 @@ public class ApplyService {
 
         // 게시글 id로 지원 내역 찾기
         Apply apply = applyRepository.findById(boardId)
-                .orElseThrow(() ->new CustomException(HttpStatus.NOT_FOUND,ErrorType.APPLY_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.APPLY_NOT_FOUND));
 
         // 게시글의 강아지 아이디 찾기
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND,ErrorType.POST_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.POST_NOT_FOUND));
 
         Dog dog = dogRepository.findById(board.getDogId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND,ErrorType.DOG_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.DOG_NOT_FOUND));
 
-        return createApplyInfoDto(member,apply,dog,board);
+        return createApplyInfoDto(member, apply, dog, board);
 
 
     }
+
     //산책자 노원구 공릉동, 30대 초반
-    private ApplyInfoDto createApplyInfoDto(Member member, Apply apply, Dog dog,Board board) {
+    private ApplyInfoDto createApplyInfoDto(Member member, Apply apply, Dog dog, Board board) {
         return new ApplyInfoDto(
                 dog.getName(),
                 dog.getGender(),
