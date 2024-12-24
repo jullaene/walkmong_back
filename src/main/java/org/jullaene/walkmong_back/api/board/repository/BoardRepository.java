@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardRepositoryCustom {
     boolean existsByOwnerIdAndBoardIdAndDelYn(Long ownerId, Long boardId, String delYn);
-
     List<Board> findByOwnerId(Long memberId);
 }
