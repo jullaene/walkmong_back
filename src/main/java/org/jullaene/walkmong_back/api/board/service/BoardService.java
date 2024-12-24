@@ -1,7 +1,7 @@
 package org.jullaene.walkmong_back.api.board.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
@@ -19,10 +19,12 @@ import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -34,6 +36,7 @@ public class BoardService {
     /**
      * 게시글 리스트 조회
      * */
+    @Transactional(readOnly = true)
     public List<BoardResponseDto> getBoards(LocalDate date, Long addressId, DistanceRange distance, DogSize dogSize, String matchingYn) {
         Member member = memberService.getMemberFromUserDetail();
 
@@ -48,29 +51,12 @@ public class BoardService {
         return boardRepository.getBoardsWithFilters(date, address, distance, dogSize, matchingYn);
     }
 
+    @Transactional(readOnly = true)
     public BoardDetailResponseDto getBoardDetail(Long boardId) {
         Member member = memberService.getMemberFromUserDetail();
 
         return boardRepository.getBoardDetailResponse(boardId,member.getMemberId(), "N")
                 .orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_ADDRESS));
-    }
-
-    /**
-     * 주어진 멤버가 가진 기본 address를 반환
-     * */
-    private Address getBasicAddressAndDelYn(Long memberId, String delYn) {
-        return addressRepository.findByMemberIdAndBasicAddressYnAndDelYn(memberId,"Y", delYn)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
-    }
-
-    /**
-     * 주어진 addressId를 이용하여 address 반환
-     * */
-    private Address getAddressByIdAndDelYn (Long addressId, String delYn) {
-
-        return addressRepository.findByAddressIdAndDelYn(addressId, delYn)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
-
     }
 
     @Transactional
@@ -92,9 +78,41 @@ public class BoardService {
         Board board = Board.builder()
                 .boardRequestDto(boardRequestDto)
                 .content(dog.getWalkRequestContent())
+                .ownerId(member.getMemberId())
                 .build();
 
         return boardRepository.save(board).getBoardId();
     }
+
+    /**
+     *  게시글 아이디와 삭제 여부로 해당 게시글의 유효한 반려인인지 확인
+     * */
+    @Transactional(readOnly = true)
+    public void isValidOwnerByBoardIdAndDelYn (Long memberId, Long boardId, String delYn) {
+        log.info("memberId : " + memberId + " boardId : " + boardId);
+       if (!boardRepository.existsByOwnerIdAndBoardIdAndDelYn(memberId, boardId, delYn)) {
+           throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
+       }
+    }
+    /**
+     * 주어진 멤버가 가진 기본 address를 반환
+     * */
+    @Transactional(readOnly = true)
+    protected Address getBasicAddressAndDelYn(Long memberId, String delYn) {
+        return addressRepository.findByMemberIdAndBasicAddressYnAndDelYn(memberId,"Y", delYn)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
+    }
+
+    /**
+     * 주어진 addressId를 이용하여 address 반환
+     * */
+    @Transactional(readOnly = true)
+    protected Address getAddressByIdAndDelYn (Long addressId, String delYn) {
+
+        return addressRepository.findByAddressIdAndDelYn(addressId, delYn)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
+
+    }
+
 
 }

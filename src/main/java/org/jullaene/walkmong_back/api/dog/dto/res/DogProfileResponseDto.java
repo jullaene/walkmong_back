@@ -19,4 +19,8 @@ public class DogProfileResponseDto {
     private String friendly;
     private String barking;
     private String rabiesYn;
+    private String adultYn;
+    private String walkRequest;
+    private String walkNote;
+    private String additionalRequest;
 }

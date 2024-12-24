@@ -27,6 +27,9 @@ public class Board extends BaseEntity {
     @Comment("반려동물 아이디")
     private Long dogId;
 
+    @Comment("반려인 아이디")
+    private Long ownerId;
+
     @Comment("반려인 주소 아이디")
     private Long ownerAddressId;
 
@@ -56,7 +59,7 @@ public class Board extends BaseEntity {
     private WalkingStatus walkingStatus;
 
     @Builder
-    public Board (BoardRequestDto boardRequestDto, String content) {
+    public Board (BoardRequestDto boardRequestDto, String content, Long ownerId) {
         this.dogId = boardRequestDto.getDogId();
         this.ownerAddressId = boardRequestDto.getAddressId();
         this.content = content;
@@ -66,6 +69,7 @@ public class Board extends BaseEntity {
         this.locationNegotiationYn = boardRequestDto.getLocationNegotiationYn();
         this.preMeetAvailableYn = boardRequestDto.getPreMeetAvailableYn();
         this.walkingStatus = WalkingStatus.BEFORE;
+        this.ownerId = ownerId;
     }
 
 
