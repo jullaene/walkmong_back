@@ -12,7 +12,6 @@ import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.common.enums.Gender;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
-@Getter
 @Table(name = "dog")
 @Entity
 @DynamicUpdate

@@ -56,43 +56,10 @@ public class ApplyService {
         }
     }
 
+    @Transactional
     public ApplyInfoDto getApplyInfo(Long boardId) {
         Member member = memberService.getMemberFromUserDetail();
-
-        // 게시글 id로 지원 내역 찾기
-        Apply apply = applyRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.APPLY_NOT_FOUND));
-
-        // 게시글의 강아지 아이디 찾기
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.POST_NOT_FOUND));
-
-        Dog dog = dogRepository.findById(board.getDogId())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.DOG_NOT_FOUND));
-
-        return createApplyInfoDto(member, apply, dog, board);
-
-
-    }
-
-    //산책자 노원구 공릉동, 30대 초반
-    private ApplyInfoDto createApplyInfoDto(Member member, Apply apply, Dog dog, Board board) {
-        return new ApplyInfoDto(
-                dog.getName(),
-                dog.getGender(),
-                dog.getBreed(),
-                dog.getDogSize(),
-                member.getName(),
-                member.getProfile(),
-                member.getGender(),
-                apply.getDongAddress(),
-                board.getStartTime(),
-                board.getEndTime(),
-                apply.getAddressDetail(),
-                apply.getMuzzleYn(),
-                apply.getPoopBagYn(),
-                apply.getPreMeetingYn(),
-                apply.getMemoToOwner()
-        );
+        return applyRepository.getApplyInfoResponse(boardId,member.getMemberId(),"N")
+                .orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_ADDRESS));
     }
 }
