@@ -247,11 +247,14 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                         apply.dongAddress.as("dongAddress"),
                                         apply.addressDetail.as("addressDetail"),
                                         board.startTime.as("startTime"),
-                                        board.endTime.as("endTime")
+                                        board.endTime.as("endTime"),
+                                        member.nickname.as("walkerNickname"),
+                                        member.profile.as("walkerProfile")
                                 ))
                         .from(board)
                         .leftJoin(dog).on(dog.dogId.eq(board.dogId))
                         .leftJoin(apply).on(apply.boardId.eq(board.boardId))
+                        .leftJoin(member).on(apply.memberId.eq(member.memberId)) //산책 지원자
                         .where(board.ownerId.eq(memberId)
                                 .and(apply.matchingStatus.eq(status)))
                         .fetch();
