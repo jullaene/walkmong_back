@@ -41,7 +41,7 @@ public class ApplyController {
     * 내가 지원,의뢰한 산책 리스트 보기
     */
     @GetMapping("/history")
-    public List<RecordResponseDto> getApplyLists(@RequestParam("record") String record,
+    public ResponseEntity<BasicResponse<List<RecordResponseDto>>> getApplyLists(@RequestParam("record") String record,
                                                       @RequestParam("status")MatchingStatus status){
         /*
         record
@@ -69,7 +69,8 @@ public class ApplyController {
                     .map(dto -> (RecordResponseDto) dto)
                     .toList();
         }
-        return recordResponseDto;
+        return ResponseEntity.ok(BasicResponse.ofSuccess(recordResponseDto));
+
 
     }
 
