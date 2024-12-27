@@ -3,20 +3,21 @@ package org.jullaene.walkmong_back.api.apply.domain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @DynamicUpdate
 public class Apply extends BaseEntity {
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "apply_id")
     private Long applyId;
@@ -55,7 +56,7 @@ public class Apply extends BaseEntity {
 
     @Comment("입마개 필요 여부")
     @Column(columnDefinition = "VARCHAR(1) default 'Y'")
-    private String nuzzleYn;
+    private String muzzleYn;
 
     @Comment("리드줄 필요 여부")
     @Column(columnDefinition = "VARCHAR(1) default 'Y'")
@@ -67,4 +68,23 @@ public class Apply extends BaseEntity {
 
     @Comment("반려인에게 전달할 메시지")
     private String memoToOwner;
+
+    @Builder
+    public Apply (Long memberId, Long boardId, ApplyRequestDto applyRequestDto) {
+        this.memberId = memberId;
+        this.boardId = boardId;
+        matchingStatus = MatchingStatus.PENDING;
+        dongAddress = applyRequestDto.getDongAddress();
+        roadAddress = applyRequestDto.getRoadAddress();
+        latitude = applyRequestDto.getLatitude();
+        longitude = applyRequestDto.getLongitude();
+        addressDetail = applyRequestDto.getAddressDetail();
+        addressMemo = applyRequestDto.getAddressMemo();
+        poopBagYn = applyRequestDto.getPoopBagYn();
+        muzzleYn = applyRequestDto.getMuzzleYn();
+        dogCollarYn = applyRequestDto.getDogCollarYn();
+        preMeetingYn = applyRequestDto.getPreMeetingYn();
+        memoToOwner = applyRequestDto.getMessageToOwner();
+    }
+
 }
