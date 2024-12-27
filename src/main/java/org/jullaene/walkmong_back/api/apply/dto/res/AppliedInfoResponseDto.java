@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class AppliedInfoResponseDto implements RecordResponseDto {
+public class AppliedInfoResponseDto extends RecordResponseDto {
     private String dogName;
     private Gender dogGender;
     private String dogProfile;
