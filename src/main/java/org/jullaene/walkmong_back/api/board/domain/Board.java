@@ -26,9 +26,6 @@ public class Board extends BaseEntity {
     @Comment("반려동물 아이디")
     private Long dogId;
 
-    @Comment("반려인 아이디")
-    private Long ownerId;
-
     @Comment("반려인 주소 아이디")
     private Long ownerAddressId;
 
@@ -56,6 +53,19 @@ public class Board extends BaseEntity {
     @Comment("산책 진행 여부")
     @Enumerated(EnumType.STRING)
     private WalkingStatus walkingStatus;
+
+    @Builder
+    public Board (BoardRequestDto boardRequestDto, String content) {
+        this.dogId = boardRequestDto.getDogId();
+        this.ownerAddressId = boardRequestDto.getAddressId();
+        this.content = content;
+        this.matchingYn = "N";
+        this.startTime = boardRequestDto.getStartTime();
+        this.endTime = boardRequestDto.getEndTime();
+        this.locationNegotiationYn = boardRequestDto.getLocationNegotiationYn();
+        this.preMeetAvailableYn = boardRequestDto.getPreMeetAvailableYn();
+        this.walkingStatus = WalkingStatus.BEFORE;
+    }
 
 
 }
