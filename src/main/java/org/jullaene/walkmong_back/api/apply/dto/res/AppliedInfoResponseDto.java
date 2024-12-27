@@ -20,4 +20,5 @@ public class AppliedInfoResponseDto implements RecordResponseDto {
     private String addressDetail;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private Double distance;
 }
