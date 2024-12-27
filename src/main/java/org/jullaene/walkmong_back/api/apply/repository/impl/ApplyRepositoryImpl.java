@@ -1,6 +1,8 @@
 package org.jullaene.walkmong_back.api.apply.repository.impl;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +13,13 @@ import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepositoryCustom;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
+import org.jullaene.walkmong_back.api.member.domain.QAddress;
 import org.jullaene.walkmong_back.api.member.domain.QMember;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.querydsl.core.types.dsl.Expressions.numberTemplate;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -66,6 +71,35 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         QMember member=QMember.member;
         QBoard board=QBoard.board;
         QApply apply= QApply.apply;
+        QAddress address=QAddress.address;
+
+        // 거리 계산
+        NumberTemplate<Double> distanceExpression = numberTemplate(
+                Double.class,
+                "(CAST(ST_Distance_Sphere(point({0}, {1}), point({2}, {3})) AS DOUBLE) / 1000)",
+                //산책 지원자의 위도,경도
+                JPAExpressions.select(address.longitude)
+                        .from(address)
+                        .where(address.memberId.eq(memberId)),
+                JPAExpressions.select(address.latitude)
+                        .from(address)
+                        .where(address.memberId.eq(memberId)),
+                //산책 요청자의 위도, 경도
+                JPAExpressions.select(address.longitude)
+                        .from(address)
+                        .where(address.memberId.eq(
+                                JPAExpressions.select(board.ownerId)
+                                        .from(board)
+                                        .where(board.boardId.eq(apply.boardId))
+                        )),
+                JPAExpressions.select(address.latitude)
+                        .from(address)
+                        .where(address.memberId.eq(
+                                JPAExpressions.select(board.ownerId)
+                                        .from(board)
+                                        .where(board.boardId.eq(apply.boardId))
+                        ))
+        );
 
         List<AppliedInfoResponseDto> appliedInfoDto=
                 queryFactory.selectDistinct(
@@ -76,7 +110,8 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                         apply.dongAddress.as("dongAddress"),
                                         apply.addressDetail.as("addressDetail"),
                                         board.startTime.as("startTime"),
-                                        board.endTime.as("endTime")
+                                        board.endTime.as("endTime"),
+                                        distanceExpression.as("distance")
                                 ))
                         .from(board)
                         .leftJoin(dog).on(dog.dogId.eq(board.dogId))
