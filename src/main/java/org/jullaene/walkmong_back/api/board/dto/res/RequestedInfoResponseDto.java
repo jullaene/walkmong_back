@@ -20,4 +20,6 @@ public class RequestedInfoResponseDto implements RecordResponseDto {
     private String addressDetail;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private String walkerNickname;
+    private String walkerProfile;
 }
