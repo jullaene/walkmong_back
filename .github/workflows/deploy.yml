@@ -63,17 +63,17 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             # 기존 컨테이너 중지 및 삭제
-            echo "${{ secrets.SERVER_PASSWORD }}" | sudo -S docker stop ${{ secrets.REPOSITORY_NAME }} || true
-            echo "${{ secrets.SERVER_PASSWORD }}" | sudo -S docker rm ${{ secrets.REPOSITORY_NAME }} || true
+            docker stop ${{ secrets.REPOSITORY_NAME }} || true
+            docker rm ${{ secrets.REPOSITORY_NAME }} || true
             
             # 기존 이미지 제거
-            sudo docker rmi docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:latest
+            docker rmi docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:latest
             
             # 이미지 pull
-            sudo docker pull docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:latest
+            docker pull docker.io/${{ secrets.DOCKER_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:latest
             
             # 새 컨테이너 실행
-            sudo docker run -d \
+            docker run -d \
             --name ${{ secrets.REPOSITORY_NAME }} \
             -p 20000:8080 \
             --restart unless-stopped \
