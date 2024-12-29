@@ -50,6 +50,12 @@ dependencies {
 
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //smtp
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 }
 
 tasks.named('test') {
