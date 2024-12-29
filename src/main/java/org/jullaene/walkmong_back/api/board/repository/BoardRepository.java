@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
+    boolean existsByOwnerIdAndBoardIdAndDelYn(Long ownerId, Long boardId, String delYn);
 }
