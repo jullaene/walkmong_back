@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.chat.domain.Chat;
 import org.jullaene.walkmong_back.api.chat.domain.ChatRoom;
-import org.jullaene.walkmong_back.api.chat.dto.ChatMessageRequestDto;
+import org.jullaene.walkmong_back.api.chat.dto.req.ChatMessageRequestDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatHistoryResponseDto;
 import org.jullaene.walkmong_back.api.chat.repository.ChatRepository;
 import org.jullaene.walkmong_back.api.chat.repository.ChatRoomRepository;

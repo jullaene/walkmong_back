@@ -1,9 +1,7 @@
-package org.jullaene.walkmong_back.config;
+package org.jullaene.walkmong_back.api.chat.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jullaene.walkmong_back.api.member.service.MemberService;
-import org.jullaene.walkmong_back.common.jwt.JwtAuthenticationFilter;
 import org.jullaene.walkmong_back.common.utils.JwtTokenUtil;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;

@@ -1,7 +1,7 @@
-package org.jullaene.walkmong_back.api.chat.controller;
+package org.jullaene.walkmong_back.api.chat.rest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jullaene.walkmong_back.api.chat.dto.ChatMessageRequestDto;
+import org.jullaene.walkmong_back.api.chat.dto.req.ChatMessageRequestDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatHistoryResponseDto;
 import org.jullaene.walkmong_back.api.chat.service.ChatRoomService;
 

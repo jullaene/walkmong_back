@@ -1,4 +1,4 @@
-package org.jullaene.walkmong_back.api.chat.dto;
+package org.jullaene.walkmong_back.api.chat.dto.req;
 
 import lombok.*;
 

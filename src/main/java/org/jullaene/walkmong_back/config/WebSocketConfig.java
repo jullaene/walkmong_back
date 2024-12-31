@@ -1,6 +1,7 @@
 package org.jullaene.walkmong_back.config;
 
 import lombok.RequiredArgsConstructor;
+import org.jullaene.walkmong_back.api.chat.handler.ChatPreHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
