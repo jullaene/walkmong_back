@@ -2,10 +2,12 @@ package org.jullaene.walkmong_back.api.board.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.dog.domain.Dog;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
@@ -115,4 +117,8 @@ public class BoardService {
     }
 
 
+    public List<RequestedInfoResponseDto> getAllRequestedInfoWithStatus(MatchingStatus status) {
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+        return boardRepository.getRequestRecordResponse(memberId,status);
+    }
 }
