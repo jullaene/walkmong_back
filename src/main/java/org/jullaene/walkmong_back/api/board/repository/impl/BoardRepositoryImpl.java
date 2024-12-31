@@ -10,9 +10,13 @@ import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.jullaene.walkmong_back.api.apply.domain.QApply;
+import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepositoryCustom;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
@@ -230,4 +234,37 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                 .and(board.delYn.eq(delYn)))
                         .fetchOne());
     }
+
+    //의뢰한 산책 내역 확인하기
+    @Override
+    public List<RequestedInfoResponseDto> getRequestRecordResponse(Long memberId, MatchingStatus status) {
+        QDog dog= QDog.dog;
+        QMember member=QMember.member;
+        QBoard board=QBoard.board;
+        QApply apply= QApply.apply;
+
+        List<RequestedInfoResponseDto> requestedInfoDto=
+                queryFactory.selectDistinct(
+                                Projections.constructor(RequestedInfoResponseDto.class,
+                                        dog.name.as("dogName"),
+                                        dog.gender.as("dogGender"),
+                                        dog.profile.as("dogProfile"),
+                                        apply.dongAddress.as("dongAddress"),
+                                        apply.addressDetail.as("addressDetail"),
+                                        board.startTime.as("startTime"),
+                                        board.endTime.as("endTime"),
+                                        member.nickname.as("walkerNickname"),
+                                        member.profile.as("walkerProfile")
+                                ))
+                        .from(board)
+                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
+                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
+                        .leftJoin(member).on(apply.memberId.eq(member.memberId)) //산책 지원자
+                        .where(board.ownerId.eq(memberId)
+                                .and(apply.matchingStatus.eq(status)))
+                        .fetch();
+        return requestedInfoDto;
+    }
+
+
 }
