@@ -3,6 +3,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.service.ApplyService;
+import org.jullaene.walkmong_back.api.board.service.BoardService;
 import org.jullaene.walkmong_back.api.chat.dto.req.ChatMessageRequestDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatHistoryResponseDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
@@ -33,6 +34,7 @@ public class ChatRoomController {
     private final SimpMessageSendingOperations template;
     private final ApplyService applyService;
     private final MemberRepository memberRepository;
+    private final BoardService boardService;
 
     //채팅방 생성
     @PostMapping("/{boardId}")
@@ -67,12 +69,15 @@ public class ChatRoomController {
         if (record.equals("applied")){
             chatRoomListResponseDto=applyService.getAllChatListWithStatus(status);
 
-            //공백으로 설정한 상대방 이름을 실명으로 전환
-            for (ChatRoomListResponseDto dto:chatRoomListResponseDto){
-                Long memberId=dto.getChatTarget();
-                log.info("상대방 아이디 {}",memberId);
-                dto.setTargetName(memberRepository.findNickNameByMemberId(memberId));
-            }
+        }else if (record.equals("requested")){
+            chatRoomListResponseDto=boardService.getAllChatListWithStatus(status);
+        }
+
+        //공백으로 설정한 상대방 이름을 실명으로 전환
+        for (ChatRoomListResponseDto dto:chatRoomListResponseDto){
+            Long memberId=dto.getChatTarget();
+            log.info("상대방 아이디 {}",memberId);
+            dto.setTargetName(memberRepository.findNickNameByMemberId(memberId));
         }
 
         return ResponseEntity.ok(BasicResponse.ofSuccess(chatRoomListResponseDto));

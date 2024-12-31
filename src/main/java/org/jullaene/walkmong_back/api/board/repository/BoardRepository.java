@@ -12,5 +12,4 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
     boolean existsByOwnerIdAndBoardIdAndDelYn(Long ownerId, Long boardId, String delYn);
     @Query("SELECT b.ownerId FROM Board b WHERE b.boardId = :boardId")
     Long findOwnerIdByBoardId(Long boardId);
-    List<Board> findByOwnerId(Long memberId);
 }

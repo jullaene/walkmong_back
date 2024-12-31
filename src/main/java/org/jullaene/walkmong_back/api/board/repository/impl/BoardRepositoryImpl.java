@@ -3,6 +3,7 @@ package org.jullaene.walkmong_back.api.board.repository.impl;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -18,6 +19,9 @@ import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepositoryCustom;
+import org.jullaene.walkmong_back.api.chat.domain.QChat;
+import org.jullaene.walkmong_back.api.chat.domain.QChatRoom;
+import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.api.member.domain.Address;
@@ -265,6 +269,56 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                         .fetch();
         return requestedInfoDto;
     }
+
+    /**
+     * 의뢰한 산책의 채팅방 리스트 조회하기
+     * */
+    @Override
+    public List<ChatRoomListResponseDto> getRequestChatList(Long memberId, MatchingStatus status) {
+        QChatRoom chatRoom=QChatRoom.chatRoom;
+        QChat chat= QChat.chat;
+        QMember member=QMember.member;
+        QDog dog= QDog.dog;
+        QBoard board=QBoard.board;
+        QApply apply= QApply.apply;
+
+        //대화 상대의 마지막 메세지 가져오기: chat 테이블에서 Id의 최댓값을 가져온다
+        SubQueryExpression<Long> lastMessageSubQuery = JPAExpressions.select(chat.chatId.max())
+                .from(chat)
+                .leftJoin(chatRoom).on(chat.roomId.eq(chatRoom.roomId))
+                .where(chat.roomId.eq(chatRoom.roomId)
+                        .and(chat.senderId.ne(memberId)));
+
+
+
+        List<ChatRoomListResponseDto> chatRoomListResponseDtos=
+                queryFactory.selectDistinct(
+                                Projections.constructor(ChatRoomListResponseDto.class,
+                                        dog.name.as("dogName"),
+                                        dog.profile.as("dogProfile"),
+                                        board.startTime.as("startTime"),
+                                        board.endTime.as("endTime"),
+                                        chatRoom.chatParticipantId.as("chatTarget"), //채팅 대상
+                                        chat.message.as("lastChat"), //상대의 마지막 채팅
+                                        chat.createdAt.as("lastChatTime"),  // 상대의 마지막 채팅 내용
+                                        Expressions.asString("").as("targetName")       // 상대방 이름을 공백으로 지정
+                                ))
+                        .from(board)
+                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
+                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
+                        //boardId와 chatParticipantId는 1:1 관계
+                        .leftJoin(chatRoom).on(chatRoom.boardId.eq(board.boardId))
+                        .leftJoin(chat).on(chat.roomId.eq(chatRoom.roomId))
+                        .leftJoin(member).on(apply.memberId.eq(member.memberId)) //산책 지원자
+                        .where(board.ownerId.eq(memberId)
+                                .and(apply.matchingStatus.eq(status))
+                                .and(chat.chatId.eq(lastMessageSubQuery)))
+                        .fetch();
+
+        return chatRoomListResponseDtos;
+    }
+
+
 
 
 }
