@@ -65,10 +65,10 @@ public class ChatRoomService {
         List<ChatHistoryResponseDto> chatHistoryResponseDtoList=new ArrayList<>();
         for (Chat chat:chatList){
             ChatHistoryResponseDto chatHistoryResponseDto=new ChatHistoryResponseDto(
-                    chat.getChatId(),
                     chat.getMessage(),
                     chat.getRoomId(),
-                    chat.getSenderId());
+                    chat.getSenderId(),
+                    chat.getCreatedAt());
             chatHistoryResponseDtoList.add(chatHistoryResponseDto);
         }
 

@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.jullaene.walkmong_back.common.BaseEntity;
 
 @NoArgsConstructor
 @Getter
 @Entity
 @Table(name="chat")
-public class Chat {
+public class Chat extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="chat_id")
@@ -30,7 +31,6 @@ public class Chat {
         this.roomId=roomId;
         this.senderId=senderId;
         this.message=message;
-
     }
 
 }

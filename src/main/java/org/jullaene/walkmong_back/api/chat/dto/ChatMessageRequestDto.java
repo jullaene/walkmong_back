@@ -1,13 +1,11 @@
 package org.jullaene.walkmong_back.api.chat.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessageRequestDto {
     public enum MessageType{
         ENTER, TALK
