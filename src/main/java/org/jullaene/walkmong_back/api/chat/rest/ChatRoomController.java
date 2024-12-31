@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -69,8 +70,16 @@ public class ChatRoomController {
         if (record.equals("applied")){
             chatRoomListResponseDto=applyService.getAllChatListWithStatus(status);
 
-        }else if (record.equals("requested")){
-            chatRoomListResponseDto=boardService.getAllChatListWithStatus(status);
+        }else if (record.equals("requested")) {
+            chatRoomListResponseDto = boardService.getAllChatListWithStatus(status);
+        }else if (record.equals("all")){
+            List<ChatRoomListResponseDto> appliedList = applyService.getAllChatListWithStatus(status);
+            List<ChatRoomListResponseDto> requestedList = boardService.getAllChatListWithStatus(status);
+
+            chatRoomListResponseDto = new ArrayList<>();
+            chatRoomListResponseDto.addAll(appliedList);
+            chatRoomListResponseDto.addAll(requestedList);
+            
         }
 
         //공백으로 설정한 상대방 이름을 실명으로 전환
