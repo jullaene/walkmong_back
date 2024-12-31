@@ -1,10 +1,14 @@
 package org.jullaene.walkmong_back.api.chat.rest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.service.ApplyService;
 import org.jullaene.walkmong_back.api.chat.dto.req.ChatMessageRequestDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatHistoryResponseDto;
+import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.chat.service.ChatRoomService;
 
+import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.jullaene.walkmong_back.common.user.CustomUserDetail;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,8 @@ import java.util.List;
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final SimpMessageSendingOperations template;
+    private final ApplyService applyService;
+    private final MemberRepository memberRepository;
 
     //채팅방 생성
     @PostMapping("/{boardId}")
@@ -38,6 +44,38 @@ public class ChatRoomController {
     @GetMapping("/history/{roomId}")
     public ResponseEntity<BasicResponse<List<ChatHistoryResponseDto>>> getChatHistory(@PathVariable(value="roomId") Long roomId){
         return ResponseEntity.ok(BasicResponse.ofSuccess(chatRoomService.getChatHistory(roomId)));
+    }
+
+    //지원|의뢰 && 매칭상태에 따른 채팅방 리스트 조회
+    @GetMapping("/list")
+    public ResponseEntity<BasicResponse<List<ChatRoomListResponseDto>>> getChatRoomList(@RequestParam("record") String record,
+                                                                                        @RequestParam("status")MatchingStatus status){
+         /*
+        record
+        applied: 지원한 산책
+        requested: 의뢰한 산책
+        all: 전체
+        */
+
+         /*
+        <status>
+        PENDING: 매칭중
+        CONFIRMED: 매칭확정
+        REJECTED: 매칭취소
+         */
+        List<ChatRoomListResponseDto> chatRoomListResponseDto=null;
+        if (record.equals("applied")){
+            chatRoomListResponseDto=applyService.getAllChatListWithStatus(status);
+
+            //공백으로 설정한 상대방 이름을 실명으로 전환
+            for (ChatRoomListResponseDto dto:chatRoomListResponseDto){
+                Long memberId=dto.getChatTarget();
+                log.info("상대방 아이디 {}",memberId);
+                dto.setTargetName(memberRepository.findNickNameByMemberId(memberId));
+            }
+        }
+
+        return ResponseEntity.ok(BasicResponse.ofSuccess(chatRoomListResponseDto));
     }
 
     //채팅방 입장
