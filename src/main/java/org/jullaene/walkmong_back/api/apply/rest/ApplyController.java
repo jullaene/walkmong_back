@@ -58,16 +58,10 @@ public class ApplyController {
          */
         List<RecordResponseDto> recordResponseDto=null;
         if (record.equals("applied")) { //내가 지원한 산책
-            recordResponseDto = applyService.getAllAppliedInfoWithStatus(status)
-                    .stream()
-                    .map(dto -> (RecordResponseDto) dto)
-                    .toList();
+            recordResponseDto = applyService.getAllAppliedInfoWithStatus(status);
         }
         else if (record.equals("requested")){ //내가 의뢰한 산책
-            recordResponseDto = boardService.getAllRequestedInfoWithStatus(status)
-                    .stream()
-                    .map(dto -> (RecordResponseDto) dto)
-                    .toList();
+            recordResponseDto = boardService.getAllRequestedInfoWithStatus(status);
         }
         return ResponseEntity.ok(BasicResponse.ofSuccess(recordResponseDto));
 
