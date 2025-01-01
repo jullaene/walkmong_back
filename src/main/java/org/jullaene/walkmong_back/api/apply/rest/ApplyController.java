@@ -1,9 +1,9 @@
 package org.jullaene.walkmong_back.api.apply.rest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
 import org.jullaene.walkmong_back.api.apply.service.ApplyService;
@@ -11,16 +11,19 @@ import org.jullaene.walkmong_back.api.board.service.BoardService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/walking/apply")
 public class ApplyController {
     private final ApplyService applyService;
     private final BoardService boardService;
+    private final RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 
     @PostMapping("/{boardId}")
     public ResponseEntity<BasicResponse<Long>> saveApply(
@@ -56,13 +59,21 @@ public class ApplyController {
         CONFIRMED: 매칭확정
         REJECTED: 매칭취소
          */
-        List<RecordResponseDto> recordResponseDto=null;
+        List<RecordResponseDto> recordResponseDto=new ArrayList<>();
         if (record.equals("applied")) { //내가 지원한 산책
             recordResponseDto = applyService.getAllAppliedInfoWithStatus(status);
         }
         else if (record.equals("requested")){ //내가 의뢰한 산책
             recordResponseDto = boardService.getAllRequestedInfoWithStatus(status);
+        }else if (record.equals("all")){//지원+의뢰한 산책 모두 조회
+            List<RecordResponseDto> appliedInfo=applyService.getAllAppliedInfoWithStatus(status);
+            List<RecordResponseDto> requestedInfo=boardService.getAllRequestedInfoWithStatus(status);
+
+            recordResponseDto.addAll(appliedInfo);
+            recordResponseDto.addAll(requestedInfo);
+
         }
+
         return ResponseEntity.ok(BasicResponse.ofSuccess(recordResponseDto));
 
 
