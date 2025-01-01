@@ -8,6 +8,7 @@ import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
@@ -126,5 +127,13 @@ public class BoardService {
         List<RequestedInfoResponseDto> requestedList= boardRepository.getRequestRecordResponse(memberId,status);
 
         return requestedList.stream().map(dto-> (RecordResponseDto) dto).toList();
+    }
+
+    /**
+     * 매칭 현황 조회 시 산책 요청글 미리 보기
+     */
+    public BoardPreviewResponseDto getPreview(Long boardId){
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+        return boardRepository.getBoardPreview(boardId,memberId,"N");
     }
 }
