@@ -3,6 +3,8 @@ package org.jullaene.walkmong_back.api.board.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
@@ -117,10 +119,14 @@ public class BoardService {
 
     }
 
-
-    public List<RequestedInfoResponseDto> getAllRequestedInfoWithStatus(MatchingStatus status) {
+    /**
+     * 요청한 산책 리스트 조회
+     * */
+    public List<RecordResponseDto> getAllRequestedInfoWithStatus(MatchingStatus status) {
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-        return boardRepository.getRequestRecordResponse(memberId,status);
+        List<RequestedInfoResponseDto> requestedList= boardRepository.getRequestRecordResponse(memberId,status);
+
+        return requestedList.stream().map(dto-> (RecordResponseDto) dto).toList();
     }
 
     /**

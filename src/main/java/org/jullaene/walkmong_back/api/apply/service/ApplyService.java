@@ -69,10 +69,12 @@ public class ApplyService {
     }
 
     //전체 지원 내역 불러오기
-    public List<AppliedInfoResponseDto> getAllAppliedInfoWithStatus(MatchingStatus status) {
+    public List<RecordResponseDto> getAllAppliedInfoWithStatus(MatchingStatus status) {
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
         List<AppliedInfoResponseDto> appliedLists=applyRepository.getApplyRecordResponse(memberId,status);
-        return appliedLists;
+
+        return appliedLists.stream().map(dto-> (RecordResponseDto) dto).toList();
+
     }
 
     //지원한 산책의 채팅방 조회
