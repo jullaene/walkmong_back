@@ -8,6 +8,7 @@ import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
@@ -133,8 +134,16 @@ public class BoardService {
      * 요청한 산책 채팅방 리스트 조회
      * */
     public List<ChatRoomListResponseDto> getAllChatListWithStatus(MatchingStatus status) {
-        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-        List<ChatRoomListResponseDto> chatList=boardRepository.getRequestChatList(memberId,status);
+        Long memberId = memberService.getMemberFromUserDetail().getMemberId();
+        List<ChatRoomListResponseDto> chatList = boardRepository.getRequestChatList(memberId, status);
         return chatList;
+    }
+
+    /**
+     * 매칭 현황 조회 시 산책 요청글 미리 보기
+     */
+    public BoardPreviewResponseDto getPreview(Long boardId){
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+        return boardRepository.getBoardPreview(boardId,memberId,"N");
     }
 }

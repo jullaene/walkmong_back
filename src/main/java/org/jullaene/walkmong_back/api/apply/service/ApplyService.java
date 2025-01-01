@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.Apply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantListResponseDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
@@ -71,7 +72,7 @@ public class ApplyService {
     //전체 지원 내역 불러오기
     public List<RecordResponseDto> getAllAppliedInfoWithStatus(MatchingStatus status) {
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-        List<AppliedInfoResponseDto> appliedLists=applyRepository.getApplyRecordResponse(memberId,status);
+        List<AppliedInfoResponseDto> appliedLists=applyRepository.getApplyRecordResponse(memberId,status,"N");
 
         return appliedLists.stream().map(dto-> (RecordResponseDto) dto).toList();
 
@@ -79,9 +80,15 @@ public class ApplyService {
 
     //지원한 산책의 채팅방 조회
     public List<ChatRoomListResponseDto> getAllChatListWithStatus(MatchingStatus status) {
-        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-        log.info("사용자 id {}",memberId);
-        List<ChatRoomListResponseDto> chatList=applyRepository.getApplyChatList(memberId,status);
+        Long memberId = memberService.getMemberFromUserDetail().getMemberId();
+        log.info("사용자 id {}", memberId);
+        List<ChatRoomListResponseDto> chatList = applyRepository.getApplyChatList(memberId, status);
         return chatList;
+    }
+
+    public List<ApplicantListResponseDto> getApplicantList(Long boardId) {
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+
+        return applyRepository.getApplicantList(boardId,memberId,"N");
     }
 }
