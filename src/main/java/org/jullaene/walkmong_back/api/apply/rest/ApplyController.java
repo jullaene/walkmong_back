@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantListResponseDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantWithBoardResponseDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
 import org.jullaene.walkmong_back.api.apply.service.ApplyService;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.service.BoardService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +43,7 @@ public class ApplyController {
         return ResponseEntity.ok(BasicResponse.ofSuccess(applyInfoDto));
     }
 
-    /*
+    /**
     * 내가 지원,의뢰한 산책 리스트 보기
     */
     @GetMapping("/history")
@@ -75,7 +78,16 @@ public class ApplyController {
         }
 
         return ResponseEntity.ok(BasicResponse.ofSuccess(recordResponseDto));
+    }
 
+    /**
+     * 반려인이 산책 지원자 리스트를 조회한다
+     */
+    @GetMapping("/applicant/{boardId}")
+    public ResponseEntity<BasicResponse<ApplicantWithBoardResponseDto>> getApplicantList( @PathVariable("boardId") Long boardId){
+        List<ApplicantListResponseDto> applicants=applyService.getApplicantList(boardId);
+        BoardPreviewResponseDto preview=boardService.getPreview(boardId);
 
+        return ResponseEntity.ok(BasicResponse.ofSuccess(new ApplicantWithBoardResponseDto(applicants,preview)));
     }
 }
