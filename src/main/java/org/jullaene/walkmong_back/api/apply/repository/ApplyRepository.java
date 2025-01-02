@@ -11,5 +11,5 @@ import java.util.List;
 public interface ApplyRepository extends JpaRepository<Apply, Long>, ApplyRepositoryCustom {
     boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn);
     boolean existsByBoardIdAndMemberIdAndMatchingStatusAndDelYn(Long boardId, Long memberId, MatchingStatus matchingStatus, String delYn);
-    List<Apply> findByMemberIdAndMatchingStatus(Long memberId, MatchingStatus status);
+    Apply findByApplyIdAndBoardIdAndDelYn(Long applyId,Long boardId,String delYn);
 }

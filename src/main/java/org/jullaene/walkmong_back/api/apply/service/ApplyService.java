@@ -5,16 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.Apply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantListResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
 import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
+import org.jullaene.walkmong_back.api.review.dto.res.RatingResponseDto;
+import org.jullaene.walkmong_back.api.review.service.ReviewToWalkerService;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,8 @@ public class ApplyService {
     private final BoardRepository boardRepository;
     private final DogRepository dogRepository;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final ReviewToWalkerService reviewToWalkerService;
 
     @Transactional
     public Long saveApply(Long boardId, ApplyRequestDto applyRequestDto) {
@@ -90,5 +93,22 @@ public class ApplyService {
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
 
         return applyRepository.getApplicantList(boardId,memberId,"N");
+    }
+
+    //반려인이 산책자 지원서 조회
+    public ApplicationFormResponseDto getApplicationFormInfo(Long boardId, Long walkerId){
+        //반려인
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+        BoardPreviewResponseDto boardDto=boardRepository.getBoardPreview(boardId,memberId,"N");
+        WalkerInfoResponseDto walkerDto=applyRepository.getApplicantInfo(boardId,walkerId);
+        RatingResponseDto ratingDto=reviewToWalkerService.calculateAverage(walkerId);
+
+        ApplicationFormResponseDto responseDto= ApplicationFormResponseDto.builder()
+                .boardDto(boardDto)
+                .walkerDto(walkerDto)
+                .ratingDto(ratingDto)
+                .build();
+        return responseDto;
+
     }
 }
