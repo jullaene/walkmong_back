@@ -15,7 +15,7 @@ import java.time.LocalDate;
 //산책자 정보+지원정보
 public class WalkerInfoResponseDto {
     private String name;
-    private LocalDate age;
+    private Integer age;
     private Gender gender;
     private String profile;
     private String walkerDongAddress; //노원구 공릉동
