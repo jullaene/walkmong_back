@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class ApplicantListResponseDto {
     private String applicantName;
     private String applicantProfile;
-    private LocalDate applicantAge;
+    private Integer applicantAge;
     private Gender applicantGender;
     private String dongAddress;
     private String roadAddress;

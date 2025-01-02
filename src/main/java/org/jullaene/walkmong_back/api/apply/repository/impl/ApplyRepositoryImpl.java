@@ -183,7 +183,7 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                 Projections.constructor(ApplicantListResponseDto.class,
                                         member.nickname.as("applicantName"),
                                         member.profile.as("applicantProfile"),
-                                        member.birthDate.as("applicantAge"),
+                                        Expressions.numberTemplate(Integer.class,"YEAR(CURDATE()) - YEAR({0})", member.birthDate).as("applicantAge"),
                                         member.gender.as("applicantGender"),
                                         address.dongAddress.as("dongAddress"),
                                         address.roadAddress.as("roadAddress"),
@@ -209,7 +209,7 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                 queryFactory.selectDistinct(
                                 Projections.constructor(WalkerInfoResponseDto.class,
                                         member.nickname.as("name"),
-                                        member.birthDate.as("age"),
+                                        Expressions.numberTemplate(Integer.class,"YEAR(CURDATE()) - YEAR({0})", member.birthDate).as("age"),
                                         member.gender.as("gender"),
                                         member.profile.as("profile"),
                                         address.dongAddress.as("walkerDongAddress"),
