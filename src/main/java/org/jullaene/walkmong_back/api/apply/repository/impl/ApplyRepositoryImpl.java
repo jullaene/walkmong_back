@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.QApply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantListResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantWithBoardResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepositoryCustom;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
 import org.jullaene.walkmong_back.api.chat.domain.QChat;
@@ -22,6 +19,8 @@ import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
 import org.jullaene.walkmong_back.api.member.domain.QAddress;
 import org.jullaene.walkmong_back.api.member.domain.QMember;
+import org.jullaene.walkmong_back.api.review.domain.QHashtagToWalker;
+import org.jullaene.walkmong_back.api.review.domain.QReviewToWalker;
 
 import java.util.List;
 import java.util.Optional;
@@ -202,34 +201,37 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
     }
 
     /**
-     * 반려인이 산책 지원자 리스트를 조회한다- board 영역
+     지원자의 정보와 지원한 산책 정보를 리턴한다
      */
-//    public Optional<ApplicantWithBoardResponseDto> getAllApplicantInfo(Long boardId, Long memberId, String delYn,MatchingStatus status){
-//
-//
-//        Optional<ApplicantWithBoardResponseDto> responseDto=
-//                Optional.ofNullable(queryFactory.selectDistinct(
-//                                Projections.constructor(ApplicantWithBoardResponseDto.class,
-//                                        dog.name.as("dogName"),
-//                                        dog.gender.as("dogGender"),
-//                                        dog.profile.as("dogProfile"),
-//                                        apply.dongAddress.as("dongAddress"),
-//                                        apply.addressDetail.as("addressDetail"),
-//                                        board.startTime.as("startTime"),
-//                                        board.endTime.as("endTime"),
-//                                        board.content.as("content"),
-//                                        list
-//                                        Expressions.asSimple(List<ApplicantWithBoardResponseDto.ApplicantList>)
-//                                ))
-//                        .from(board)
-//                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-//                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
-//                        .where(apply.memberId.eq(memberId)
-//                                .and(apply.matchingStatus.eq(status))
-//                                .and(board.delYn.eq(delYn)))
-//                        .fetchOne());
-//        return responseDto;
-//    }
+    @Override
+    public WalkerInfoResponseDto getApplicantInfo(Long boardId, Long walkerId) {
+        WalkerInfoResponseDto walkerInfo=
+                queryFactory.selectDistinct(
+                                Projections.constructor(WalkerInfoResponseDto.class,
+                                        member.nickname.as("name"),
+                                        member.birthDate.as("age"),
+                                        member.gender.as("gender"),
+                                        member.profile.as("profile"),
+                                        address.dongAddress.as("walkerDongAddress"),
+                                        apply.dongAddress.as("dongAddress"),
+                                        apply.roadAddress.as("roadAddress"),
+                                        apply.addressDetail.as("addressDetail"),
+                                        apply.addressMemo.as("addressMemo"),
+                                        apply.poopBagYn.as("poopBagYn"),
+                                        apply.muzzleYn.as("muzzleYn"),
+                                        apply.dogCollarYn.as("dogCollarYn"),
+                                        apply.preMeetingYn.as("preMettingYn"),
+                                        apply.memoToOwner.as("memoToOwner")
+                                ))
+                        .from(apply)
+                        .leftJoin(member).on(member.memberId.eq(apply.memberId))
+                        .leftJoin(address).on(address.memberId.eq(member.memberId))
+                        .where(apply.memberId.eq(walkerId))
+                        .fetchOne();
+
+        return walkerInfo;
+    }
+
 
 
 }
