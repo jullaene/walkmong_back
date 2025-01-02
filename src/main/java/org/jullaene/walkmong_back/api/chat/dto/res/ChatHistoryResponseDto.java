@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ChatHistoryResponseDto {
     String message;
-    Long roomId;
     Long senderId;
     LocalDateTime createdAt;
 }

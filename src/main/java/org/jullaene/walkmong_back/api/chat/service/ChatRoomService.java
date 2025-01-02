@@ -59,14 +59,15 @@ public class ChatRoomService {
         chatRepository.save(chat);
     }
 
-    //채팅방에 있는 대화 내역 조회
+    /**
+     채팅방에 있는 대화 내역 조회
+     */
     public List<ChatHistoryResponseDto> getChatHistory(Long roomId) {
         List<Chat> chatList=chatRepository.findAllByRoomId(roomId);
         List<ChatHistoryResponseDto> chatHistoryResponseDtoList=new ArrayList<>();
         for (Chat chat:chatList){
             ChatHistoryResponseDto chatHistoryResponseDto=new ChatHistoryResponseDto(
                     chat.getMessage(),
-                    chat.getRoomId(),
                     chat.getSenderId(),
                     chat.getCreatedAt());
             chatHistoryResponseDtoList.add(chatHistoryResponseDto);
