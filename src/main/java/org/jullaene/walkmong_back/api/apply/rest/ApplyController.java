@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantListResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantWithBoardResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.service.ApplyService;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.service.BoardService;
@@ -90,5 +87,17 @@ public class ApplyController {
 
         return ResponseEntity.ok(BasicResponse.ofSuccess(new ApplicantWithBoardResponseDto(applicants,preview)));
     }
+
+    /**
+     * 반려인이 산책 지원자의 지원서를 조회한다
+     */
+    @GetMapping("/form/{boardId}")
+    public ResponseEntity<BasicResponse<ApplicationFormResponseDto>> getApplicantList(@PathVariable("boardId") Long boardId,
+                                                                                      @RequestParam("walkerId") Long walkerId){
+        log.info("진입");
+        ApplicationFormResponseDto responseDto=applyService.getApplicationFormInfo(boardId,walkerId);
+        return ResponseEntity.ok(BasicResponse.ofSuccess(responseDto));
+    }
+
 
 }
