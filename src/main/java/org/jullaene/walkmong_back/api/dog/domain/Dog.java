@@ -118,11 +118,11 @@ public class Dog extends BaseEntity {
     }
 
     @Builder
-    public Dog(Long memberId, DogProfileReqDto dogProfileReqDto){
+    public Dog(Long memberId, DogProfileReqDto dogProfileReqDto, String profileUrl){
         this.name = dogProfileReqDto.getName();
         this.memberId = memberId;
         this.dogSize = dogProfileReqDto.getDogSize();
-        this.profile = dogProfileReqDto.getProfile();
+        this.profile = profileUrl;
         this.gender = dogProfileReqDto.getGender();
         this.birthYear = dogProfileReqDto.getBirthYear();
         this.breed = dogProfileReqDto.getBreed();
@@ -138,9 +138,9 @@ public class Dog extends BaseEntity {
         this.additionalRequest = dogProfileReqDto.getAdditionalRequest();
     }
 
-    public void updateProfile(DogProfileReqDto dogProfileDto) {
+    public void updateProfile(DogProfileReqDto dogProfileDto, String profileUrl) {
         this.name = dogProfileDto.getName();
-        this.profile = dogProfileDto.getProfile();
+        this.profile = profileUrl;
         this.gender = dogProfileDto.getGender();
         this.birthYear = dogProfileDto.getBirthYear();
         this.weight = dogProfileDto.getWeight();
