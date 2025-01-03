@@ -111,4 +111,17 @@ public class ApplyService {
         return responseDto;
 
     }
+
+    /**
+     매칭 확정 후 다른 요청자의 지원을 취소한다
+     */
+    @Transactional
+    public void confirmMatching(Long boardId, Long walkerId) {
+        Apply matchApply=applyRepository.findByMemberIdAndBoardIdAndDelYn(walkerId,boardId,"N");
+        matchApply.changeState(); //매칭 완료 상태로 바꾼다
+        applyRepository.save(matchApply);
+
+        //나머지 지원을 취소처리
+        applyRepository.cancelOtherApplications(boardId,walkerId);
+    }
 }
