@@ -87,4 +87,7 @@ public class Apply extends BaseEntity {
         memoToOwner = applyRequestDto.getMessageToOwner();
     }
 
+    public void changeState() {
+        this.matchingStatus=MatchingStatus.CONFIRMED;
+    }
 }
