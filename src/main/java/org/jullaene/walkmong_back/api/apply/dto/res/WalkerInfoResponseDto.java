@@ -12,21 +12,9 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+//반려인이 산책자 지원서 조회
 //산책자 정보+지원정보
 public class WalkerInfoResponseDto {
-    private String name;
-    private Integer age;
-    private Gender gender;
-    private String profile;
-    private String walkerDongAddress; //노원구 공릉동
-    private String dongAddress;
-    private String roadAddress; //강남구 학동로 508
-    private String addressDetail; //스타벅스 앞
-    private String addressMemo;
-    private String poopBagYn;
-    private String muzzleYn;
-    private String dogCollarYn;
-    private String preMeetingYn;
-    private String memoToOwner;
-
+    private ApplicantInfoResponseDto applicantInfoResponseDto;
+    private ApplyInfoResponseDto applyInfoResponseDto;
 }

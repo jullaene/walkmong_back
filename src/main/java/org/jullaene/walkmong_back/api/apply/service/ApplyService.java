@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -91,19 +90,24 @@ public class ApplyService {
         return chatList;
     }
 
-    public List<ApplicantListResponseDto> getApplicantList(Long boardId) {
-        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-
-        return applyRepository.getApplicantList(boardId,memberId,"N");
+    public List<ApplicantInfoResponseDto> getApplicantList(Long boardId) {
+        return applyRepository.getApplicantList(boardId,"N");
     }
 
     //반려인이 산책자 지원서 조회
-    public ApplicationFormResponseDto getApplicationFormInfo(Long boardId, Long walkerId){
+    public ApplicationFormResponseDto getApplicationFormInfo(Long boardId, Long applyId){
         //반려인의 아이디
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
         BoardPreviewResponseDto boardDto=boardRepository.getBoardPreview(boardId,memberId,"N");
-        WalkerInfoResponseDto walkerDto=applyRepository.getApplicantInfo(boardId,walkerId);
-        RatingResponseDto ratingDto=reviewToWalkerService.calculateAverage(walkerId);
+        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.POST_NOT_FOUND));
+
+        ApplicantInfoResponseDto applicantDto=applyRepository.getApplicant(boardId,applyId,"N");
+        ApplyInfoResponseDto applyDto=apply.toApplyInfoDto();
+        WalkerInfoResponseDto walkerDto= WalkerInfoResponseDto.builder().
+                applicantInfoResponseDto(applicantDto)
+                .applyInfoResponseDto(applyDto)
+                .build();
+        RatingResponseDto ratingDto=reviewToWalkerService.calculateAverage(applyId);
 
         ApplicationFormResponseDto responseDto= ApplicationFormResponseDto.builder()
                 .boardDto(boardDto)
@@ -133,25 +137,15 @@ public class ApplyService {
     public MyFormResponseDto getMyForm(Long applyId) {
         Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.POST_NOT_FOUND));
 
-        //지원자의 아이디
-        Long applicantId=memberService.getMemberFromUserDetail().getMemberId();
         //산책 요청글의 boardID
         Long boardId=applyRepository.findIdByApplicantId(applyId);
         Board board=boardRepository.findById(boardId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
 
-        BoardPreviewResponseDto preivewDto=boardRepository.getBoardPreview(boardId,board.getOwnerId(),"N");
+        BoardPreviewResponseDto previewDto=boardRepository.getBoardPreview(boardId,board.getOwnerId(),"N");
 
-        MyFormResponseDto formResponseDto=MyFormResponseDto.builder().
-                previewResponseDto(preivewDto).
-                dongAddress(apply.getDongAddress())
-                .roadAddress(apply.getRoadAddress())
-                .addressDetail(apply.getAddressDetail())
-                .addressMemo(apply.getAddressMemo())
-                .poopBagYn(apply.getPoopBagYn())
-                .muzzleYn(apply.getMuzzleYn())
-                .dogCollarYn(apply.getDogCollarYn())
-                .preMeetingYn(apply.getPreMeetingYn())
-                .memoToOwner(apply.getMemoToOwner())
+        MyFormResponseDto formResponseDto=MyFormResponseDto.builder()
+                .previewResponseDto(previewDto)
+                .applyInfoResponseDto(apply.toApplyInfoDto())
                 .build();
 
         return formResponseDto;

@@ -4,16 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jullaene.walkmong_back.common.enums.Gender;
 
-import java.time.LocalDate;
-
+//산책 지원자 dto
 @Getter
 @AllArgsConstructor
-public class ApplicantListResponseDto {
+public class ApplicantInfoResponseDto {
     private String applicantName;
     private String applicantProfile;
     private Integer applicantAge;
     private Gender applicantGender;
-    private String dongAddress;
-    private String roadAddress;
+    private String applicantDongAddress;
+    private String applicantRoadAddress;
     private Integer applicantRate;
 }
