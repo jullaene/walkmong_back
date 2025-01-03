@@ -7,6 +7,7 @@ import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
+import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -97,7 +99,7 @@ public class ApplyService {
 
     //반려인이 산책자 지원서 조회
     public ApplicationFormResponseDto getApplicationFormInfo(Long boardId, Long walkerId){
-        //반려인
+        //반려인의 아이디
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
         BoardPreviewResponseDto boardDto=boardRepository.getBoardPreview(boardId,memberId,"N");
         WalkerInfoResponseDto walkerDto=applyRepository.getApplicantInfo(boardId,walkerId);
@@ -120,8 +122,38 @@ public class ApplyService {
         Apply matchApply=applyRepository.findByMemberIdAndBoardIdAndDelYn(walkerId,boardId,"N");
         matchApply.changeState(); //매칭 완료 상태로 바꾼다
         applyRepository.save(matchApply);
-
         //나머지 지원을 취소처리
         applyRepository.cancelOtherApplications(boardId,walkerId);
+    }
+
+
+    /**
+     * 지원자가 자신의 지원서를 조회한다
+     */
+    public  MyFormResponseDto getMyForm(Long applyId) {
+        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.POST_NOT_FOUND));
+
+        //지원자의 아이디
+        Long applicantId=memberService.getMemberFromUserDetail().getMemberId();
+        //산책 요청글의 boardID
+        Long boardId=applyRepository.findIdByApplicantId(applyId);
+        Board board=boardRepository.findById(boardId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
+
+        BoardPreviewResponseDto preivewDto=boardRepository.getBoardPreview(boardId,board.getOwnerId(),"N");
+
+        MyFormResponseDto formResponseDto=MyFormResponseDto.builder().
+                previewResponseDto(preivewDto).
+                dongAddress(apply.getDongAddress())
+                .roadAddress(apply.getRoadAddress())
+                .addressDetail(apply.getAddressDetail())
+                .addressMemo(apply.getAddressMemo())
+                .poopBagYn(apply.getPoopBagYn())
+                .muzzleYn(apply.getMuzzleYn())
+                .dogCollarYn(apply.getDogCollarYn())
+                .preMeetingYn(apply.getPreMeetingYn())
+                .memoToOwner(apply.getMemoToOwner())
+                .build();
+
+        return formResponseDto;
     }
 }
