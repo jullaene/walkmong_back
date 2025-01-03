@@ -11,6 +11,7 @@ import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
+import org.jullaene.walkmong_back.common.file.FileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class DogService {
     private final DogRepository dogRepository;
     private final MemberService memberService;
+    private final FileService fileService;
 
     public DogProfileResponseDto getDogProfile(Long dogId) {
         Dog dog = dogRepository.findByDogIdAndDelYn(dogId, "N")
@@ -36,9 +38,12 @@ public class DogService {
             throw new CustomException(HttpStatus.FORBIDDEN,ErrorType.CANNOT_DUPLICATED_DOG_PROFILE);
         }
 
+        String imageUrl = fileService.uploadFile(dogProfileReqDto.getProfile(), "/dog");
+
         Dog dog=Dog.builder()
                 .memberId(member.getMemberId())
                 .dogProfileReqDto(dogProfileReqDto)
+                .profileUrl(imageUrl)
                 .build();
 
         return dogRepository.save(dog).getDogId();
@@ -60,7 +65,8 @@ public class DogService {
             throw new CustomException(HttpStatus.FORBIDDEN, ErrorType.ACCESS_DENIED);
         }
 
-        dog.updateProfile(dogProfileReqDto);
+        String imageUrl = fileService.uploadFile(dogProfileReqDto.getProfile(), "/dog");
+        dog.updateProfile(dogProfileReqDto, imageUrl);
         Dog updatedDog = dogRepository.save(dog);
 
         return updatedDog.toDogProfileResponseDto();
