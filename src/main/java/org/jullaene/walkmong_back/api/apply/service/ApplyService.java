@@ -121,7 +121,7 @@ public class ApplyService {
     /**
      * 지원자가 자신의 지원서를 조회한다
      */
-    public  MyFormResponseDto getMyForm(Long applyId) {
+    public MyFormResponseDto getMyForm(Long applyId) {
         Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.POST_NOT_FOUND));
 
         //지원자의 아이디
@@ -146,5 +146,14 @@ public class ApplyService {
                 .build();
 
         return formResponseDto;
+    }
+
+    /**
+     지원자가 자신의 지원을 취소
+     */
+    public void cancelApply(Long applyId) {
+        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
+        Apply changedApply=apply.cancelApply();
+        applyRepository.save(changedApply);
     }
 }

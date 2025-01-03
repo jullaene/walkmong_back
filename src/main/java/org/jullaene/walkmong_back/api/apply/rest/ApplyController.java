@@ -118,4 +118,13 @@ public class ApplyController {
         return ResponseEntity.ok(BasicResponse.ofSuccess(myFormDto));
     }
 
+    /**
+     * 지원자가 자신의 지원을 취소한다
+     */
+    @DeleteMapping("/cancel/{applyId}")
+    public ResponseEntity<BasicResponse<String>> cancelApply(@PathVariable("applyId") Long applyId){
+        applyService.cancelApply(applyId);
+        return ResponseEntity.ok(BasicResponse.ofSuccess("지원이 취소되었습니다"));
+    }
+
 }

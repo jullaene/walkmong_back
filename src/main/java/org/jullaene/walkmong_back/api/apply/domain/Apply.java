@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
@@ -90,5 +91,10 @@ public class Apply extends BaseEntity {
 
     public void changeState() {
         this.matchingStatus=MatchingStatus.CONFIRMED;
+    }
+
+    public Apply cancelApply() {
+        this.delYn="Y";
+        return this;
     }
 }
