@@ -42,9 +42,8 @@ out/
 **/._.DS_Store
 
 ## application ##
-src/main/resources/application.yml
 **/src/main/resources/application.yml
-**/src/main/resources/application-*.yml
+**/src/main/resources/application*.yml
 
 ## querydsl ##
 **/src/main/generated/*
