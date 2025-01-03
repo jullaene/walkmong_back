@@ -109,5 +109,13 @@ public class ApplyController {
         return ResponseEntity.ok(BasicResponse.ofSuccess("다른 지원자들의 매칭이 취소되었습니다"));
     }
 
+    /**
+     * 지원자가 자신의 지원서를 조회한다
+     */
+    @GetMapping("/myForm/{applyId}")
+    public ResponseEntity<BasicResponse<MyFormResponseDto>> getMyForm(@PathVariable("applyId") Long applyId){
+        MyFormResponseDto myFormDto=applyService.getMyForm(applyId);
+        return ResponseEntity.ok(BasicResponse.ofSuccess(myFormDto));
+    }
 
 }

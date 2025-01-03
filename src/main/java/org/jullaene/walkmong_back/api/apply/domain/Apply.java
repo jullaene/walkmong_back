@@ -15,6 +15,7 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 @Entity
 @NoArgsConstructor
 @DynamicUpdate
+@Getter
 public class Apply extends BaseEntity {
     @Id
     @Getter
