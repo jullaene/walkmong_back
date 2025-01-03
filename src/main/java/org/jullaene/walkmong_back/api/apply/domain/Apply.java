@@ -103,4 +103,9 @@ public class Apply extends BaseEntity {
         this.delYn="Y";
         return this;
     }
+
+    public Apply cancelMatching() {
+        this.matchingStatus=MatchingStatus.PENDING;
+        return this;
+    }
 }

@@ -126,4 +126,14 @@ public class ApplyController {
         return ResponseEntity.ok(BasicResponse.ofSuccess("지원이 취소되었습니다"));
     }
 
+    /**
+     * 매칭 확정 후 매칭 취소
+     */
+    @DeleteMapping("/cancel/matching/{applyId}")
+    public ResponseEntity<BasicResponse<String>> cancelMatching(@PathVariable("applyId") Long applyId){
+        applyService.cancelMatching(applyId);
+        return ResponseEntity.ok(BasicResponse.ofSuccess("매칭이 취소되었습니다"));
+
+    }
+
 }
