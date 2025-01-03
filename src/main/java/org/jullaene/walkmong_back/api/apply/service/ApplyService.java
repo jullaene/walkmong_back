@@ -89,20 +89,18 @@ public class ApplyService {
     public ApplicationFormResponseDto getApplicationFormInfo(Long boardId, Long applyId){
         //반려인의 아이디
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-        BoardPreviewResponseDto boardDto=boardRepository.getBoardPreview(boardId,memberId,"N");
         Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.POST_NOT_FOUND));
+        Long walkerId=apply.getMemberId(); //산책자의 아이디
 
+        BoardPreviewResponseDto boardDto=boardRepository.getBoardPreview(boardId,memberId,"N");
         ApplicantInfoResponseDto applicantDto=applyRepository.getApplicant(boardId,applyId,"N");
         ApplyInfoResponseDto applyDto=apply.toApplyInfoDto();
-        WalkerInfoResponseDto walkerDto= WalkerInfoResponseDto.builder().
-                applicantInfoResponseDto(applicantDto)
-                .applyInfoResponseDto(applyDto)
-                .build();
-        RatingResponseDto ratingDto=reviewToWalkerService.calculateAverage(applyId);
+        RatingResponseDto ratingDto=reviewToWalkerService.calculateAverage(walkerId);
 
         ApplicationFormResponseDto responseDto= ApplicationFormResponseDto.builder()
                 .boardDto(boardDto)
-                .walkerDto(walkerDto)
+                .applicantDto(applicantDto)
+                .applyDto(applyDto)
                 .ratingDto(ratingDto)
                 .build();
         return responseDto;
