@@ -158,11 +158,20 @@ public class ApplyService {
     }
 
     /**
-     지원자가 자신의 지원을 취소
+     지원자가 자신의 지원을 취소: delYn을 Y로 바꾼다
      */
     public void cancelApply(Long applyId) {
         Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
         Apply changedApply=apply.cancelApply();
+        applyRepository.save(changedApply);
+    }
+
+    /**
+     *매칭 취소: status를 PENDING으로 바꾼다
+     */
+    public void cancelMatching(Long applyId) {
+        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
+        Apply changedApply=apply.cancelMatching();
         applyRepository.save(changedApply);
     }
 }
