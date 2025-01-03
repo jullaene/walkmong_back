@@ -82,7 +82,7 @@ public class ApplyController {
      */
     @GetMapping("/applicant/{boardId}")
     public ResponseEntity<BasicResponse<ApplicantWithBoardResponseDto>> getApplicantList( @PathVariable("boardId") Long boardId){
-        List<ApplicantListResponseDto> applicants=applyService.getApplicantList(boardId);
+        List<ApplicantInfoResponseDto> applicants=applyService.getApplicantList(boardId);
         BoardPreviewResponseDto preview=boardService.getPreview(boardId);
 
         return ResponseEntity.ok(BasicResponse.ofSuccess(new ApplicantWithBoardResponseDto(applicants,preview)));
@@ -92,8 +92,8 @@ public class ApplyController {
      */
     @GetMapping("/form/{boardId}")
     public ResponseEntity<BasicResponse<ApplicationFormResponseDto>> getApplicantList(@PathVariable("boardId") Long boardId,
-                                                                                      @RequestParam("walkerId") Long walkerId){
-        ApplicationFormResponseDto responseDto=applyService.getApplicationFormInfo(boardId,walkerId);
+                                                                                      @RequestParam("applyId") Long applyId){
+        ApplicationFormResponseDto responseDto=applyService.getApplicationFormInfo(boardId,applyId);
         return ResponseEntity.ok(BasicResponse.ofSuccess(responseDto));
     }
 

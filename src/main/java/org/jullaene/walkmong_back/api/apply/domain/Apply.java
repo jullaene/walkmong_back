@@ -15,6 +15,7 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoResponseDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
@@ -107,5 +108,20 @@ public class Apply extends BaseEntity {
     public Apply cancelMatching() {
         this.matchingStatus=MatchingStatus.PENDING;
         return this;
+    }
+
+    //도메인에서 dto로 전환
+    public ApplyInfoResponseDto toApplyInfoDto(){
+        return ApplyInfoResponseDto.builder()
+                .dongAddress(dongAddress)
+                .roadAddress(roadAddress)
+                .addressDetail(addressDetail)
+                .addressMemo(addressMemo)
+                .poopBagYn(poopBagYn)
+                .muzzleYn(muzzleYn)
+                .dogCollarYn(dogCollarYn)
+                .preMeetingYn(preMeetingYn)
+                .memoToOwner(memoToOwner)
+                .build();
     }
 }
