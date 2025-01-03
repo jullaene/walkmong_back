@@ -93,8 +93,18 @@ public class ApplyController {
     @GetMapping("/form/{boardId}")
     public ResponseEntity<BasicResponse<ApplicationFormResponseDto>> getApplicantList(@PathVariable("boardId") Long boardId,
                                                                                       @RequestParam("walkerId") Long walkerId){
-        log.info("진입");
         ApplicationFormResponseDto responseDto=applyService.getApplicationFormInfo(boardId,walkerId);
         return ResponseEntity.ok(BasicResponse.ofSuccess(responseDto));
+    }
+
+    /**
+     * 매칭 확정 시 다른 지원자의 요청을 취소한다
+     */
+    @PostMapping("/form/{boardId}")
+    public ResponseEntity<BasicResponse<String>> confirmMatching(@PathVariable("boardId") Long boardId,
+                                @RequestParam("walkerId") Long walkerId){
+        applyService.confirmMatching(boardId,walkerId);
+
+        return ResponseEntity.ok(BasicResponse.ofSuccess("다른 지원자들의 매칭이 취소되었습니다"));
     }
 }
