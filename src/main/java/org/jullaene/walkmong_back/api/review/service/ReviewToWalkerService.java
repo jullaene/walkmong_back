@@ -9,6 +9,7 @@ import org.jullaene.walkmong_back.api.review.domain.HashtagToWalker;
 import org.jullaene.walkmong_back.api.review.domain.ReviewToWalker;
 import org.jullaene.walkmong_back.api.review.domain.ReviewToWalkerImage;
 import org.jullaene.walkmong_back.api.review.dto.req.ReviewToWalkerReqDto;
+import org.jullaene.walkmong_back.api.review.dto.res.RatingResponseDto;
 import org.jullaene.walkmong_back.api.review.repository.HashtagToWalkerRepository;
 import org.jullaene.walkmong_back.api.review.repository.ReviewToWalkerImageRepository;
 import org.jullaene.walkmong_back.api.review.repository.ReviewToWalkerRepository;
@@ -69,4 +70,40 @@ public class ReviewToWalkerService {
 
         return reviewToWalkerId;
     }
+
+    /**
+     * 전체 사용자 평가 평균 조회
+     */
+    public RatingResponseDto calculateAverage(Long walkerId){
+        List<ReviewToWalker> reviews=reviewToWalkerRepository.findAllByReviewTargetId(walkerId);
+
+        float timePunctualityAvg = (float) reviews.stream()
+                .mapToDouble(ReviewToWalker::getTimePunctuality)
+                .average()
+                .orElse(0.0);
+
+        float communicationAvg = (float) reviews.stream()
+                .mapToDouble(ReviewToWalker::getCommunication)
+                .average()
+                .orElse(0.0);
+
+        float attitudeAvg = (float) reviews.stream()
+                .mapToDouble(ReviewToWalker::getAttitude)
+                .average()
+                .orElse(0.0);
+
+        float taskCompletionAvg = (float) reviews.stream()
+                .mapToDouble(ReviewToWalker::getTaskCompletion)
+                .average()
+                .orElse(0.0);
+
+        float photoSharingAvg = (float) reviews.stream()
+                .mapToDouble(ReviewToWalker::getPhotoSharing)
+                .average()
+                .orElse(0.0);
+
+        return new RatingResponseDto(timePunctualityAvg, communicationAvg, attitudeAvg, taskCompletionAvg, photoSharingAvg,reviews.size());
+
+    }
+
 }

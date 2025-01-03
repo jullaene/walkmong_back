@@ -2,6 +2,7 @@ package org.jullaene.walkmong_back.api.board.repository;
 
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
@@ -17,4 +18,6 @@ public interface BoardRepositoryCustom {
     boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn);
     Optional<BoardDetailResponseDto> getBoardDetailResponse(Long boardId, Long memberId, String delYn);
     List<RequestedInfoResponseDto> getRequestRecordResponse(Long memberId, MatchingStatus status);
-}
+    BoardPreviewResponseDto getBoardPreview(Long boardId, Long memberId, String delYn);
+
+    }

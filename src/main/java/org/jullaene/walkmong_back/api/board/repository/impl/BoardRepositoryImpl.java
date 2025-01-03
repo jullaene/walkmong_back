@@ -15,6 +15,7 @@ import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepositoryCustom;
@@ -43,9 +44,9 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     @Override
     public List<BoardResponseDto> getBoardsWithFilters(LocalDate date, Address walkerAddress, DistanceRange distance, DogSize dogSize, String matchingYn) {
-        QBoard board = QBoard.board;
-        QDog dog = QDog.dog;
-        QAddress ownerAddress = QAddress.address;
+       QBoard board = QBoard.board;
+       QDog dog = QDog.dog;
+       QAddress ownerAddress = QAddress.address;
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -266,5 +267,42 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         return requestedInfoDto;
     }
 
+    /**
+     * 매칭 현황 조회 시 게시글 미리보기
+     */
+    @Override
+    public BoardPreviewResponseDto getBoardPreview(Long boardId,Long memberId,String delYn){
+        QBoard board=QBoard.board;
+        QDog dog=QDog.dog;
+        QAddress address=QAddress.address;
+
+        StringTemplate startTimeExpression = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, '%H:%i')",
+                board.startTime
+        );
+        StringTemplate endTimeExpression = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, '%H:%i')",
+                board.endTime
+        );
+
+        BoardPreviewResponseDto previewDto=
+                queryFactory.selectDistinct(
+                                Projections.constructor(BoardPreviewResponseDto.class,
+                                        dog.name.as("dogName"),
+                                        dog.profile.as("dogProfile"),
+                                        dog.gender.as("dogGender"),
+                                        address.dongAddress.as("dongAddress"),
+                                        board.content.as("content"),
+                                        startTimeExpression.as("startTime"),
+                                        endTimeExpression.as("endTime")
+                                ))
+                        .from(board)
+                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
+                        .leftJoin(address).on(address.memberId.eq(memberId))
+                        .where(board.boardId.eq(boardId)
+                                .and(board.delYn.eq(delYn)))
+                        .fetchOne();
+        return previewDto;
+    }
 
 }

@@ -24,4 +24,5 @@ public class ApplyInfoDto {
     private String memoToOwner;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
 }

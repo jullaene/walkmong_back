@@ -2,6 +2,7 @@ package org.jullaene.walkmong_back.api.review.domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
@@ -12,6 +13,7 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 @Entity
 @NoArgsConstructor
 @DynamicUpdate
+@Getter
 public class ReviewToWalker extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

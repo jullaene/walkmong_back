@@ -5,14 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.Apply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
+import org.jullaene.walkmong_back.api.board.domain.Board;
+import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
 import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
+import org.jullaene.walkmong_back.api.review.dto.res.RatingResponseDto;
+import org.jullaene.walkmong_back.api.review.service.ReviewToWalkerService;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.springframework.http.HttpStatus;
@@ -29,6 +32,8 @@ public class ApplyService {
     private final BoardRepository boardRepository;
     private final DogRepository dogRepository;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final ReviewToWalkerService reviewToWalkerService;
 
     @Transactional
     public Long saveApply(Long boardId, ApplyRequestDto applyRequestDto) {
@@ -68,9 +73,88 @@ public class ApplyService {
     }
 
     //전체 지원 내역 불러오기
-    public List<AppliedInfoResponseDto> getAllAppliedInfoWithStatus(MatchingStatus status) {
+    public List<RecordResponseDto> getAllAppliedInfoWithStatus(MatchingStatus status) {
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-        List<AppliedInfoResponseDto> appliedLists=applyRepository.getApplyRecordResponse(memberId,status);
-        return appliedLists;
+        List<AppliedInfoResponseDto> appliedLists=applyRepository.getApplyRecordResponse(memberId,status,"N");
+
+        return appliedLists.stream().map(dto-> (RecordResponseDto) dto).toList();
+
+    }
+
+    public List<ApplicantInfoResponseDto> getApplicantList(Long boardId) {
+        return applyRepository.getApplicantList(boardId,"N");
+    }
+
+    //반려인이 산책자 지원서 조회
+    public ApplicationFormResponseDto getApplicationFormInfo(Long boardId, Long applyId){
+        //반려인의 아이디
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.POST_NOT_FOUND));
+        Long walkerId=apply.getMemberId(); //산책자의 아이디
+
+        BoardPreviewResponseDto boardDto=boardRepository.getBoardPreview(boardId,memberId,"N");
+        ApplicantInfoResponseDto applicantDto=applyRepository.getApplicant(boardId,applyId,"N");
+        ApplyInfoResponseDto applyDto=apply.toApplyInfoDto();
+        RatingResponseDto ratingDto=reviewToWalkerService.calculateAverage(walkerId);
+
+        ApplicationFormResponseDto responseDto= ApplicationFormResponseDto.builder()
+                .boardDto(boardDto)
+                .applicantDto(applicantDto)
+                .applyDto(applyDto)
+                .ratingDto(ratingDto)
+                .build();
+        return responseDto;
+
+    }
+
+    /**
+     매칭 확정 후 다른 요청자의 지원을 취소한다
+     */
+    @Transactional
+    public void confirmMatching(Long boardId, Long walkerId) {
+        Apply matchApply=applyRepository.findByMemberIdAndBoardIdAndDelYn(walkerId,boardId,"N");
+        matchApply.changeState(); //매칭 완료 상태로 바꾼다
+        applyRepository.save(matchApply);
+        //나머지 지원을 취소처리
+        applyRepository.cancelOtherApplications(boardId,walkerId);
+    }
+
+
+    /**
+     * 지원자가 자신의 지원서를 조회한다
+     */
+    public MyFormResponseDto getMyForm(Long applyId) {
+        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.POST_NOT_FOUND));
+
+        //산책 요청글의 boardID
+        Long boardId=applyRepository.findIdByApplicantId(applyId);
+        Board board=boardRepository.findById(boardId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
+
+        BoardPreviewResponseDto previewDto=boardRepository.getBoardPreview(boardId,board.getOwnerId(),"N");
+
+        MyFormResponseDto formResponseDto=MyFormResponseDto.builder()
+                .previewResponseDto(previewDto)
+                .applyInfoResponseDto(apply.toApplyInfoDto())
+                .build();
+
+        return formResponseDto;
+    }
+
+    /**
+     지원자가 자신의 지원을 취소: delYn을 Y로 바꾼다
+     */
+    public void cancelApply(Long applyId) {
+        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
+        Apply changedApply=apply.cancelApply();
+        applyRepository.save(changedApply);
+    }
+
+    /**
+     *매칭 취소: status를 PENDING으로 바꾼다
+     */
+    public void cancelMatching(Long applyId) {
+        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
+        Apply changedApply=apply.cancelMatching();
+        applyRepository.save(changedApply);
     }
 }

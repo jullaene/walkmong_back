@@ -1,6 +1,7 @@
 package org.jullaene.walkmong_back.api.apply.repository.impl;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -8,8 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.QApply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
-import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepositoryCustom;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
@@ -19,21 +19,23 @@ import org.jullaene.walkmong_back.api.member.domain.QMember;
 import java.util.List;
 import java.util.Optional;
 
+import static com.querydsl.core.types.dsl.Expressions.list;
 import static com.querydsl.core.types.dsl.Expressions.numberTemplate;
 
 @RequiredArgsConstructor
 @Slf4j
 public class ApplyRepositoryImpl implements ApplyRepositoryCustom{
     private final JPAQueryFactory queryFactory;
-
-    //산책 지원 최종 내역 확인하기
+    private final QDog dog = QDog.dog;
+    private final QMember member = QMember.member;
+    private final QBoard board = QBoard.board;
+    private final QApply apply = QApply.apply;
+    private final QAddress address = QAddress.address;
+    /**
+     산책 지원시 지원서 내용 최종 확인하기
+     */
     @Override
     public Optional<ApplyInfoDto> getApplyInfoResponse(Long boardId, Long memberId, String delYn) {
-        QDog dog= QDog.dog;
-        QMember member=QMember.member;
-        QBoard board=QBoard.board;
-        QApply apply= QApply.apply;
-
         Optional<ApplyInfoDto> applyInfoDto=
                 Optional.ofNullable(queryFactory.selectDistinct(
                                 Projections.constructor(ApplyInfoDto.class,
@@ -64,15 +66,11 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom{
         return applyInfoDto;
     }
 
-    //지원한 산책 내역 확인하기
+    /**
+     내가 지원한 산책 내역 확인하기
+     */
     @Override
-    public List<AppliedInfoResponseDto> getApplyRecordResponse(Long memberId, MatchingStatus status) {
-        QDog dog= QDog.dog;
-        QMember member=QMember.member;
-        QBoard board=QBoard.board;
-        QApply apply= QApply.apply;
-        QAddress address=QAddress.address;
-
+    public List<AppliedInfoResponseDto> getApplyRecordResponse(Long memberId, MatchingStatus status,String delYn) {
         // 거리 계산
         NumberTemplate<Double> distanceExpression = numberTemplate(
                 Double.class,
@@ -117,8 +115,66 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom{
                         .leftJoin(dog).on(dog.dogId.eq(board.dogId))
                         .leftJoin(apply).on(apply.boardId.eq(board.boardId))
                         .where(apply.memberId.eq(memberId)
-                                .and(apply.matchingStatus.eq(status)))
+                                .and(apply.matchingStatus.eq(status))
+                                .and(board.delYn.eq(delYn)))
                         .fetch();
             return appliedInfoDto;
     }
+
+
+    /**
+     * 반려인이 산책 지원자들의 정보를 조회한다
+     */
+    public List<ApplicantInfoResponseDto> getApplicantList(Long boardId,String delYn){
+        List<ApplicantInfoResponseDto> applicantList=
+                queryFactory.selectDistinct(
+                                Projections.constructor(ApplicantInfoResponseDto.class,
+                                        member.nickname.as("applicantName"),
+                                        member.profile.as("applicantProfile"),
+                                        Expressions.numberTemplate(Integer.class,"YEAR(CURDATE()) - YEAR({0})", member.birthDate).as("applicantAge"),
+                                        member.gender.as("applicantGender"),
+                                        address.dongAddress.as("applicantDongAddress"),
+                                        address.roadAddress.as("applicantRoadAddress"),
+                                        Expressions.asNumber(100) //평점
+                                ))
+                        .from(board)
+                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
+                        .leftJoin(member).on(apply.memberId.eq(member.memberId))
+                        .leftJoin(address).on(apply.memberId.eq(address.memberId))
+                        .where((apply.matchingStatus.eq(MatchingStatus.valueOf("PENDING")))
+                                .and(board.delYn.eq(delYn))
+                                .and(board.boardId.eq(boardId)))
+                        .fetch();
+
+        return applicantList;
+    }
+
+    /**
+     * 반려인이 특정 산책자 정보를 조회한다
+     */
+    public ApplicantInfoResponseDto getApplicant(Long boardId,Long applyId, String delYn){
+        ApplicantInfoResponseDto applicant=
+                queryFactory.selectDistinct(
+                                Projections.constructor(ApplicantInfoResponseDto.class,
+                                        member.nickname.as("applicantName"),
+                                        member.profile.as("applicantProfile"),
+                                        Expressions.numberTemplate(Integer.class,"YEAR(CURDATE()) - YEAR({0})", member.birthDate).as("applicantAge"),
+                                        member.gender.as("applicantGender"),
+                                        address.dongAddress.as("applicantDongAddress"),
+                                        address.roadAddress.as("applicantRoadAddress"),
+                                        Expressions.asNumber(100) //평점
+                                ))
+                        .from(board)
+                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
+                        .leftJoin(member).on(apply.memberId.eq(member.memberId))
+                        .leftJoin(address).on(apply.memberId.eq(address.memberId))
+                        .where((apply.matchingStatus.eq(MatchingStatus.valueOf("PENDING")))
+                                .and(board.delYn.eq(delYn))
+                                .and(apply.applyId.eq(applyId))
+                                .and(board.boardId.eq(boardId)))
+                        .fetchOne();
+
+        return applicant;
+    }
+
 }

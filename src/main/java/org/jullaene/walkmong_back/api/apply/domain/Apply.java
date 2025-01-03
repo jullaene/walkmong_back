@@ -5,16 +5,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoResponseDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
 @Entity
 @NoArgsConstructor
 @DynamicUpdate
+@Getter
 public class Apply extends BaseEntity {
     @Id
     @Getter
@@ -87,4 +90,32 @@ public class Apply extends BaseEntity {
         memoToOwner = applyRequestDto.getMessageToOwner();
     }
 
+    public void changeState() {
+        this.matchingStatus=MatchingStatus.CONFIRMED;
+    }
+
+    public Apply cancelApply() {
+        this.delYn="Y";
+        return this;
+    }
+
+    public Apply cancelMatching() {
+        this.matchingStatus=MatchingStatus.PENDING;
+        return this;
+    }
+
+    //도메인에서 dto로 전환
+    public ApplyInfoResponseDto toApplyInfoDto(){
+        return ApplyInfoResponseDto.builder()
+                .dongAddress(dongAddress)
+                .roadAddress(roadAddress)
+                .addressDetail(addressDetail)
+                .addressMemo(addressMemo)
+                .poopBagYn(poopBagYn)
+                .muzzleYn(muzzleYn)
+                .dogCollarYn(dogCollarYn)
+                .preMeetingYn(preMeetingYn)
+                .memoToOwner(memoToOwner)
+                .build();
+    }
 }
