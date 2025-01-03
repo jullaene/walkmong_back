@@ -15,8 +15,6 @@ import org.jullaene.walkmong_back.api.board.domain.QBoard;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
 import org.jullaene.walkmong_back.api.member.domain.QAddress;
 import org.jullaene.walkmong_back.api.member.domain.QMember;
-import org.jullaene.walkmong_back.api.review.domain.QHashtagToWalker;
-import org.jullaene.walkmong_back.api.review.domain.QReviewToWalker;
 
 import java.util.List;
 import java.util.Optional;
@@ -127,16 +125,16 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom{
     /**
      * 반려인이 산책 지원자들의 정보를 조회한다
      */
-    public List<ApplicantListResponseDto> getApplicantList(Long boardId, Long memberId, String delYn){
-        List<ApplicantListResponseDto> applicantList=
+    public List<ApplicantInfoResponseDto> getApplicantList(Long boardId,String delYn){
+        List<ApplicantInfoResponseDto> applicantList=
                 queryFactory.selectDistinct(
-                                Projections.constructor(ApplicantListResponseDto.class,
+                                Projections.constructor(ApplicantInfoResponseDto.class,
                                         member.nickname.as("applicantName"),
                                         member.profile.as("applicantProfile"),
                                         Expressions.numberTemplate(Integer.class,"YEAR(CURDATE()) - YEAR({0})", member.birthDate).as("applicantAge"),
                                         member.gender.as("applicantGender"),
-                                        address.dongAddress.as("dongAddress"),
-                                        address.roadAddress.as("roadAddress"),
+                                        address.dongAddress.as("applicantDongAddress"),
+                                        address.roadAddress.as("applicantRoadAddress"),
                                         Expressions.asNumber(100) //평점
                                 ))
                         .from(board)
@@ -144,44 +142,39 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom{
                         .leftJoin(member).on(apply.memberId.eq(member.memberId))
                         .leftJoin(address).on(apply.memberId.eq(address.memberId))
                         .where((apply.matchingStatus.eq(MatchingStatus.valueOf("PENDING")))
-                                .and(board.delYn.eq(delYn)))
+                                .and(board.delYn.eq(delYn))
+                                .and(board.boardId.eq(boardId)))
                         .fetch();
 
         return applicantList;
     }
 
     /**
-     지원자의 정보와 지원한 산책 정보를 리턴한다
+     * 반려인이 특정 산책자 정보를 조회한다
      */
-    @Override
-    public WalkerInfoResponseDto getApplicantInfo(Long boardId, Long walkerId) {
-        WalkerInfoResponseDto walkerInfo=
+    public ApplicantInfoResponseDto getApplicant(Long boardId,Long applyId, String delYn){
+        ApplicantInfoResponseDto applicant=
                 queryFactory.selectDistinct(
-                                Projections.constructor(WalkerInfoResponseDto.class,
-                                        member.nickname.as("name"),
-                                        Expressions.numberTemplate(Integer.class,"YEAR(CURDATE()) - YEAR({0})", member.birthDate).as("age"),
-                                        member.gender.as("gender"),
-                                        member.profile.as("profile"),
-                                        address.dongAddress.as("walkerDongAddress"),
-                                        apply.dongAddress.as("dongAddress"),
-                                        apply.roadAddress.as("roadAddress"),
-                                        apply.addressDetail.as("addressDetail"),
-                                        apply.addressMemo.as("addressMemo"),
-                                        apply.poopBagYn.as("poopBagYn"),
-                                        apply.muzzleYn.as("muzzleYn"),
-                                        apply.dogCollarYn.as("dogCollarYn"),
-                                        apply.preMeetingYn.as("preMettingYn"),
-                                        apply.memoToOwner.as("memoToOwner")
+                                Projections.constructor(ApplicantInfoResponseDto.class,
+                                        member.nickname.as("applicantName"),
+                                        member.profile.as("applicantProfile"),
+                                        Expressions.numberTemplate(Integer.class,"YEAR(CURDATE()) - YEAR({0})", member.birthDate).as("applicantAge"),
+                                        member.gender.as("applicantGender"),
+                                        address.dongAddress.as("applicantDongAddress"),
+                                        address.roadAddress.as("applicantRoadAddress"),
+                                        Expressions.asNumber(100) //평점
                                 ))
-                        .from(apply)
-                        .leftJoin(member).on(member.memberId.eq(apply.memberId))
-                        .leftJoin(address).on(address.memberId.eq(member.memberId))
-                        .where(apply.memberId.eq(walkerId))
+                        .from(board)
+                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
+                        .leftJoin(member).on(apply.memberId.eq(member.memberId))
+                        .leftJoin(address).on(apply.memberId.eq(address.memberId))
+                        .where((apply.matchingStatus.eq(MatchingStatus.valueOf("PENDING")))
+                                .and(board.delYn.eq(delYn))
+                                .and(apply.applyId.eq(applyId))
+                                .and(board.boardId.eq(boardId)))
                         .fetchOne();
 
-        return walkerInfo;
+        return applicant;
     }
-
-
 
 }

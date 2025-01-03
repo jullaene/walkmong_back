@@ -10,6 +10,6 @@ public interface ApplyRepositoryCustom {
 
     //내가 지원한 산책 리스트 조회
     List<AppliedInfoResponseDto> getApplyRecordResponse(Long memberId, MatchingStatus status,String delYn);
-   List<ApplicantListResponseDto> getApplicantList(Long boardId, Long memberId, String delYn);
-    WalkerInfoResponseDto getApplicantInfo(Long boardId, Long walkerId);
+   List<ApplicantInfoResponseDto> getApplicantList(Long boardId, String delYn);
+    ApplicantInfoResponseDto getApplicant(Long boardId,Long applyId, String delYn);
 }
