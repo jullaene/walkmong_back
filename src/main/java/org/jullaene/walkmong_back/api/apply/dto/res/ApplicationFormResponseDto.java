@@ -11,7 +11,8 @@ import org.jullaene.walkmong_back.api.review.dto.res.RatingResponseDto;
 @Getter
 @Builder
 public class ApplicationFormResponseDto {
-    BoardPreviewResponseDto boardDto;
-    WalkerInfoResponseDto walkerDto;
-    RatingResponseDto ratingDto;
+    private BoardPreviewResponseDto boardDto;
+    private ApplicantInfoResponseDto applicantDto;
+    private ApplyInfoResponseDto applyDto;
+    private RatingResponseDto ratingDto;
 }
