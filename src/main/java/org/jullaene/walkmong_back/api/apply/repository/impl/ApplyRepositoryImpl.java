@@ -23,7 +23,7 @@ import static com.querydsl.core.types.dsl.Expressions.numberTemplate;
 
 @RequiredArgsConstructor
 @Slf4j
-public class ApplyRepositoryImpl implements ApplyRepositoryCustom{
+public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     //산책 지원 최종 내역 확인하기
