@@ -49,11 +49,6 @@ public class AuthService {
      */
     @Transactional
     public Long createAccount(MemberCreateReq memberCreateReq) {
-
-        if (memberRepository.existsByEmail(memberCreateReq.getEmail())) {
-            throw new CustomException(HttpStatus.CONFLICT, ErrorType.ALREADY_EXIST_USER);
-        }
-
         Member member = Member.builder()
                 .email(memberCreateReq.getEmail())
                 .nickname(memberCreateReq.getNickname())

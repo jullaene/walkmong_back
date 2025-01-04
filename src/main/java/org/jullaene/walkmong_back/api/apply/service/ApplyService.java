@@ -7,10 +7,10 @@ import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
+import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
-import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
-import org.jullaene.walkmong_back.api.dog.domain.Dog;
+import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
@@ -19,6 +19,7 @@ import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -60,6 +61,13 @@ public class ApplyService {
         }
     }
 
+    @Transactional
+    public ApplyInfoDto getApplyInfo(Long boardId) {
+        Member member = memberService.getMemberFromUserDetail();
+        return applyRepository.getApplyInfoResponse(boardId,member.getMemberId(),"N")
+                .orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_ADDRESS));
+    }
+
     //전체 지원 내역 불러오기
     public List<AppliedInfoResponseDto> getAllAppliedInfoWithStatus(MatchingStatus status) {
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
@@ -67,10 +75,11 @@ public class ApplyService {
         return appliedLists;
     }
 
-    @Transactional
-    public ApplyInfoDto getApplyInfo(Long boardId) {
-        Member member = memberService.getMemberFromUserDetail();
-        return applyRepository.getApplyInfoResponse(boardId,member.getMemberId(),"N")
-                .orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_ADDRESS));
+    //지원한 산책의 채팅방 조회
+    public List<ChatRoomListResponseDto> getAllChatListWithStatus(MatchingStatus status) {
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+        log.info("사용자 id {}",memberId);
+        List<ChatRoomListResponseDto> chatList=applyRepository.getApplyChatList(memberId,status);
+        return chatList;
     }
 }
