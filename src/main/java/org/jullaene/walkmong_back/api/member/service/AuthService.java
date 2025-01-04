@@ -1,5 +1,6 @@
 package org.jullaene.walkmong_back.api.member.service;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.dto.req.LoginReq;
@@ -127,23 +128,22 @@ public class AuthService {
     }
 
 
-    public String reissueTokens(String email, String refreshToken) {
+    public LoginRes reissueTokens(String refreshToken) {
+        // Refresh Token 검증
+        Claims claims = jwtTokenUtil.verify(refreshToken);
+        String email = claims.getSubject(); // Refresh Token에서 email 추출
+
         // Redis에서 저장된 Refresh Token 조회
         String storedRefreshToken = redisTemplate.opsForValue().get(email);
-
-        // 저장된 Refresh Token과 입력받은 Refresh Token 검증
         if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.INVALID_REFRESH_TOKEN);
         }
 
-        // Refresh Token 검증
-        jwtTokenUtil.verify(refreshToken);
-
-        // 새로운 Access Token 생성
+        // 새로운 Access Token 및 Refresh Token 생성
         String newAccessToken = jwtTokenUtil.createToken(email);
+        String newRefreshToken = jwtTokenUtil.createRefreshToken(email);
 
-        // 새로운 Refresh Token 생성 및 Redis 갱신
-        String newRefreshToken = jwtTokenUtil.createToken(email);
+        // Redis 갱신
         redisTemplate.opsForValue().set(
                 email,
                 newRefreshToken,
@@ -152,6 +152,7 @@ public class AuthService {
         );
 
         // 반환
-        return newAccessToken;
+        return new LoginRes(newAccessToken, newRefreshToken);
     }
+
 }
