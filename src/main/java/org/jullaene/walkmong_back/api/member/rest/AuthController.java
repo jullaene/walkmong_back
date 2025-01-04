@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.member.dto.req.LoginReq;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
+import org.jullaene.walkmong_back.api.member.dto.res.LoginRes;
 import org.jullaene.walkmong_back.api.member.service.AuthService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.jullaene.walkmong_back.common.exception.CustomException;
@@ -29,7 +30,7 @@ public class AuthController {
 
     @Operation(summary = "로그인", description = "로그인")
     @PostMapping("/login")
-    public ResponseEntity<BasicResponse<String>> login(@Valid @RequestBody LoginReq loginReq) {
+    public ResponseEntity<BasicResponse<LoginRes>> login(@Valid @RequestBody LoginReq loginReq) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(authService.login(loginReq)));
     }
 
@@ -65,5 +66,13 @@ public class AuthController {
         } else {
             throw new CustomException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_VERIFICATION_CODE);
         }
+    }
+
+    @Operation(summary = "토큰 재발급", description = "Refresh Token을 통해 Access Token을 재발급받습니다.")
+    @PostMapping("/reissue/accesstoken")
+    public ResponseEntity<BasicResponse<String>> reissueToken(
+            @RequestParam(name = "email") String email,
+            @RequestParam(name = "refreshToken") String refreshToken) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(authService.reissueTokens(email, refreshToken)));
     }
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.dto.req.LoginReq;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
+import org.jullaene.walkmong_back.api.member.dto.res.LoginRes;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
@@ -37,7 +38,7 @@ public class AuthService {
     /**
      * 로그인
      */
-    public String login(LoginReq loginReq) {
+    public LoginRes login(LoginReq loginReq) {
         Member member = findByAccountEmail(loginReq.getEmail());
         if (!passwordEncoder.matches(loginReq.getPassword(), member.getPassword())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.WRONG_PASSWORD);
@@ -47,7 +48,7 @@ public class AuthService {
         String accessToken = jwtTokenUtil.createToken(member.getEmail());
         String refreshToken = jwtTokenUtil.createRefreshToken(member.getEmail());
 
-        // Redis에 Refresh Token 저장 (TTL 7일)
+        // Redis에 Refresh Token 저장
         redisTemplate.opsForValue().set(
                 member.getEmail(),
                 refreshToken,
@@ -55,7 +56,7 @@ public class AuthService {
                 TimeUnit.MILLISECONDS
         );
 
-        return accessToken;
+        return new LoginRes(accessToken, refreshToken);
     }
 
     /**
@@ -125,4 +126,32 @@ public class AuthService {
                         () -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_USER));
     }
 
+
+    public String reissueTokens(String email, String refreshToken) {
+        // Redis에서 저장된 Refresh Token 조회
+        String storedRefreshToken = redisTemplate.opsForValue().get(email);
+
+        // 저장된 Refresh Token과 입력받은 Refresh Token 검증
+        if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.INVALID_REFRESH_TOKEN);
+        }
+
+        // Refresh Token 검증
+        jwtTokenUtil.verify(refreshToken);
+
+        // 새로운 Access Token 생성
+        String newAccessToken = jwtTokenUtil.createToken(email);
+
+        // 새로운 Refresh Token 생성 및 Redis 갱신
+        String newRefreshToken = jwtTokenUtil.createToken(email);
+        redisTemplate.opsForValue().set(
+                email,
+                newRefreshToken,
+                jwtTokenUtil.getRefreshTokenExpirationMillis(),
+                TimeUnit.MILLISECONDS
+        );
+
+        // 반환
+        return newAccessToken;
+    }
 }
