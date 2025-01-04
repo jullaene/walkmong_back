@@ -32,6 +32,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
+    private final RedisTemplate<String, String> redisTemplate;
+
     /**
      * 로그인
      */
@@ -41,7 +43,19 @@ public class AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.WRONG_PASSWORD);
         }
 
-        return jwtTokenUtil.createToken(member.getEmail());
+        // Access Token 및 Refresh Token 생성
+        String accessToken = jwtTokenUtil.createToken(member.getEmail());
+        String refreshToken = jwtTokenUtil.createRefreshToken(member.getEmail());
+
+        // Redis에 Refresh Token 저장 (TTL 7일)
+        redisTemplate.opsForValue().set(
+                member.getEmail(),
+                refreshToken,
+                jwtTokenUtil.getRefreshTokenExpirationMillis(),
+                TimeUnit.MILLISECONDS
+        );
+
+        return accessToken;
     }
 
     /**
@@ -57,6 +71,12 @@ public class AuthService {
 
         return memberRepository.save(member).getMemberId();
     }
+
+    public void logout(String email) {
+        // Redis에서 Refresh Token 제거
+        redisTemplate.delete(email);
+    }
+
 
     /**
      * 이메일 중복 확인
