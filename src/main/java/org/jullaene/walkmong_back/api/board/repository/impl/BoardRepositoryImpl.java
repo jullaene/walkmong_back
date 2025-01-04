@@ -13,7 +13,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.QApply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
-import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
@@ -33,8 +32,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static com.querydsl.core.types.dsl.Expressions.numberTemplate;
 
 @Slf4j
 public class BoardRepositoryImpl implements BoardRepositoryCustom {
@@ -78,7 +75,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         }
 
         // 거리 계산
-        NumberTemplate<Double> distanceExpression = numberTemplate(
+        NumberTemplate<Double> distanceExpression = Expressions.numberTemplate(
                 Double.class,
                 "ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))",
                 JPAExpressions.select(ownerAddress.longitude)
@@ -118,8 +115,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                 dog.dogSize.as("dogSize"),
                                 board.content.as("content"),
                                 ownerAddress.dongAddress.as("dongAddress"),
-                                distanceExpression.as("distance"),
-                                board.createdAt.as("createdAt")
+                                distanceExpression.as("distance")
                         )
                 )
                 .from(board)
@@ -153,7 +149,6 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
         return count > 0;
     }
-
 
     @Override
     public Optional<BoardDetailResponseDto> getBoardDetailResponse(Long boardId, Long memberId, String delYn) {
