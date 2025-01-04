@@ -20,4 +20,7 @@ public class ChatRoomListResponseDto {
     private String lastChat;
     private LocalDateTime lastChatTime;
     private String targetName;
+    private Integer notRead;
+    private Long roomId;
+
 }

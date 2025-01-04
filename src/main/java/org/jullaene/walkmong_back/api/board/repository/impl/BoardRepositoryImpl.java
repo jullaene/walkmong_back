@@ -296,7 +296,9 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                         chatRoom.chatParticipantId.as("chatTarget"), //채팅 대상
                                         chat.message.as("lastChat"), //상대의 마지막 채팅
                                         chat.createdAt.as("lastChatTime"),  // 상대의 마지막 채팅 내용
-                                        Expressions.asString("").as("targetName")       // 상대방 이름을 공백으로 지정
+                                        Expressions.asString("").as("targetName"), // 상대방 이름을 공백으로 지정
+                                        Expressions.asNumber(10).as("notRead"),
+                                        chat.roomId.as("roomId")
                                 ))
                         .from(board)
                         .leftJoin(dog).on(dog.dogId.eq(board.dogId))
