@@ -71,4 +71,5 @@ public class Board extends BaseEntity {
         this.ownerId = ownerId;
     }
 
+
 }
