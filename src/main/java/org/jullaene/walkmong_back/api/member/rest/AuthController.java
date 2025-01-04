@@ -70,9 +70,8 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발급", description = "Refresh Token을 통해 Access Token을 재발급받습니다.")
     @PostMapping("/reissue/accesstoken")
-    public ResponseEntity<BasicResponse<String>> reissueToken(
-            @RequestParam(name = "email") String email,
+    public ResponseEntity<BasicResponse<LoginRes>> reissueToken(
             @RequestParam(name = "refreshToken") String refreshToken) {
-        return ResponseEntity.ok(BasicResponse.ofSuccess(authService.reissueTokens(email, refreshToken)));
+        return ResponseEntity.ok(BasicResponse.ofSuccess(authService.reissueTokens(refreshToken)));
     }
 }
