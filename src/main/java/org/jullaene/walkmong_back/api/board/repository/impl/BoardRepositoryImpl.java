@@ -1,6 +1,7 @@
 package org.jullaene.walkmong_back.api.board.repository.impl;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.SubQueryExpression;
@@ -9,6 +10,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.QApply;
@@ -27,10 +29,12 @@ import org.jullaene.walkmong_back.api.member.domain.Address;
 import org.jullaene.walkmong_back.api.member.domain.QAddress;
 import org.jullaene.walkmong_back.api.member.domain.QMember;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
+import org.jullaene.walkmong_back.common.exception.ErrorType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -59,14 +63,14 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
         builder.and(board.startTime.between(startOfDay, endOfDay));
 
-        if (dogSize != null) {
+        if (dogSize != null && !matchingYn.isBlank()) {
             builder.and(board.dogId.in(
                     JPAExpressions.select(dog.dogId)
                             .from(dog)
                             .where(dog.dogSize.eq(dogSize))));
         }
 
-        if (matchingYn != null) {
+        if (matchingYn != null && !matchingYn.isBlank()) {
             builder.and(board.matchingYn.eq(matchingYn));
         }
 
@@ -98,7 +102,6 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 "DATE_FORMAT({0}, '%H:%i')",
                 board.endTime
         );
-
 
         // 필터링된 board들을 바로 결과로 조회
         return queryFactory.select(
@@ -152,10 +155,10 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     @Override
     public Optional<BoardDetailResponseDto> getBoardDetailResponse(Long boardId, Long memberId, String delYn) {
-        QDog dog= QDog.dog;
-        QAddress address=QAddress.address;
-        QBoard board= QBoard.board;
-        QMember member=QMember.member;
+        QDog dog = QDog.dog;
+        QAddress address = QAddress.address;
+        QBoard board = QBoard.board;
+        QMember member = QMember.member;
         int currentYear = LocalDate.now().getYear() + 1;
 
 
@@ -173,28 +176,42 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 board.startTime
         );
 
-        // 숫자 형식의 생년월일에서 연도 추출 (YYYYMMDD / 10000 = YYYY)
+        // 숫자 형식의 생년월일에서 연도 추출
         NumberTemplate<Integer> birthYearExpression = Expressions.numberTemplate(Integer.class,
-                "FLOOR({0} / 10000)",
+                "YEAR({0})",
                 member.birthDate
         );
 
-//        // 거리 계산
-//        NumberTemplate<Double> distanceExpression = numberTemplate(
-//                Double.class,
-//                "ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))",
-//                JPAExpressions.select(ownerAddress.longitude)
-//                        .from(ownerAddress)
-//                        .where(ownerAddress.addressId.eq(board.ownerAddressId)),
-//                JPAExpressions.select(ownerAddress.latitude)
-//                        .from(ownerAddress)
-//                        .where(ownerAddress.addressId.eq(board.ownerAddressId)),
-//                walkerAddress.getLongitude(),
-//                walkerAddress.getLatitude()
-//        );
+        // 산책자의 기본 주소 위도, 경도 추출
+        Tuple result = queryFactory
+                .select(address.latitude, address.longitude)
+                .from(address)
+                .where(
+                        address.memberId.eq(memberId)
+                                .and(address.basicAddressYn.eq("Y"))
+                )
+                .fetchOne();
+        Objects.requireNonNull(result, ErrorType.INVALID_ADDRESS.getMessage());
+
+        Double walkerLatitude = result.get(address.latitude);
+        Double walkerLongitude = result.get(address.longitude);
+
+        // 거리 계산
+        NumberTemplate<Double> distanceExpression = Expressions.numberTemplate(
+                Double.class,
+                "ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))",
+                JPAExpressions.select(address.longitude)
+                        .from(address)
+                        .where(address.addressId.eq(board.ownerAddressId)),
+                JPAExpressions.select(address.latitude)
+                        .from(address)
+                        .where(address.addressId.eq(board.ownerAddressId)),
+                walkerLongitude,
+                walkerLatitude
+        );
+
         double distance = 500;
 
-        System.out.println(currentYear);
         return
                 Optional.ofNullable(queryFactory.select(
                                 Projections.constructor(BoardDetailResponseDto.class,
@@ -208,7 +225,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                         dog.weight.as("weight"),
                                         dog.dogSize.as("dogSize"),
                                         address.dongAddress.as("dongAddress"),
-                                        Expressions.constant(distance),
+                                        distanceExpression.as("distance"),
                                         dateExpression.as("date"),
                                         startTimeExpression.as("startTime"),
                                         endTimeExpression.as("endTime"),
@@ -227,7 +244,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                 ))
                         .from(board)
                         .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-                        .leftJoin(member).on(dog.memberId.eq(member.memberId))
+                        .leftJoin(member).on(board.ownerId.eq(member.memberId))
                         .leftJoin(address).on(address.addressId.eq(board.ownerAddressId))
                         .where(board.boardId.eq(boardId)
                                 .and(board.delYn.eq(delYn)))
