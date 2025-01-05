@@ -87,9 +87,33 @@ public class Dog extends BaseEntity {
     @Comment("추가 안내 사항")
     private String additionalRequest;
 
+    @Builder
+    public Dog(Long memberId, DogProfileReqDto dogProfileReqDto, String profileUrl){
+        this.name = dogProfileReqDto.getName();
+        this.memberId = memberId;
+        this.dogSize = dogProfileReqDto.getDogSize();
+        this.profile = profileUrl;
+        this.gender = dogProfileReqDto.getGender();
+        this.birthYear = dogProfileReqDto.getBirthYear();
+        this.breed = dogProfileReqDto.getBreed();
+        this.weight = dogProfileReqDto.getWeight();
+        this.neuteringYn = dogProfileReqDto.getNeuteringYn();
+        this.bite = dogProfileReqDto.getBite();
+        this.friendly = dogProfileReqDto.getFriendly();
+        this.barking = dogProfileReqDto.getBarking();
+        this.rabiesYn = dogProfileReqDto.getRabiesYn();
+        this.adultYn = dogProfileReqDto.getAdultYn();
+        this.walkRequest = dogProfileReqDto.getWalkRequest();
+        this.walkNote = dogProfileReqDto.getWalkNote();
+        this.additionalRequest = dogProfileReqDto.getAdditionalRequest();
+    }
 
     public final String getWalkRequestContent() {
         return this.walkRequest;
+    }
+
+    public final Long getMemberId () {
+        return this.memberId;
     }
 
     public final DogProfileResponseDto toDogProfileResponseDto() {
@@ -115,27 +139,6 @@ public class Dog extends BaseEntity {
                 .walkNote(this.walkNote)
                 .additionalRequest(this.additionalRequest)
                 .build();
-    }
-
-    @Builder
-    public Dog(Long memberId, DogProfileReqDto dogProfileReqDto, String profileUrl){
-        this.name = dogProfileReqDto.getName();
-        this.memberId = memberId;
-        this.dogSize = dogProfileReqDto.getDogSize();
-        this.profile = profileUrl;
-        this.gender = dogProfileReqDto.getGender();
-        this.birthYear = dogProfileReqDto.getBirthYear();
-        this.breed = dogProfileReqDto.getBreed();
-        this.weight = dogProfileReqDto.getWeight();
-        this.neuteringYn = dogProfileReqDto.getNeuteringYn();
-        this.bite = dogProfileReqDto.getBite();
-        this.friendly = dogProfileReqDto.getFriendly();
-        this.barking = dogProfileReqDto.getBarking();
-        this.rabiesYn = dogProfileReqDto.getRabiesYn();
-        this.adultYn = dogProfileReqDto.getAdultYn();
-        this.walkRequest = dogProfileReqDto.getWalkRequest();
-        this.walkNote = dogProfileReqDto.getWalkNote();
-        this.additionalRequest = dogProfileReqDto.getAdditionalRequest();
     }
 
     public void updateProfile(DogProfileReqDto dogProfileDto, String profileUrl) {
