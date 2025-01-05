@@ -139,20 +139,12 @@ public class AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.INVALID_REFRESH_TOKEN);
         }
 
-        // 새로운 Access Token 및 Refresh Token 생성
+        // 새로운 Access Token 생성
         String newAccessToken = jwtTokenUtil.createToken(email);
-        String newRefreshToken = jwtTokenUtil.createRefreshToken(email);
 
-        // Redis 갱신
-        redisTemplate.opsForValue().set(
-                email,
-                newRefreshToken,
-                jwtTokenUtil.getRefreshTokenExpirationMillis(),
-                TimeUnit.MILLISECONDS
-        );
 
         // 반환
-        return new LoginRes(newAccessToken, newRefreshToken);
+        return new LoginRes(newAccessToken, refreshToken);
     }
 
 }
