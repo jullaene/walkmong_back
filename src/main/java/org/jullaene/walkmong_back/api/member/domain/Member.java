@@ -83,9 +83,14 @@ public class Member extends BaseEntity {
     }
 
     public void addWalkingExperience(WalkExperienceReq walkExperienceReq) {
-        this.dogOwnership=walkExperienceReq.getDogOwnershipYn();
-        this.dogWalkingExperienceYn=walkExperienceReq.getDogWalkingExperienceYn();
-        this.availabilityWithSize=walkExperienceReq.getAvailabilityWithSize();
-        this.introduce=walkExperienceReq.getIntroduction();
+        this.dogOwnership = walkExperienceReq.getDogOwnershipYn();
+        this.dogWalkingExperienceYn = walkExperienceReq.getDogWalkingExperienceYn();
+        this.availabilityWithSize = walkExperienceReq.getAvailabilityWithSize();
+        this.introduce = walkExperienceReq.getIntroduction();
+    }
+
+    @Override
+    public String toString () {
+        return "dogOwnerShip " + this.dogOwnership;
     }
 }

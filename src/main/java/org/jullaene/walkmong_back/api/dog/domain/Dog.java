@@ -112,7 +112,7 @@ public class Dog extends BaseEntity {
         return this.walkRequest;
     }
 
-    public final Long getMemberId () {
+    public Long getMemberId () {
         return this.memberId;
     }
 
