@@ -3,6 +3,7 @@ package org.jullaene.walkmong_back.api.dog.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.dog.domain.Dog;
 import org.jullaene.walkmong_back.api.dog.dto.req.DogProfileReqDto;
 import org.jullaene.walkmong_back.api.dog.dto.res.DogProfileResponseDto;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class DogService {
     private final DogRepository dogRepository;
     private final MemberService memberService;
@@ -34,7 +36,7 @@ public class DogService {
         Member member = memberService.getMemberFromUserDetail();
 
         //이미 등록된 강아지 프로필이라면 예외처리
-        if (dogRepository.existsByNameAndDelYn(dogProfileReqDto.getName(),"N")){
+        if (dogRepository.existsByNameAndMemberIdAndDelYn(dogProfileReqDto.getName(), member.getMemberId(), "N")){
             throw new CustomException(HttpStatus.FORBIDDEN,ErrorType.CANNOT_DUPLICATED_DOG_PROFILE);
         }
 
@@ -53,13 +55,11 @@ public class DogService {
 
         Member member = memberService.getMemberFromUserDetail();
 
-        List<Dog> dogList = dogRepository.findByMemberIdAndDelYn(member.getMemberId(), "N");
-
         Dog dog = dogRepository.findById(dogId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.DOG_NOT_FOUND));
 
-        boolean isDogOwnedByMember = dogList.stream()
-                .anyMatch(memberDog -> memberDog.getDogId().equals(dogId));
+        // 강아지 주인인지 확인
+        boolean isDogOwnedByMember = member.getMemberId().equals(dog.getMemberId());
 
         if (!isDogOwnedByMember) {
             throw new CustomException(HttpStatus.FORBIDDEN, ErrorType.ACCESS_DENIED);
