@@ -1,7 +1,12 @@
 package org.jullaene.walkmong_back.api.apply.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +20,9 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
 @Entity
+@Getter
 @NoArgsConstructor
 @DynamicUpdate
-@Getter
 public class Apply extends BaseEntity {
     @Id
     @Getter

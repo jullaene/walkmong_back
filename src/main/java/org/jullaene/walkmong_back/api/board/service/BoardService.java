@@ -12,6 +12,7 @@ import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
+import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.domain.Dog;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
@@ -135,5 +136,14 @@ public class BoardService {
     public BoardPreviewResponseDto getPreview(Long boardId){
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
         return boardRepository.getBoardPreview(boardId,memberId,"N");
+    }
+
+    /**
+     * 요청한 산책 채팅방 리스트 조회
+     * */
+    public List<ChatRoomListResponseDto> getAllChatListWithStatus(MatchingStatus status) {
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+        List<ChatRoomListResponseDto> chatList=boardRepository.getRequestChatList(memberId,status);
+        return chatList;
     }
 }

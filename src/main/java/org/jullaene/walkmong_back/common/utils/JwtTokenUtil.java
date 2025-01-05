@@ -31,6 +31,9 @@ public class JwtTokenUtil {
     @Value("${spring.jwt.token.access-expiration-time}")
     private Long expirationMillis;
 
+    @Value("${spring.jwt.token.refresh-expiration-time}")
+    private Long refreshExpirationMillis;
+
     @Value("${spring.jwt.secret-key}")
     private String secretKey;
     private SecretKey key;
@@ -69,6 +72,20 @@ public class JwtTokenUtil {
         }
     }
 
+    public String createRefreshToken(String subject) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + refreshExpirationMillis);
+        try {
+            return Jwts.builder()
+                    .setSubject(subject)
+                    .setExpiration(expiration)
+                    .signWith(key)
+                    .compact();
+        } catch (JwtException e) {
+            throw new JwtException("리프레시 토큰 생성 중 오류가 발생했습니다.");
+        }
+    }
+
     public Claims verify(String token) {
         try {
             return Jwts.parserBuilder()
@@ -86,6 +103,10 @@ public class JwtTokenUtil {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(
                 userDetails, "", userDetails.getAuthorities());
+    }
+
+    public Long getRefreshTokenExpirationMillis() {
+        return refreshExpirationMillis;
     }
 
 }

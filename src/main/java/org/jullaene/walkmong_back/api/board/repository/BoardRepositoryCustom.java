@@ -5,6 +5,7 @@ import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
+import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.api.member.domain.Address;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
@@ -18,6 +19,13 @@ public interface BoardRepositoryCustom {
     boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn);
     Optional<BoardDetailResponseDto> getBoardDetailResponse(Long boardId, Long memberId, String delYn);
     List<RequestedInfoResponseDto> getRequestRecordResponse(Long memberId, MatchingStatus status);
-    BoardPreviewResponseDto getBoardPreview(Long boardId, Long memberId, String delYn);
 
-    }
+    BoardPreviewResponseDto getBoardPreview(Long boardId, Long memberId, String delYn);
+    //지원한 산책의 채팅방 조회
+    List<ChatRoomListResponseDto> getRequestChatList(Long memberId, MatchingStatus status);
+    //지원한 산책의 채팅방 조회
+}
+
+
+
+

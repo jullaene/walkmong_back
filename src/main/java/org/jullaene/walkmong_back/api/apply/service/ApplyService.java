@@ -10,6 +10,7 @@ import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
+import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
@@ -156,5 +157,13 @@ public class ApplyService {
         Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
         Apply changedApply=apply.cancelMatching();
         applyRepository.save(changedApply);
+    }
+
+    //지원한 산책의 채팅방 조회
+    public List<ChatRoomListResponseDto> getAllChatListWithStatus(MatchingStatus status) {
+        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
+        log.info("사용자 id {}",memberId);
+        List<ChatRoomListResponseDto> chatList=applyRepository.getApplyChatList(memberId,status);
+        return chatList;
     }
 }

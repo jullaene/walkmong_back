@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ApplyRepository extends JpaRepository<Apply, Long>,ApplyRepositoryCustom {
+public interface ApplyRepository extends JpaRepository<Apply, Long>, ApplyRepositoryCustom {
     boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn);
     boolean existsByBoardIdAndMemberIdAndMatchingStatusAndDelYn(Long boardId, Long memberId, MatchingStatus matchingStatus, String delYn);
     Apply findByMemberIdAndBoardIdAndDelYn(Long walkerId,Long boardId,String delYn);

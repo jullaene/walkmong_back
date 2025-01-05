@@ -1,9 +1,11 @@
 package org.jullaene.walkmong_back.api.member.service;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.dto.req.LoginReq;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
+import org.jullaene.walkmong_back.api.member.dto.res.LoginRes;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
@@ -32,16 +34,30 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
+    private final RedisTemplate<String, String> redisTemplate;
+
     /**
      * 로그인
      */
-    public String login(LoginReq loginReq) {
+    public LoginRes login(LoginReq loginReq) {
         Member member = findByAccountEmail(loginReq.getEmail());
         if (!passwordEncoder.matches(loginReq.getPassword(), member.getPassword())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.WRONG_PASSWORD);
         }
 
-        return jwtTokenUtil.createToken(member.getEmail());
+        // Access Token 및 Refresh Token 생성
+        String accessToken = jwtTokenUtil.createToken(member.getEmail());
+        String refreshToken = jwtTokenUtil.createRefreshToken(member.getEmail());
+
+        // Redis에 Refresh Token 저장
+        redisTemplate.opsForValue().set(
+                member.getEmail(),
+                refreshToken,
+                jwtTokenUtil.getRefreshTokenExpirationMillis(),
+                TimeUnit.MILLISECONDS
+        );
+
+        return new LoginRes(accessToken, refreshToken);
     }
 
     /**
@@ -57,6 +73,12 @@ public class AuthService {
 
         return memberRepository.save(member).getMemberId();
     }
+
+    public void logout(String email) {
+        // Redis에서 Refresh Token 제거
+        redisTemplate.delete(email);
+    }
+
 
     /**
      * 이메일 중복 확인
@@ -103,6 +125,26 @@ public class AuthService {
                 .findByEmail(email)
                 .orElseThrow(
                         () -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_USER));
+    }
+
+
+    public LoginRes reissueTokens(String refreshToken) {
+        // Refresh Token 검증
+        Claims claims = jwtTokenUtil.verify(refreshToken);
+        String email = claims.getSubject(); // Refresh Token에서 email 추출
+
+        // Redis에서 저장된 Refresh Token 조회
+        String storedRefreshToken = redisTemplate.opsForValue().get(email);
+        if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.INVALID_REFRESH_TOKEN);
+        }
+
+        // 새로운 Access Token 생성
+        String newAccessToken = jwtTokenUtil.createToken(email);
+
+
+        // 반환
+        return new LoginRes(newAccessToken, refreshToken);
     }
 
 }

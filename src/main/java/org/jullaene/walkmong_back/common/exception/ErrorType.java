@@ -28,7 +28,8 @@ public enum ErrorType {
     INVALID_FILE("존재하지 않는 파일입니다."),
     INVALID_S3_FILE("AWS S3 저장소에 존재하지 않는 파일입니다."),
     APPLY_NOT_FOUND("존재하지 않는 지원입니다"),
-    POST_NOT_FOUND("존재하지 않는 산책글입니다")
+    POST_NOT_FOUND("존재하지 않는 산책글입니다"),
+    INVALID_REFRESH_TOKEN("유효하지 않은 refresh 토큰입니다.")
     ;
 
     private String message;
