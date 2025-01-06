@@ -102,8 +102,8 @@ public class ApplyController {
      */
     @PostMapping("/form/{boardId}")
     public ResponseEntity<BasicResponse<String>> confirmMatching(@PathVariable("boardId") Long boardId,
-                                @RequestParam("walkerId") Long walkerId){
-        applyService.confirmMatching(boardId,walkerId);
+                                @RequestParam("applyId") Long applyId){
+        applyService.confirmMatching(boardId,applyId);
 
         return ResponseEntity.ok(BasicResponse.ofSuccess("다른 지원자들의 매칭이 취소되었습니다"));
     }
