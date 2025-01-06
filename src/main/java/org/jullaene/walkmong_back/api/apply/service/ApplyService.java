@@ -15,6 +15,7 @@ import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
+import org.jullaene.walkmong_back.api.review.dto.res.HashtagResponseDto;
 import org.jullaene.walkmong_back.api.review.dto.res.RatingResponseDto;
 import org.jullaene.walkmong_back.api.review.service.ReviewToWalkerService;
 import org.jullaene.walkmong_back.common.exception.CustomException;
@@ -97,12 +98,14 @@ public class ApplyService {
         ApplicantInfoResponseDto applicantDto=applyRepository.getApplicant(boardId,applyId,"N");
         ApplyInfoResponseDto applyDto=apply.toApplyInfoDto();
         RatingResponseDto ratingDto=reviewToWalkerService.calculateAverage(walkerId);
+        List<HashtagResponseDto> hashtagDto=reviewToWalkerService.getTop3HashtagsByWalkerId(walkerId);
 
         ApplicationFormResponseDto responseDto= ApplicationFormResponseDto.builder()
                 .boardDto(boardDto)
                 .applicantDto(applicantDto)
                 .applyDto(applyDto)
                 .ratingDto(ratingDto)
+                .hashtagDto(hashtagDto)
                 .build();
         return responseDto;
 

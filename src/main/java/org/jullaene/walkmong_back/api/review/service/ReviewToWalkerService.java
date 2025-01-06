@@ -9,6 +9,7 @@ import org.jullaene.walkmong_back.api.review.domain.HashtagToWalker;
 import org.jullaene.walkmong_back.api.review.domain.ReviewToWalker;
 import org.jullaene.walkmong_back.api.review.domain.ReviewToWalkerImage;
 import org.jullaene.walkmong_back.api.review.dto.req.ReviewToWalkerReqDto;
+import org.jullaene.walkmong_back.api.review.dto.res.HashtagResponseDto;
 import org.jullaene.walkmong_back.api.review.dto.res.RatingResponseDto;
 import org.jullaene.walkmong_back.api.review.repository.HashtagToWalkerRepository;
 import org.jullaene.walkmong_back.api.review.repository.ReviewToWalkerImageRepository;
@@ -105,5 +106,13 @@ public class ReviewToWalkerService {
         return new RatingResponseDto(timePunctualityAvg, communicationAvg, attitudeAvg, taskCompletionAvg, photoSharingAvg,reviews.size());
 
     }
+
+    /**
+     * 상위 3개 해시태그 조회
+     */
+    public List<HashtagResponseDto> getTop3HashtagsByWalkerId(Long walkerId) {
+        return hashtagToWalkerRepository.findTop3HashtagsByWalkerId(walkerId);
+    }
+
 
 }
