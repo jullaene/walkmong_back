@@ -24,7 +24,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입", description = "회원가입")
     @PostMapping("/sign-up")
-    public ResponseEntity<BasicResponse<Long>> signUp(@Valid @RequestBody MemberCreateReq memberCreateReq){
+    public ResponseEntity<BasicResponse<Long>> signUp(@Valid @ModelAttribute MemberCreateReq memberCreateReq){
         return ResponseEntity.ok(BasicResponse.ofCreateSuccess(authService.createAccount(memberCreateReq)));
     }
 

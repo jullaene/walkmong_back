@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.member.domain.enums.Role;
+import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.common.BaseEntity;
 import org.jullaene.walkmong_back.common.enums.Gender;
@@ -63,23 +64,15 @@ public class Member extends BaseEntity {
 
 
     @Builder
-    public Member (Long memberId, String email, String password, String nickname,
-                   String name, LocalDate birthDate, Gender gender, Role role,
-                   String introduce, String profile, String dogOwnership,
-                   String dogWalkingExperienceYn, String availabilityWithSize) {
-        this.memberId = memberId;
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.name = name;
-        this.birthDate = birthDate;
-        this.gender = gender;
-        this.role = role;
-        this.introduce = introduce;
-        this.profile = profile;
-        this.dogOwnership = dogOwnership;
-        this.dogWalkingExperienceYn = dogWalkingExperienceYn;
-        this.availabilityWithSize = availabilityWithSize;
+    public Member (MemberCreateReq memberCreateReq, String profileUrl) {
+        this.email = memberCreateReq.getEmail();
+        this.password = memberCreateReq.getPassword();
+        this.nickname = memberCreateReq.getNickname();
+        this.name = memberCreateReq.getName();
+        this.birthDate = memberCreateReq.getBirthDate();
+        this.gender = memberCreateReq.getGender();
+        this.role = Role.WALKER;
+        this.profile = profileUrl;
     }
 
     public void addWalkingExperience(WalkExperienceReq walkExperienceReq) {
