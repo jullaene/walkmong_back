@@ -78,29 +78,25 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         // 거리 계산
         NumberTemplate<Double> distanceExpression = numberTemplate(
                 Double.class,
-                "(CAST(ST_Distance_Sphere(point({0}, {1}), point({2}, {3})) AS DOUBLE) / 1000)",
+                "ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))",
                 //산책 지원자의 위도,경도
-                JPAExpressions.select(address.longitude)
-                        .from(address)
-                        .where(address.memberId.eq(memberId)),
-                JPAExpressions.select(address.latitude)
-                        .from(address)
-                        .where(address.memberId.eq(memberId)),
+                JPAExpressions.select(apply.longitude)
+                        .from(apply)
+                        .where(apply.memberId.eq(memberId)
+                                .and(apply.boardId.eq(board.boardId))
+                                .and(apply.delYn.eq(delYn))),
+                JPAExpressions.select(apply.latitude)
+                        .from(apply)
+                        .where(apply.memberId.eq(memberId)
+                                .and(apply.boardId.eq(board.boardId))
+                                .and(apply.delYn.eq(delYn))),
                 //산책 요청자의 위도, 경도
                 JPAExpressions.select(address.longitude)
                         .from(address)
-                        .where(address.memberId.eq(
-                                JPAExpressions.select(board.ownerId)
-                                        .from(board)
-                                        .where(board.boardId.eq(apply.boardId))
-                        )),
+                        .where(address.addressId.eq(board.ownerAddressId)),
                 JPAExpressions.select(address.latitude)
                         .from(address)
-                        .where(address.memberId.eq(
-                                JPAExpressions.select(board.ownerId)
-                                        .from(board)
-                                        .where(board.boardId.eq(apply.boardId))
-                        ))
+                        .where(address.addressId.eq(board.ownerAddressId))
         );
 
         List<AppliedInfoResponseDto> appliedInfoDto=
@@ -116,11 +112,15 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                         distanceExpression.as("distance")
                                 ))
                         .from(board)
-                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
-                        .where(apply.memberId.eq(memberId)
+                        .join(dog).on(dog.dogId.eq(board.dogId)
+                                .and(dog.delYn.eq(delYn)))
+                        .join(apply)
+                        .on(apply.boardId.eq(board.boardId)
+                                .and(apply.memberId.eq(memberId))
                                 .and(apply.matchingStatus.eq(status))
-                                .and(board.delYn.eq(delYn)))
+                                .and(apply.delYn.eq(delYn))
+                        )
+                        .where(board.delYn.eq(delYn))
                         .fetch();
             return appliedInfoDto;
     }
