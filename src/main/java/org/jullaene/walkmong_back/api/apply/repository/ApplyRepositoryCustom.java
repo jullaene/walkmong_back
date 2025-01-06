@@ -1,8 +1,6 @@
 package org.jullaene.walkmong_back.api.apply.repository;
 
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantListResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.ApplicantWithBoardResponseDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
