@@ -2,9 +2,16 @@ package org.jullaene.walkmong_back.api.member.dto.req;
 
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.common.enums.Gender;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 
 @Getter
+@AllArgsConstructor
 public class MemberCreateReq {
     @Pattern(regexp = "[a-zA-Z0-9]+[@][a-zA-Z0-9]+[.]+[a-zA-Z]+[.]*[a-zA-Z]*")
     private String email;
@@ -15,4 +22,15 @@ public class MemberCreateReq {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[a-z\\d@$!%*?&]{8,16}$")
     private String password;
 
+    private String name;
+    private Gender gender;
+    private LocalDate birthDate;
+    private MultipartFile profile;
+
+    public Member toEntity(String profileUrl) {
+        return Member.builder()
+                .memberCreateReq(this)
+                .profileUrl(profileUrl)
+                .build();
+    }
 }

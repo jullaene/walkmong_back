@@ -9,6 +9,7 @@ import org.jullaene.walkmong_back.api.member.dto.res.LoginRes;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
+import org.jullaene.walkmong_back.common.file.FileService;
 import org.jullaene.walkmong_back.common.utils.JwtTokenUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class AuthService {
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final FileService fileService;
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -65,11 +67,9 @@ public class AuthService {
      */
     @Transactional
     public Long createAccount(MemberCreateReq memberCreateReq) {
-        Member member = Member.builder()
-                .email(memberCreateReq.getEmail())
-                .nickname(memberCreateReq.getNickname())
-                .password(passwordEncoder.encode(memberCreateReq.getPassword()))
-                .build();
+
+        String profileUrl = fileService.uploadFile(memberCreateReq.getProfile(), "/member");
+        Member member = memberCreateReq.toEntity(profileUrl);
 
         return memberRepository.save(member).getMemberId();
     }
