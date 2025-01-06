@@ -23,6 +23,7 @@ import org.jullaene.walkmong_back.common.BaseEntity;
 @Getter
 @NoArgsConstructor
 @DynamicUpdate
+@Slf4j
 public class Apply extends BaseEntity {
     @Id
     @Getter
@@ -96,6 +97,7 @@ public class Apply extends BaseEntity {
     }
 
     public void changeState() {
+        log.info("사용자 아이디 {}",this.memberId);
         this.matchingStatus=MatchingStatus.CONFIRMED;
     }
 

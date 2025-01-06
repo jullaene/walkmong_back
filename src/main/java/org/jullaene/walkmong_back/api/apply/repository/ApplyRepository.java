@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface ApplyRepository extends JpaRepository<Apply, Long>, ApplyRepositoryCustom {
     boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn);
     boolean existsByBoardIdAndMemberIdAndMatchingStatusAndDelYn(Long boardId, Long memberId, MatchingStatus matchingStatus, String delYn);
-    Apply findByMemberIdAndBoardIdAndDelYn(Long walkerId,Long boardId,String delYn);
+
 
     @Modifying
     @Query("UPDATE Apply a SET a.matchingStatus = 'REJECTED' WHERE a.boardId = :boardId AND a.applyId <> :applyId")
@@ -20,4 +20,6 @@ public interface ApplyRepository extends JpaRepository<Apply, Long>, ApplyReposi
     //산책 지원글로부터 요청자 아이디를 반환한다
     @Query("SELECT a.boardId FROM Apply a WHERE a.applyId = :applyId")
     Long findIdByApplicantId(Long applyId);
+
+    Apply findByApplyIdAndBoardIdAndDelYn(Long applyId, Long boardId, String n);
 }
