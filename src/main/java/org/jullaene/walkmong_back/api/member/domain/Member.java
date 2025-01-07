@@ -53,6 +53,9 @@ public class Member extends BaseEntity {
     @Comment("프로필 url")
     private String profile;
 
+    @Comment("폰 번호")
+    private String phone;
+
     @Comment("반려견 키운 경험")
     private String dogOwnership;
 
@@ -71,6 +74,7 @@ public class Member extends BaseEntity {
         this.name = memberCreateReq.getName();
         this.birthDate = memberCreateReq.getBirthDate();
         this.gender = memberCreateReq.getGender();
+        this.phone = memberCreateReq.getPhone();
         this.role = Role.WALKER;
         this.profile = profileUrl;
     }
