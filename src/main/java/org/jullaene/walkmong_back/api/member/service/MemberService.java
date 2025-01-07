@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
+import org.jullaene.walkmong_back.api.member.dto.res.MemberResponseDto;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
@@ -48,5 +49,15 @@ public class MemberService {
         member.addWalkingExperience(walkExperienceReq);
 
         return member.getMemberId();
+    }
+
+    /**
+     * 사용자의 기본 정보 조회
+     * */
+    @Transactional
+    public MemberResponseDto getMemberInfo() {
+        Member member = getMemberFromUserDetail();
+
+        return memberRepository.getMemberInfo(member.getMemberId(), "N");
     }
 }

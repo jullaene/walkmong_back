@@ -26,6 +26,7 @@ public class MemberCreateReq {
     private Gender gender;
     private LocalDate birthDate;
     private MultipartFile profile;
+    private String phone;
 
     public Member toEntity(String profileUrl) {
         return Member.builder()
