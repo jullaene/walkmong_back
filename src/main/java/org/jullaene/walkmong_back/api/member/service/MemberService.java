@@ -6,11 +6,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.member.domain.Address;
 import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.api.member.dto.common.WalkingBasicInfo;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberReqDto;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.api.member.dto.res.MemberResponseDto;
+import org.jullaene.walkmong_back.api.member.dto.res.WalkingResponseDto;
 import org.jullaene.walkmong_back.api.member.repository.AddressRepository;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
+import org.jullaene.walkmong_back.api.review.dto.res.HashtagPercentageDto;
+import org.jullaene.walkmong_back.api.review.repository.HashtagToWalkerRepository;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.jullaene.walkmong_back.common.file.FileService;
@@ -31,6 +35,7 @@ import static org.jullaene.walkmong_back.common.exception.ErrorType.USER_NOT_AUT
 public class MemberService {
     private final MemberRepository memberRepository;
     private final AddressRepository addressRepository;
+    private final HashtagToWalkerRepository hashtagToWalkerRepository;
     private final FileService fileService;
 
     /**
@@ -99,5 +104,22 @@ public class MemberService {
                 .forEach(address -> address.changeBasicAddressYn("Y"));
 
         return member.getMemberId();
+    }
+
+    /**
+     * 유저의 산책 관련 정보 조회
+     * */
+    public WalkingResponseDto getWalkingInfo() {
+        Member member = getMemberFromUserDetail();
+
+        WalkingBasicInfo walkingBasicInfo = memberRepository.getWalkingInfo(member.getMemberId(), "N");
+
+        List<HashtagPercentageDto> topHashtags = hashtagToWalkerRepository.getTopHashtags(member.getMemberId(), "N");
+
+
+        return WalkingResponseDto.builder()
+                .walkingBasicInfo(walkingBasicInfo)
+                .topHashtags(topHashtags)
+                .build();
     }
 }
