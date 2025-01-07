@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
+import org.jullaene.walkmong_back.api.member.dto.res.MemberResponseDto;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +23,11 @@ public class MemberController {
     @PostMapping("/experience")
     public ResponseEntity<BasicResponse<Long>> registerWalkExperienceInfo(@Valid @RequestBody WalkExperienceReq walkExperienceReq) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.registerWalkingExperience(walkExperienceReq)));
+    }
+
+    @Operation(summary = "내 정보 조회", description = "내 정보를 조회하는 API입니다.")
+    @GetMapping("/mypage")
+    public ResponseEntity<BasicResponse<MemberResponseDto>> getMemberInfo () {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.getMemberInfo()));
     }
 }
