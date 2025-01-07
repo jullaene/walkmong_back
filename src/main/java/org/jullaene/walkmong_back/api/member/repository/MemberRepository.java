@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
     Optional<Member> findByEmail(String email);
 
     Boolean existsByEmail(String email);
@@ -16,4 +16,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m.nickname FROM Member m WHERE m.memberId = :memberId")
     String findNickNameByMemberId(Long memberId);
+
+    Optional<Member> findByMemberIdAndDelYn(Long memberId, String delYn);
 }

@@ -8,6 +8,7 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.member.domain.enums.Role;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
+import org.jullaene.walkmong_back.api.member.dto.req.MemberReqDto;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.common.BaseEntity;
 import org.jullaene.walkmong_back.common.enums.Gender;
@@ -53,6 +54,9 @@ public class Member extends BaseEntity {
     @Comment("프로필 url")
     private String profile;
 
+    @Comment("폰 번호")
+    private String phone;
+
     @Comment("반려견 키운 경험")
     private String dogOwnership;
 
@@ -71,6 +75,7 @@ public class Member extends BaseEntity {
         this.name = memberCreateReq.getName();
         this.birthDate = memberCreateReq.getBirthDate();
         this.gender = memberCreateReq.getGender();
+        this.phone = memberCreateReq.getPhone();
         this.role = Role.WALKER;
         this.profile = profileUrl;
     }
@@ -85,5 +90,15 @@ public class Member extends BaseEntity {
     @Override
     public String toString () {
         return "dogOwnerShip " + this.dogOwnership;
+    }
+
+    public void update(MemberReqDto memberReqDto, String profileUrl) {
+        this.nickname = memberReqDto.getNickname();
+        this.introduce = memberReqDto.getIntroduction();
+        this.name = memberReqDto.getName();
+        this.gender = memberReqDto.getGender();
+        this.birthDate = memberReqDto.getBirthDate();
+        this.phone = memberReqDto.getPhone();
+        this.profile = profileUrl;
     }
 }

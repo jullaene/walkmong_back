@@ -12,4 +12,8 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     Optional<Address> findByAddressIdAndDelYn(Long addressId, String delYn);
     Optional<Address> findByMemberIdAndBasicAddressYnAndDelYn(Long memberId, String basicAddressYn, String delYn);
     List<Address> findByMemberIdAndDelYn(Long memberId, String delYn);
+
+    boolean existsByAddressIdAndMemberIdAndDelYn(Long addressId, Long memberId, String delYn);
+
+    boolean existsByMemberIdAndBasicAddressYnAndDelYn(Long memberId, String basicAddressYn, String delYn);
 }
