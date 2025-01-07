@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.member.domain.Address;
+import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.api.member.dto.req.AddressReq;
 import org.jullaene.walkmong_back.api.member.dto.res.AddressResponseDto;
 import org.jullaene.walkmong_back.api.member.repository.AddressRepository;
 import org.jullaene.walkmong_back.common.exception.CustomException;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AddressService {
     private final AddressRepository addressRepository;
+    private final MemberService memberService;
 
     public List<AddressResponseDto> getAddresses(Long memberId) {
         List<Address> addresses = addressRepository.findByMemberIdAndDelYn(memberId, "N");
@@ -26,19 +29,15 @@ public class AddressService {
     }
 
     @Transactional
-    public void changeBasicAddress(Long memberId, Long addressId) {
-        if (!addressRepository.existsByAddressIdAndMemberIdAndDelYn(addressId, memberId, "N")) {
-            throw new CustomException(HttpStatus.FORBIDDEN, ErrorType.ACCESS_DENIED);
+    public Long createAddress(AddressReq addressReq) {
+        Member member = memberService.getMemberFromUserDetail();
+
+        if (addressRepository.existsByMemberIdAndBasicAddressYnAndDelYn(member.getMemberId(), "Y", "N")) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorType.DUPLICATED_BASIC_ADDRESS);
         }
 
-        List<Address> addresses = addressRepository.findByMemberIdAndDelYn(memberId, "N");
+        Address address = addressReq.toEntity(member.getMemberId());
 
-        // 모든 주소 다 기본에서 제외
-        addresses.forEach(address -> address.changeBasicAddressYn("N"));
-
-        // 주어진 addressId를 기본 주소로 설정
-        addresses.stream()
-                .filter(address -> address.getAddressId().equals(addressId))
-                .forEach(address -> address.changeBasicAddressYn("Y"));
+        return addressRepository.save(address).getAddressId();
     }
 }
