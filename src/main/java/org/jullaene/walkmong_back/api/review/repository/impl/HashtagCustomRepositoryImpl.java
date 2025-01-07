@@ -1,6 +1,5 @@
 package org.jullaene.walkmong_back.api.review.repository.impl;
 
-import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -91,5 +90,4 @@ public class HashtagCustomRepositoryImpl implements HashtagCustomRepository {
                         )
                 ));
     }
-
 }
