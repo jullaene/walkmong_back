@@ -1,10 +1,12 @@
 package org.jullaene.walkmong_back.api.member.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
+import org.jullaene.walkmong_back.api.member.dto.req.AddressReq;
 import org.jullaene.walkmong_back.api.member.dto.res.AddressResponseDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
@@ -43,6 +45,17 @@ public class Address extends BaseEntity {
     @Comment("기본 주소 유무")
     @Column(columnDefinition = "VARCHAR(1) default 'Y'")
     private String basicAddressYn;
+
+    @Builder
+    public Address(AddressReq addressReq, Long memberId) {
+        this.memberId = memberId;
+        this.latitude = addressReq.getLatitude();
+        this.longitude = addressReq.getLongitude();
+        this.roadAddress = addressReq.getRoadAddress();
+        this.dongAddress = addressReq.getDongAddress();
+        this.distanceRange = addressReq.getDistanceRange();
+        this.basicAddressYn = addressReq.getBasicAddressYn();
+    }
 
     public final AddressResponseDto toAddressResponseDto() {
         return AddressResponseDto.builder()
