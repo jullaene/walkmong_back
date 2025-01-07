@@ -51,4 +51,7 @@ public class Address extends BaseEntity {
                 .build();
     }
 
+    public void changeBasicAddressYn(String basicAddressYn) {
+        this.basicAddressYn = basicAddressYn;
+    }
 }
