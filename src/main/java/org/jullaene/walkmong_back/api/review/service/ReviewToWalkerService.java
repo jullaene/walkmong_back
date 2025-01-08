@@ -8,9 +8,12 @@ import org.jullaene.walkmong_back.api.member.service.MemberService;
 import org.jullaene.walkmong_back.api.review.domain.HashtagToWalker;
 import org.jullaene.walkmong_back.api.review.domain.ReviewToWalker;
 import org.jullaene.walkmong_back.api.review.domain.ReviewToWalkerImage;
+import org.jullaene.walkmong_back.api.review.domain.enums.HashtagWalkerNm;
+import org.jullaene.walkmong_back.api.review.dto.common.ReviewToWalkerBasicInfo;
 import org.jullaene.walkmong_back.api.review.dto.req.ReviewToWalkerReqDto;
 import org.jullaene.walkmong_back.api.review.dto.res.HashtagResponseDto;
 import org.jullaene.walkmong_back.api.review.dto.res.RatingResponseDto;
+import org.jullaene.walkmong_back.api.review.dto.res.ReviewToWalkerRes;
 import org.jullaene.walkmong_back.api.review.repository.HashtagToWalkerRepository;
 import org.jullaene.walkmong_back.api.review.repository.ReviewToWalkerImageRepository;
 import org.jullaene.walkmong_back.api.review.repository.ReviewToWalkerRepository;
@@ -19,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -114,5 +119,30 @@ public class ReviewToWalkerService {
         return hashtagToWalkerRepository.findTop3HashtagsByWalkerId(walkerId);
     }
 
+    /**
+     * 반려인이 산책자에 대해 작성한 후기 리스트 조회
+     * */
+    public List<ReviewToWalkerRes> getReviewToWalkerList() {
+        Member member = memberService.getMemberFromUserDetail();
 
+        // 후기 기본 정보 조회
+        List<ReviewToWalkerBasicInfo> basicInfos = reviewToWalkerRepository.findAllByReviewTargetIdAndDelYn(member.getMemberId(), "N");
+
+        List<Long> reviewIds = basicInfos.stream()
+                .map(ReviewToWalkerBasicInfo::getReviewToWalkerId)
+                .toList();
+
+        Map<Long, List<String>> profiles = reviewToWalkerImageRepository.findProfilesByReviewToWalkerIdsAndDelYn(reviewIds, "N");
+
+        Map<Long, List<HashtagWalkerNm>> hashtags = hashtagToWalkerRepository.findHashtagsByReviewToWalkerIdsAndDelYn(reviewIds, "N");
+
+        return basicInfos.stream()
+                .map(basicInfo -> {
+                    return ReviewToWalkerRes.builder()
+                            .reviewToWalkerBasicInfo(basicInfo)
+                            .profiles(profiles.get(basicInfo.getReviewToWalkerId()))
+                            .hashtags(hashtags.get(basicInfo.getReviewToWalkerId()))
+                            .build();
+                }).toList();
+    }
 }

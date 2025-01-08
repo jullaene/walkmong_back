@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ReviewToWalkerRepository extends JpaRepository<ReviewToWalker, Long> {
+public interface ReviewToWalkerRepository extends JpaRepository<ReviewToWalker, Long>, ReviewToWalkerRepositoryCustom {
     List<ReviewToWalker> findAllByReviewTargetId(Long walkerId);
-
-
 }

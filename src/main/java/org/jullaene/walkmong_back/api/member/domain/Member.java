@@ -87,11 +87,6 @@ public class Member extends BaseEntity {
         this.introduce = walkExperienceReq.getIntroduction();
     }
 
-    @Override
-    public String toString () {
-        return "dogOwnerShip " + this.dogOwnership;
-    }
-
     public void update(MemberReqDto memberReqDto, String profileUrl) {
         this.nickname = memberReqDto.getNickname();
         this.introduce = memberReqDto.getIntroduction();

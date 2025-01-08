@@ -1,16 +1,22 @@
 package org.jullaene.walkmong_back.api.review.repository.impl;
 
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.review.domain.QHashtagToWalker;
+import org.jullaene.walkmong_back.api.review.domain.QReviewToWalker;
+import org.jullaene.walkmong_back.api.review.domain.enums.HashtagWalkerNm;
 import org.jullaene.walkmong_back.api.review.dto.res.HashtagPercentageDto;
 import org.jullaene.walkmong_back.api.review.dto.res.HashtagResponseDto;
 import org.jullaene.walkmong_back.api.review.repository.HashtagCustomRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -55,6 +61,35 @@ public class HashtagCustomRepositoryImpl implements HashtagCustomRepository {
                 .orderBy(Expressions.numberTemplate(Long.class, "count({0})", hashtagToWalker.hashtagWalkerNm).desc())
                 .limit(3)
                 .fetch();
+    }
+
+    @Override
+    public Map<Long, List<HashtagWalkerNm>> findHashtagsByReviewToWalkerIdsAndDelYn(List<Long> reviewIds, String delYn) {
+        QReviewToWalker reviewToWalker = QReviewToWalker.reviewToWalker;
+        QHashtagToWalker hashtagToWalker = QHashtagToWalker.hashtagToWalker;
+
+        return queryFactory
+                .select(
+                        reviewToWalker.reviewToWalkerId,
+                        hashtagToWalker.hashtagWalkerNm
+                )
+                .from(hashtagToWalker)
+                .join(reviewToWalker)
+                .on(reviewToWalker.reviewToWalkerId.eq(hashtagToWalker.reviewToWalkerId)
+                        .and(reviewToWalker.delYn.eq(delYn)))
+                .where(reviewToWalker.reviewToWalkerId.in(reviewIds)
+                        .and(reviewToWalker.delYn.eq(delYn)))
+                .fetch()
+                .stream()
+                .filter(tuple -> Optional.ofNullable(tuple.get(0, Long.class)).isPresent())
+                .collect(Collectors.groupingBy(
+                        tuple -> Optional.ofNullable(tuple.get(0, Long.class))
+                                .orElseThrow(() -> new RuntimeException("ReviewToWalkerId cannot be null")),
+                        Collectors.mapping(
+                                tuple -> tuple.get(1, HashtagWalkerNm.class),
+                                Collectors.toList()
+                        )
+                ));
     }
 
 }
