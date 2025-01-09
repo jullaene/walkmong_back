@@ -2,17 +2,25 @@ package org.jullaene.walkmong_back.api.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.IdentifierLoadAccess;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.chat.domain.Chat;
 import org.jullaene.walkmong_back.api.chat.domain.ChatRoom;
+import org.jullaene.walkmong_back.api.chat.domain.enums.MessageType;
 import org.jullaene.walkmong_back.api.chat.dto.req.ChatMessageRequestDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatHistoryResponseDto;
+import org.jullaene.walkmong_back.api.chat.dto.res.ChatMessageResponseDto;
 import org.jullaene.walkmong_back.api.chat.repository.ChatRepository;
 import org.jullaene.walkmong_back.api.chat.repository.ChatRoomRepository;
 
+import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
+import org.jullaene.walkmong_back.common.exception.CustomException;
+import org.jullaene.walkmong_back.common.exception.ErrorType;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +59,7 @@ public class ChatRoomService {
     public void saveMessage(ChatMessageRequestDto chatMessageRequestDto, Long memberId) {
         Chat chat=Chat.builder()
                 .senderId(memberId)
-                .roomId(chatMessageRequestDto.getRoomNumber())
+                .roomId(chatMessageRequestDto.getRoomId())
                 .message(chatMessageRequestDto.getMsg())
                 .build();
 
@@ -74,5 +82,25 @@ public class ChatRoomService {
         }
 
         return chatHistoryResponseDtoList;
+    }
+
+    public ChatMessageResponseDto enter (Long roomId, ChatMessageRequestDto message) {
+        ChatRoom chatRoom = chatRoomRepository.findByRoomIdAndDelYn(roomId, "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_CHAT_ROOM));
+
+        Member member = memberService.getMemberFromUserDetail();
+
+        // 방에 접근 가능한 사람인지 확인
+        if (!chatRoom.getChatOwnerId().equals(member.getMemberId()) && !chatRoom.getChatParticipantId().equals(member.getMemberId())) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
+        }
+
+        return ChatMessageResponseDto.builder()
+                .type(MessageType.ENTER)
+                .roomId(roomId)
+                .senderId(member.getMemberId())
+                .message(member.getNickname() + "님이 입장하셨습니다.")
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 }

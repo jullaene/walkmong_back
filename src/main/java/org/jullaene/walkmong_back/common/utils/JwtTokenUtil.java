@@ -109,4 +109,14 @@ public class JwtTokenUtil {
         return refreshExpirationMillis;
     }
 
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
