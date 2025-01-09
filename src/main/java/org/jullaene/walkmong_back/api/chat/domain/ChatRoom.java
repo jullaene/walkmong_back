@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.chat.dto.req.ChatRoomRequestDto;
+import org.jullaene.walkmong_back.common.BaseEntity;
 
 @NoArgsConstructor
 @Getter
 @Entity
 @Table(name="chatroom")
 @DynamicUpdate
-public class ChatRoom {
+public class ChatRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="room_id")

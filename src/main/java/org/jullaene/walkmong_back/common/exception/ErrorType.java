@@ -30,7 +30,8 @@ public enum ErrorType {
     APPLY_NOT_FOUND("존재하지 않는 지원입니다"),
     POST_NOT_FOUND("존재하지 않는 산책글입니다"),
     INVALID_REFRESH_TOKEN("유효하지 않은 refresh 토큰입니다."),
-    DUPLICATED_BASIC_ADDRESS("기본 주소가 이미 존재합니다.");
+    DUPLICATED_BASIC_ADDRESS("기본 주소가 이미 존재합니다."),
+    INVALID_CHAT_ROOM("존재하지 않는 채팅방입니다.");
 
     private String message;
 }

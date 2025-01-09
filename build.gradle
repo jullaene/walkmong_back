@@ -27,7 +27,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.security:spring-security-messaging'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
@@ -63,6 +62,10 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-s3")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
 
+    // websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+//    implementation 'org.webjars:sockjs-client:1.0.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3'
 }
 
 tasks.named('test') {
