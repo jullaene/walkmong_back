@@ -6,6 +6,7 @@ import org.jullaene.walkmong_back.api.apply.service.ApplyService;
 import org.jullaene.walkmong_back.api.board.service.BoardService;
 import org.jullaene.walkmong_back.api.chat.dto.req.ChatMessageRequestDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatHistoryResponseDto;
+import org.jullaene.walkmong_back.api.chat.dto.res.ChatMessageResponseDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.chat.service.ChatRoomService;
 
@@ -13,8 +14,10 @@ import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.jullaene.walkmong_back.common.user.CustomUserDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
@@ -28,7 +31,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/chatroom")
+@RequestMapping("/api/v1/chatroom")
 
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
@@ -93,12 +96,12 @@ public class ChatRoomController {
     }
 
     //채팅방 입장
-    // pub/enterUser/를 통해 publish
-    @MessageMapping("/enterUser")
-    public void enterUser(@Payload ChatMessageRequestDto chat, StompHeaderAccessor headerAccessor) {
+    // pub/enter/를 통해 publish
+    @MessageMapping("/message/enter")
+    @SendTo("/pub/room/{roomId}")
+    public ChatMessageResponseDto enter (@DestinationVariable Long roomId, @Payload ChatMessageRequestDto message) {
         log.info("채팅방 입장");
-        SecurityContextHolder.getContext().setAuthentication((Authentication) headerAccessor.getUser());
-        template.convertAndSend("/sub/chat/room/" + chat.getRoomNumber(), chat);
+        return chatRoomService.enter(roomId, message);
     }
 
     //메세지 전송
@@ -112,6 +115,6 @@ public class ChatRoomController {
         CustomUserDetail userDetails = (CustomUserDetail) principal;
 
         chatRoomService.saveMessage(chat,userDetails.getMember().getMemberId());
-        template.convertAndSend("/sub/chat/room/" + chat.getRoomNumber(), chat);
+        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
     }
 }
