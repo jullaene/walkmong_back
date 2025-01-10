@@ -16,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @RequiredArgsConstructor
 @Component
 @Slf4j
@@ -25,25 +27,47 @@ public class ChatPreHandler implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
+                message, StompHeaderAccessor.class);
 
-        if (accessor.getCommand() == StompCommand.CONNECT) {
+        try {
+            if (StompCommand.CONNECT.equals(Objects.requireNonNull(accessor).getCommand()) ||
+                    StompCommand.SEND.equals(accessor.getCommand())) {
+                String accessToken = extractAccessToken(accessor);
 
-            String accessToken = extractAccessToken(accessor);
+                if (accessToken == null || accessToken.isEmpty()) {
+                    log.error("No access token provided");
+                    throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
+                }
 
-            if (jwtTokenUtil.verify(accessToken) != null) {
-                throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
+                if (!jwtTokenUtil.validateToken(accessToken)) {
+                    log.error("Invalid token");
+                    throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
+                }
+
+                // 토큰 검증 성공 시 Authentication 설정
+                Authentication auth = jwtTokenUtil.getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                accessor.setUser(auth);
             }
-        }
 
-        return message;
+            return message;
+        } catch (CustomException e) {
+            log.error("Authentication failed: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error in ChatPreHandler: ", e);
+            return message;
+        }
     }
 
     private String extractAccessToken (StompHeaderAccessor accessor) {
-        String accessToken = accessor.getFirstNativeHeader("accessToken");
+        String accessToken = accessor.getFirstNativeHeader("Authorization");
+
         if (accessToken != null && accessToken.startsWith(BEARER_PREFIX)) {
             accessToken = accessToken.substring(7); // "Bearer " 접두사 제거
         }
+
         return accessToken;
     }
 }

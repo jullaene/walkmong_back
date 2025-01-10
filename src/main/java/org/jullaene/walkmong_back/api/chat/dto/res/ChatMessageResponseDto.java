@@ -12,15 +12,15 @@ import java.time.LocalDateTime;
 public class ChatMessageResponseDto {
     private MessageType type;
     private Long roomId;
-    private Long senderId;
+    private String senderNm;
     private String message;
     private LocalDateTime createdAt;
 
     @Builder
-    public ChatMessageResponseDto(MessageType type, Long roomId, Long senderId, String message, LocalDateTime createdAt) {
+    public ChatMessageResponseDto(MessageType type, Long roomId, String senderNm, String message, LocalDateTime createdAt) {
         this.type = type;
         this.roomId = roomId;
-        this.senderId = senderId;
+        this.senderNm = senderNm;
         this.message = message;
         this.createdAt = createdAt;
     }
