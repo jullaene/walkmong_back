@@ -18,4 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     String findNickNameByMemberId(Long memberId);
 
     Optional<Member> findByMemberIdAndDelYn(Long memberId, String delYn);
+
+    boolean existsByEmailOrNicknameAndDelYn(String email, String nickname, String delYn);
 }
