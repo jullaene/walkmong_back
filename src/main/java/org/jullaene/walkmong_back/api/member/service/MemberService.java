@@ -79,8 +79,8 @@ public class MemberService {
      * */
     @Transactional
     public Long updateMemberInfo(MemberReqDto memberReqDto) {
-        Member audthMember = getMemberFromUserDetail();
-        Member member = memberRepository.findByMemberIdAndDelYn(audthMember.getMemberId(), "N")
+        Member authMember = getMemberFromUserDetail();
+        Member member = memberRepository.findByMemberIdAndDelYn(authMember.getMemberId(), "N")
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, INVALID_USER));
 
         // 멤버 정보 저장

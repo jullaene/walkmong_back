@@ -80,6 +80,10 @@ public class Member extends BaseEntity {
         this.profile = profileUrl;
     }
 
+    public Long getMemberId() {
+        return memberId;
+    }
+
     public void addWalkingExperience(WalkExperienceReq walkExperienceReq) {
         this.dogOwnership = walkExperienceReq.getDogOwnershipYn();
         this.dogWalkingExperienceYn = walkExperienceReq.getDogWalkingExperienceYn();

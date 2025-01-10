@@ -55,17 +55,6 @@ public class ChatRoomService {
         return roomId;
     }
 
-    //메세지 저장
-    public void saveMessage(ChatMessageRequestDto chatMessageRequestDto, Long memberId) {
-        Chat chat=Chat.builder()
-                .senderId(memberId)
-                .roomId(chatMessageRequestDto.getRoomId())
-                .message(chatMessageRequestDto.getMsg())
-                .build();
-
-        log.info("메세지 저장");
-        chatRepository.save(chat);
-    }
 
     /**
      채팅방에 있는 대화 내역 조회
@@ -84,23 +73,43 @@ public class ChatRoomService {
         return chatHistoryResponseDtoList;
     }
 
-    public ChatMessageResponseDto enter (Long roomId, ChatMessageRequestDto message) {
-        ChatRoom chatRoom = chatRoomRepository.findByRoomIdAndDelYn(roomId, "N")
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_CHAT_ROOM));
-
+    //메세지 저장
+    public ChatMessageResponseDto saveMessage(ChatMessageRequestDto message) {
+        // 메시지 보낸 사람
         Member member = memberService.getMemberFromUserDetail();
+
+        ChatRoom chatRoom = chatRoomRepository.findByRoomIdAndDelYn(message.getRoomId(), "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_CHAT_ROOM));
+        log.info("member :  " + member.getNickname());
 
         // 방에 접근 가능한 사람인지 확인
         if (!chatRoom.getChatOwnerId().equals(member.getMemberId()) && !chatRoom.getChatParticipantId().equals(member.getMemberId())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
         }
 
-        return ChatMessageResponseDto.builder()
-                .type(MessageType.ENTER)
-                .roomId(roomId)
+        // 입, 퇴장인 경우 메시지 다르게 적용
+        String newMessage = message.getMessage();
+
+        if (message.getType().equals(MessageType.ENTER) || message.getType().equals(MessageType.LEAVE)) {
+            newMessage = member.getNickname() + "가 " + newMessage;
+        }
+        log.info("neww mesage : " + newMessage);
+
+        Chat chat = Chat.builder()
                 .senderId(member.getMemberId())
-                .message(member.getNickname() + "님이 입장하셨습니다.")
-                .createdAt(LocalDateTime.now())
+                .roomId(message.getRoomId())
+                .message(newMessage)
+                .type(message.getType())
+                .build();
+
+        Chat savedChat = chatRepository.save(chat);
+
+        return ChatMessageResponseDto.builder()
+                .type(message.getType())
+                .roomId(message.getRoomId())
+                .senderNm(member.getNickname())
+                .message(newMessage)
+                .createdAt(savedChat.getCreatedAt())
                 .build();
     }
 }

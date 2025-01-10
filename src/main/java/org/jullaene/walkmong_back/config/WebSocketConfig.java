@@ -16,7 +16,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*");
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
     }
 
     /*한 클라이언트에서 다른 클라이언트로 메시지를 라우팅하는데 사용될 메시지 브로커*/
@@ -33,7 +34,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     //토큰 관련 로직을 처리한다
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(chatPreHandler);
+        registration.interceptors(chatPreHandler)
+                .taskExecutor()
+                .corePoolSize(1)
+                .maxPoolSize(10);
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
+        registry.setMessageSizeLimit(128 * 1024)
+                .setSendBufferSizeLimit(512 * 1024)
+                .setSendTimeLimit(20000);
     }
 
 

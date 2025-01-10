@@ -1,5 +1,5 @@
 package org.jullaene.walkmong_back.api.chat.domain.enums;
 
 public enum MessageType {
-    ENTER, TALK;
+    ENTER, TALK, LEAVE;
 }

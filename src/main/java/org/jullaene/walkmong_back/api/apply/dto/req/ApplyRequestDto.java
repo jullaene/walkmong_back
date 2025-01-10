@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class ApplyRequestDto {
     private String dongAddress;
     private String roadAddress;

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.jullaene.walkmong_back.api.chat.domain.enums.MessageType;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @NoArgsConstructor
@@ -26,11 +27,16 @@ public class Chat extends BaseEntity {
     @Comment("메세지")
     private String message;
 
+    @Comment("메시지 타입")
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
+
     @Builder
-    public Chat(Long roomId, Long senderId,String message){
-        this.roomId=roomId;
-        this.senderId=senderId;
-        this.message=message;
+    public Chat(Long roomId, Long senderId, String message, MessageType type){
+        this.roomId = roomId;
+        this.senderId = senderId;
+        this.message = message;
+        this.type = type;
     }
 
 }
