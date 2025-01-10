@@ -14,10 +14,8 @@ import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.jullaene.walkmong_back.common.user.CustomUserDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
@@ -35,7 +33,7 @@ import java.util.List;
 
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
-    private final SimpMessageSendingOperations template;
+    private final SimpMessageSendingOperations messagingTemplate;
     private final ApplyService applyService;
     private final MemberRepository memberRepository;
     private final BoardService boardService;
@@ -96,25 +94,25 @@ public class ChatRoomController {
     }
 
     //채팅방 입장
-    // pub/enter/를 통해 publish
     @MessageMapping("/message/enter")
-    @SendTo("/pub/room/{roomId}")
-    public ChatMessageResponseDto enter (@DestinationVariable Long roomId, @Payload ChatMessageRequestDto message) {
+    public void enter (@Payload ChatMessageRequestDto message) {
         log.info("채팅방 입장");
-        return chatRoomService.enter(roomId, message);
+        ChatMessageResponseDto response = chatRoomService.saveMessage(message);
+        messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), response);
     }
 
     //메세지 전송
-    // pub/sendMessage를 통해 publish
-    @MessageMapping("/sendMessage")
-    public void sendMessage(@Payload ChatMessageRequestDto chat, StompHeaderAccessor headerAccessor) {
-        SecurityContextHolder.getContext().setAuthentication((Authentication) headerAccessor.getUser());
+    @MessageMapping("/message/send")
+    public void sendMessage(@Payload ChatMessageRequestDto chat) {
+        ChatMessageResponseDto response = chatRoomService.saveMessage(chat);
+        messagingTemplate.convertAndSend("/sub/chat/room/" + chat.getRoomId(), response);
+    }
 
-        // 현재 인증된 사용자 정보 가져오기
-        Object principal =SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CustomUserDetail userDetails = (CustomUserDetail) principal;
 
-        chatRoomService.saveMessage(chat,userDetails.getMember().getMemberId());
-        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
+    // 채팅방 퇴장
+    @MessageMapping("/message/leave")
+    public void leave (@Payload ChatMessageRequestDto message) {
+        ChatMessageResponseDto response = chatRoomService.saveMessage(message);
+        messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), response);
     }
 }

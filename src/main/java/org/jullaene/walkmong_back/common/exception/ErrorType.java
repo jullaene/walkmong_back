@@ -1,10 +1,5 @@
 package org.jullaene.walkmong_back.common.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
 public enum ErrorType {
     ACCESS_DENIED("접근 권한이 없습니다."),
     USER_NOT_AUTHENTICATED("인증되지 않은 유저입니다."),
@@ -34,4 +29,13 @@ public enum ErrorType {
     INVALID_CHAT_ROOM("존재하지 않는 채팅방입니다.");
 
     private String message;
+
+    ErrorType(String message) {
+        this.message = message;
+    }
+
+    // 메시지를 가져오는 메서드
+    public String getMessage() {
+        return message;
+    }
 }

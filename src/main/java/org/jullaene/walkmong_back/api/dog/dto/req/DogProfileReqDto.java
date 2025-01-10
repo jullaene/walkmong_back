@@ -26,5 +26,4 @@ public class DogProfileReqDto {
     private final String walkRequest;
     private final String walkNote;
     private final String additionalRequest;
-
 }
