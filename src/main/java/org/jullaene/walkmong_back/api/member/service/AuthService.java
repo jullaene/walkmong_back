@@ -69,7 +69,8 @@ public class AuthService {
     public Long createAccount(MemberCreateReq memberCreateReq) {
 
         String profileUrl = fileService.uploadFile(memberCreateReq.getProfile(), "/member");
-        Member member = memberCreateReq.toEntity(profileUrl);
+        String password = passwordEncoder.encode(memberCreateReq.getPassword());
+        Member member = memberCreateReq.toEntity(profileUrl, password);
 
         return memberRepository.save(member).getMemberId();
     }
