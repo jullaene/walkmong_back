@@ -67,6 +67,9 @@ public class AuthService {
      */
     @Transactional
     public Long createAccount(MemberCreateReq memberCreateReq) {
+        if (memberRepository.existsByEmailOrNicknameAndDelYn(memberCreateReq.getEmail(), memberCreateReq.getNickname(), "N")) {
+            throw new CustomException(HttpStatus.FORBIDDEN, ErrorType.ALREADY_EXIST_USER);
+        }
 
         String profileUrl = fileService.uploadFile(memberCreateReq.getProfile(), "/member");
         String password = passwordEncoder.encode(memberCreateReq.getPassword());

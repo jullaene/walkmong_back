@@ -19,7 +19,7 @@ public class MemberCreateReq {
     @Size(min = 3, max = 16)
     private String nickname;
 
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[a-z\\d@$!%*?&]{8,16}$")
+    @Pattern(regexp = "^(?=(.*[a-zA-Z].*){2,}|.*\\d.*|.*[@$!%*?&].*)(?=.*[a-zA-Z\\d@$!%*?&])[a-zA-Z\\d@$!%*?&]{8,20}$")
     private String password;
 
     private String name;
