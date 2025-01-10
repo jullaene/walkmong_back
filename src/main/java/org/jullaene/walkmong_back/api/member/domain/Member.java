@@ -68,9 +68,9 @@ public class Member extends BaseEntity {
 
 
     @Builder
-    public Member (MemberCreateReq memberCreateReq, String profileUrl) {
+    public Member (MemberCreateReq memberCreateReq, String profileUrl, String password) {
         this.email = memberCreateReq.getEmail();
-        this.password = memberCreateReq.getPassword();
+        this.password = password;
         this.nickname = memberCreateReq.getNickname();
         this.name = memberCreateReq.getName();
         this.birthDate = memberCreateReq.getBirthDate();

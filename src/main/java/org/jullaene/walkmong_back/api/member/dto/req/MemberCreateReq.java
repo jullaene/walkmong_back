@@ -28,9 +28,10 @@ public class MemberCreateReq {
     private MultipartFile profile;
     private String phone;
 
-    public Member toEntity(String profileUrl) {
+    public Member toEntity(String profileUrl, String password) {
         return Member.builder()
                 .memberCreateReq(this)
+                .password(password)
                 .profileUrl(profileUrl)
                 .build();
     }
