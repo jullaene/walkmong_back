@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 
 @Getter
 public class ChatMessageResponseDto {
-    private MessageType type;
-    private Long roomId;
-    private String senderNm;
-    private String message;
-    private LocalDateTime createdAt;
+    private final MessageType type;
+    private final Long roomId;
+    private final String senderNm;
+    private final String message;
+    private final LocalDateTime createdAt;
 
     @Builder
     public ChatMessageResponseDto(MessageType type, Long roomId, String senderNm, String message, LocalDateTime createdAt) {

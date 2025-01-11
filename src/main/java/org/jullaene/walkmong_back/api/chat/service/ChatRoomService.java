@@ -55,7 +55,6 @@ public class ChatRoomService {
         return roomId;
     }
 
-
     /**
      채팅방에 있는 대화 내역 조회
      */
