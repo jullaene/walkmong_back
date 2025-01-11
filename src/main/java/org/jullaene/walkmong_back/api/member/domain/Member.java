@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
+import org.jullaene.walkmong_back.api.member.domain.enums.Provider;
 import org.jullaene.walkmong_back.api.member.domain.enums.Role;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberReqDto;
@@ -66,6 +67,12 @@ public class Member extends BaseEntity {
     @Comment("산책 가능 반려동물 크기")
     private String availabilityWithSize;
 
+    @Comment("소셜 로그인 공급자 ID")
+    private String providerId;
+
+    @Comment("소셜 로그인 제공자")
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
 
     @Builder
     public Member (MemberCreateReq memberCreateReq, String profileUrl, String password) {
@@ -82,6 +89,17 @@ public class Member extends BaseEntity {
 
     public Long getMemberId() {
         return memberId;
+    }
+
+    public Member(String email, String providerId, Provider provider) {
+        this.email = email;
+        this.providerId = providerId;
+        this.provider = provider;
+    }
+
+    public void linkSocialAccount(String providerId, Provider provider) {
+        this.providerId = providerId;
+        this.provider = provider;
     }
 
     public void addWalkingExperience(WalkExperienceReq walkExperienceReq) {
