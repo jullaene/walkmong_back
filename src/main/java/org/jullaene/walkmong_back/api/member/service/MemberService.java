@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.member.domain.Address;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.dto.common.WalkingBasicInfo;
+import org.jullaene.walkmong_back.api.member.dto.req.MemberAdditionalInfoRequestDto;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberReqDto;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.api.member.dto.res.MemberResponseDto;
@@ -121,5 +122,20 @@ public class MemberService {
                 .walkingBasicInfo(walkingBasicInfo)
                 .topHashtags(topHashtags)
                 .build();
+    }
+
+    @Transactional
+    public Member addAdditionalInfo(MemberAdditionalInfoRequestDto additionalInfoRequestDto) {
+        Member member = getMemberFromUserDetail();
+
+        String profileUrl = null;
+        if (additionalInfoRequestDto.getProfile() != null && !additionalInfoRequestDto.getProfile().isEmpty()) {
+            profileUrl = fileService.uploadFile(additionalInfoRequestDto.getProfile(), "/member");
+        }
+
+        member.updateAdditionalInfo(additionalInfoRequestDto, profileUrl);
+
+        memberRepository.save(member);
+        return member;
     }
 }

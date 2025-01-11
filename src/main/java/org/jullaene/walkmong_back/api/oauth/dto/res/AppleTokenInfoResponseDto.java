@@ -1,4 +1,4 @@
-package org.jullaene.walkmong_back.api.oauth.dto;
+package org.jullaene.walkmong_back.api.oauth.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
