@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.common.enums.Gender;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,4 +37,5 @@ public class BoardDetailResponseDto {
     private Integer ownerAge;
     private Gender ownerGender;
     private String ownerProfile;
+    private LocalDateTime createdAt;
 }

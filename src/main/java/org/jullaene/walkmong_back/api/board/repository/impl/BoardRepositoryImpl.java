@@ -119,7 +119,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                 dog.dogSize.as("dogSize"),
                                 board.content.as("content"),
                                 ownerAddress.dongAddress.as("dongAddress"),
-                                distanceExpression.as("distance")
+                                distanceExpression.as("distance"),
+                                board.createdAt
                         )
                 )
                 .from(board)
@@ -240,7 +241,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                                 Expressions.constant(currentYear),
                                                 birthYearExpression).as("ownerAge"),
                                         member.gender.as("ownerGender"),
-                                        member.profile.as("ownerProfile")
+                                        member.profile.as("ownerProfile"),
+                                        board.createdAt
 
                                 ))
                         .from(board)
