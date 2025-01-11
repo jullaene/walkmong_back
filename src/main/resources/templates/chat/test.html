@@ -82,7 +82,7 @@
 </div>
 
 <script th:inline="javascript">
-    const websocketEndpoint = '[[${websocketEndpoint}]]';
+    const websocketEndpoint = /*[[${websocketEndpoint}]]*/ "http://locahost:8080/ws";
 
     // 페이지 로드 시 토큰 체크
     document.addEventListener('DOMContentLoaded', function() {
