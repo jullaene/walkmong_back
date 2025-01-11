@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.member.domain.Member;
+import org.jullaene.walkmong_back.api.member.dto.req.MemberAdditionalInfoRequestDto;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberReqDto;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.api.member.dto.res.MemberResponseDto;
@@ -43,5 +44,12 @@ public class MemberController {
     @PutMapping("/mypage")
     public ResponseEntity<BasicResponse<Long>> getMemberInfo (@ModelAttribute MemberReqDto memberReqDto) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.updateMemberInfo(memberReqDto)));
+    }
+
+    @Operation(summary = "소셜 로그인 후 회원 정보 추가 등록", description = "소셜 로그인을 통해 회원 가입한 경우, 회원 정보를 추가로 입력하는 API입니다.")
+    @PatchMapping("/additional-info")
+    public ResponseEntity<BasicResponse<Member>> addAdditionalInfo(
+            @Valid @RequestBody MemberAdditionalInfoRequestDto additionalInfoReq) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.addAdditionalInfo(additionalInfoReq)));
     }
 }
