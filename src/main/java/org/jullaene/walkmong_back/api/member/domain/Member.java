@@ -8,6 +8,7 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.member.domain.enums.Provider;
 import org.jullaene.walkmong_back.api.member.domain.enums.Role;
+import org.jullaene.walkmong_back.api.member.dto.req.MemberAdditionalInfoRequestDto;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberCreateReq;
 import org.jullaene.walkmong_back.api.member.dto.req.MemberReqDto;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
@@ -118,4 +119,14 @@ public class Member extends BaseEntity {
         this.phone = memberReqDto.getPhone();
         this.profile = profileUrl;
     }
+
+    public void updateAdditionalInfo(MemberAdditionalInfoRequestDto memberAdditionalRequestDto, String profileUrl) {
+        this.nickname = memberAdditionalRequestDto.getNickname();
+        this.name = memberAdditionalRequestDto.getName();
+        this.gender = memberAdditionalRequestDto.getGender();
+        this.birthDate = memberAdditionalRequestDto.getBirthDate();
+        this.phone = memberAdditionalRequestDto.getPhone();
+        this.profile = profileUrl;
+    }
+
 }

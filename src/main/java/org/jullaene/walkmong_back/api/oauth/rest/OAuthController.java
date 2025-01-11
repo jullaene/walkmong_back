@@ -1,11 +1,15 @@
 package org.jullaene.walkmong_back.api.oauth.rest;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.domain.enums.Provider;
 import org.jullaene.walkmong_back.api.member.dto.res.OAuthLoginResponseDto;
 import org.jullaene.walkmong_back.api.member.dto.res.OAuthUserInfoResponseDto;
+import org.jullaene.walkmong_back.api.member.service.MemberService;
+import org.jullaene.walkmong_back.api.member.dto.req.MemberAdditionalInfoRequestDto;
 import org.jullaene.walkmong_back.api.oauth.service.OAuthService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.jullaene.walkmong_back.api.oauth.service.AppleTokenService;
@@ -13,7 +17,9 @@ import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +32,7 @@ public class OAuthController {
 
     private final AppleTokenService appleTokenService;
     private final OAuthService oAuthService;
+    private final MemberService memberService;
 
     // redirect url로 authorizaion code 획득
     @PostMapping("/apple/callback")

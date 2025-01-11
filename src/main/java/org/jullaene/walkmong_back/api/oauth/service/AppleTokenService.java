@@ -16,7 +16,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
 import org.jullaene.walkmong_back.api.member.dto.res.OAuthUserInfoResponseDto;
-import org.jullaene.walkmong_back.api.oauth.dto.AppleTokenInfoResponseDto;
+import org.jullaene.walkmong_back.api.oauth.dto.res.AppleTokenInfoResponseDto;
 import org.jullaene.walkmong_back.api.oauth.utils.AppleClientSecretGenerator;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
