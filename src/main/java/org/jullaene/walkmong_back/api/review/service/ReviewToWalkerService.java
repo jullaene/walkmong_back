@@ -54,7 +54,7 @@ public class ReviewToWalkerService {
                 .map(hashtag -> {
                     return HashtagToWalker.builder()
                             .reviewToWalkerId(reviewToWalkerId)
-                            .reviewTargetId(member.getMemberId())
+                            .reviewTargetId(reviewToWalker.getReviewTargetId())
                             .hashtagWalkerNm(hashtag)
                             .build();
                 })
