@@ -27,6 +27,13 @@ jobs:
         run: |
           cat << EOF > src/main/resources/application-prod.yml
           ${{ secrets.DATABASE_CONFIG }}
+          EOF
+        
+          mkdir -p src/main/resources/key
+        
+          cat << EOF > src/main/resources/key/secret.p8
+          ${{ secrets.APPLE_SECRET_KEY }}
+          EOF
 
       - name: Build with Gradle
         run: ./gradlew clean build
