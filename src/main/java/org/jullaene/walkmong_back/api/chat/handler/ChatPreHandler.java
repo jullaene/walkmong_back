@@ -62,12 +62,10 @@ public class ChatPreHandler implements ChannelInterceptor {
     }
 
     private String extractAccessToken (StompHeaderAccessor accessor) {
-        String accessToken = accessor.getFirstNativeHeader("Authorization");
-
+        String accessToken = accessor.getFirstNativeHeader("accessToken");
         if (accessToken != null && accessToken.startsWith(BEARER_PREFIX)) {
             accessToken = accessToken.substring(7); // "Bearer " 접두사 제거
         }
-
         return accessToken;
     }
 }
