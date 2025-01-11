@@ -24,6 +24,7 @@ public class SecurityConfig {
 
     public static final String[] PERMIT_ALL_REQUESTS = {
             "/api/v1/auth/**",
+            "/api/v1/oauth/**",
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/ws/**",
