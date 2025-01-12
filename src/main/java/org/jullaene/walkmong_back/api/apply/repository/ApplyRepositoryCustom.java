@@ -1,7 +1,7 @@
 package org.jullaene.walkmong_back.api.apply.repository;
 
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
-import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
+import org.jullaene.walkmong_back.api.apply.dto.enums.WalkMatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoDto;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.*;
@@ -16,7 +16,7 @@ public interface ApplyRepositoryCustom {
     List<ChatRoomListResponseDto> getApplyChatList(Long memberId, MatchingStatus status);
 
     //내가 지원한 산책 리스트 조회
-    List<AppliedInfoResponseDto> getApplyRecordResponse(Long memberId, MatchingStatus status,String delYn);
+    List<MatchingResponseDto> getApplyInfoResponses(Long memberId, WalkMatchingStatus status, String delYn);
    List<ApplicantInfoResponseDto> getApplicantList(Long boardId, String delYn);
     ApplicantInfoResponseDto getApplicant(Long boardId,Long applyId, String delYn);
 }

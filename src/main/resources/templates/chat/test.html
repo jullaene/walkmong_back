@@ -28,7 +28,7 @@
         .input-container button {
             padding: 8px 16px;
         }
-        .connection-status {
+        .connection-tabStatus {
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 4px;
@@ -64,7 +64,7 @@
         <button onclick="logout()" class="logout-btn">로그아웃</button>
     </div>
 
-    <div class="connection-status" id="connectionStatus">연결 상태: 연결되지 않음</div>
+    <div class="connection-tabStatus" id="connectionStatus">연결 상태: 연결되지 않음</div>
 
     <div>
         <label for="roomId">채팅방 ID:</label>
@@ -132,7 +132,7 @@
 
         stompClient.connect(headers, function(frame) {
             connectionStatus.textContent = '연결 상태: 연결됨';
-            connectionStatus.className = 'connection-status connected';
+            connectionStatus.className = 'connection-tabStatus connected';
 
             // 채팅방 구독
             stompClient.subscribe('/sub/chat/room/' + roomId, function(message) {
@@ -149,7 +149,7 @@
 
         }, function(error) {
             connectionStatus.textContent = '연결 상태: 연결 실패';
-            connectionStatus.className = 'connection-status disconnected';
+            connectionStatus.className = 'connection-tabStatus disconnected';
             console.error('연결 실패:', error);
 
             // 토큰 만료 등의 인증 에러 처리
@@ -184,7 +184,7 @@
             // 연결 해제
             stompClient.disconnect();
             connectionStatus.textContent = '연결 상태: 연결 해제됨';
-            connectionStatus.className = 'connection-status disconnected';
+            connectionStatus.className = 'connection-tabStatus disconnected';
         }
     }
 
