@@ -11,7 +11,9 @@ import java.util.Base64;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -74,21 +76,30 @@ public class AppleClientSecretGenerator {
 
     private PrivateKey loadPrivateKey() {
         try {
-            // 1. 키 파일 읽기
-            InputStream inputStream = new ClassPathResource(keyPath).getInputStream();
+            // ResourcePatternUtils를 사용하여 classpath 내 리소스를 찾습니다.
+            Resource[] resources = ResourcePatternUtils
+                    .getResourcePatternResolver(new DefaultResourceLoader())
+                    .getResources("classpath*:" + keyPath); // classpath에서 파일 찾기
+
+            if (resources.length == 0) {
+                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.PRIVATE_KEY_LOAD_ERROR);
+            }
+
+            // 첫 번째 리소스에서 InputStream 읽기
+            InputStream inputStream = resources[0].getInputStream();
             byte[] keyBytes = inputStream.readAllBytes();
             String keyContent = new String(keyBytes, StandardCharsets.UTF_8);
 
-            // 2. PEM 헤더와 푸터 제거
+            // PEM 헤더와 푸터 제거
             keyContent = keyContent
                     .replace("-----BEGIN PRIVATE KEY-----", "")
                     .replace("-----END PRIVATE KEY-----", "")
                     .replaceAll("\\s+", ""); // 공백 제거
 
-            // 3. Base64 디코딩
+            // Base64 디코딩
             byte[] decodedKey = Base64.getDecoder().decode(keyContent);
 
-            // 4. PKCS8EncodedKeySpec을 사용하여 PrivateKey 생성
+            // PKCS8EncodedKeySpec을 사용하여 PrivateKey 생성
             PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decodedKey);
             KeyFactory keyFactory = KeyFactory.getInstance("EC");
             return keyFactory.generatePrivate(spec);
