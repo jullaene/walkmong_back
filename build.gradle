@@ -82,3 +82,10 @@ sourceSets.main.java.srcDir generatedSourcesDir
 tasks.withType(JavaCompile) {
     options.annotationProcessorGeneratedSourcesDirectory = generatedSourcesDir
 }
+
+// Add the processResources block to include 'secret.p8' in the JAR
+processResources {
+    from('src/main/resources') {
+        include 'key/secret.p8'
+    }
+}
