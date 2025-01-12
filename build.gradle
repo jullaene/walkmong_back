@@ -82,9 +82,3 @@ sourceSets.main.java.srcDir generatedSourcesDir
 tasks.withType(JavaCompile) {
     options.annotationProcessorGeneratedSourcesDirectory = generatedSourcesDir
 }
-
-processResources {
-    from('src/main/resources') {
-        include 'key/AuthKey_W2JJ96LFHN.p8'
-    }
-}
