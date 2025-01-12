@@ -10,16 +10,17 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.QApply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.enums.WalkMatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.res.MatchingResponseDto;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
+import org.jullaene.walkmong_back.api.board.domain.enums.WalkingStatus;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
-import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepositoryCustom;
 import org.jullaene.walkmong_back.api.chat.domain.QChat;
 import org.jullaene.walkmong_back.api.chat.domain.QChatRoom;
@@ -30,6 +31,7 @@ import org.jullaene.walkmong_back.api.member.domain.Address;
 import org.jullaene.walkmong_back.api.member.domain.QAddress;
 import org.jullaene.walkmong_back.api.member.domain.QMember;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
+import org.jullaene.walkmong_back.common.enums.TabStatus;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 
 import java.time.LocalDate;
@@ -254,37 +256,6 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                         .fetchOne());
     }
 
-    //의뢰한 산책 내역 확인하기
-    @Override
-    public List<RequestedInfoResponseDto> getRequestRecordResponse(Long memberId, MatchingStatus status) {
-        QDog dog= QDog.dog;
-        QMember member=QMember.member;
-        QBoard board=QBoard.board;
-        QApply apply= QApply.apply;
-
-        List<RequestedInfoResponseDto> requestedInfoDto=
-                queryFactory.selectDistinct(
-                                Projections.constructor(RequestedInfoResponseDto.class,
-                                        dog.name.as("dogName"),
-                                        dog.gender.as("dogGender"),
-                                        dog.profile.as("dogProfile"),
-                                        apply.dongAddress.as("dongAddress"),
-                                        apply.addressDetail.as("addressDetail"),
-                                        board.startTime.as("startTime"),
-                                        board.endTime.as("endTime"),
-                                        member.nickname.as("walkerNickname"),
-                                        member.profile.as("walkerProfile")
-                                ))
-                        .from(board)
-                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
-                        .leftJoin(member).on(apply.memberId.eq(member.memberId)) //산책 지원자
-                        .where(board.ownerId.eq(memberId)
-                                .and(apply.matchingStatus.eq(status)))
-                        .fetch();
-        return requestedInfoDto;
-    }
-
     /**
      * 의뢰한 산책의 채팅방 리스트 조회하기
      * */
@@ -372,6 +343,69 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                 .and(board.delYn.eq(delYn)))
                         .fetchOne();
         return previewDto;
+    }
+
+    @Override
+    public List<MatchingResponseDto> getBoardInfoResponse(Long memberId, WalkMatchingStatus status, String delYn) {
+        QBoard board = QBoard.board;
+        QDog dog = QDog.dog;
+        QMember member = QMember.member;
+        QApply apply = QApply.apply;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        LocalDateTime now = LocalDateTime.now();
+
+        // 매칭 전 : 지원 상태가 PENDING이고 산책 날짜 안 지남
+        if (status.equals(WalkMatchingStatus.PENDING)) {
+            builder.and(board.walkingStatus.eq(WalkingStatus.PENDING))
+                    .and(board.startTime.after(now));
+        }
+        // 매칭 확정 : 지원 상태가 CONFIRMED이고 날짜 안 지남
+        else if (status.equals(WalkMatchingStatus.BEFORE)) {
+            builder.and(board.walkingStatus.eq(WalkingStatus.BEFORE))
+                    .and(board.startTime.after(now));
+        }
+        // 산책 완료 : 지원 상태가 CONFIRMED이고 날짜 지남
+        else if (status.equals(WalkMatchingStatus.AFTER)) {
+            builder.and(board.walkingStatus.eq(WalkingStatus.AFTER));
+        }
+        // 매칭 취소 : 지원 상태가 REJECT이거나 지원 상태가 PENDING인데 날짜 지남
+        else if (status.equals(WalkMatchingStatus.REJECT)) {
+            builder.and(board.walkingStatus.eq(WalkingStatus.PENDING))
+                    .and(board.startTime.after(now));
+        }
+
+        return queryFactory.selectDistinct(
+                Projections.constructor(MatchingResponseDto.class,
+                        Expressions.constant(TabStatus.BOARD.name()),
+                        dog.name.as("dogName"),
+                        dog.gender.as("dogGender"),
+                        dog.profile.as("dogProfile"),
+                        board.startTime.as("startTime"),
+                        board.endTime.as("endTime"),
+                        Expressions.nullExpression(String.class),
+                        Expressions.nullExpression(Double.class),
+                        member.name.as("walkerName"), // member와의 조인을 통해 walkerName 설정
+                        member.profile.as("walkerProfile"), // member와의 조인을 통해 walkerProfile 설정
+                        Expressions.asString(status.name()).as("walkMatchingStatus")
+                ))
+                .from(board)
+                .leftJoin(dog)
+                .on(dog.dogId.eq(board.dogId)
+                        .and(dog.delYn.eq(delYn)))
+                .leftJoin(apply)
+                .on(apply.boardId.eq(board.boardId)
+                        .and(apply.delYn.eq(delYn)))  // Apply와 Board를 연결하는 조건 추가
+                .leftJoin(member)
+                .on(member.memberId.eq(apply.memberId)
+                        .and(member.delYn.eq(delYn))
+                        .and(board.walkingStatus.ne(WalkingStatus.PENDING))  // board.walkingStatus가 PENDING이 아닌 경우
+                        .and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED))) // apply.matchingStatus가 CONFIRMED인 경우)
+                .where(board.ownerId.eq(memberId)
+                        .and(board.delYn.eq(delYn))
+                        .and(builder)
+                )
+                .fetch();
     }
 
 }

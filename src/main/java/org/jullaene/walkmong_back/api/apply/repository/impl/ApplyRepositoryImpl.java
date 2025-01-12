@@ -1,5 +1,6 @@
 package org.jullaene.walkmong_back.api.apply.repository.impl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.QApply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.enums.WalkMatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepositoryCustom;
 import org.jullaene.walkmong_back.api.board.domain.QBoard;
@@ -19,27 +21,28 @@ import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.domain.QDog;
 import org.jullaene.walkmong_back.api.member.domain.QAddress;
 import org.jullaene.walkmong_back.api.member.domain.QMember;
+import org.jullaene.walkmong_back.common.enums.TabStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.querydsl.core.types.dsl.Expressions.list;
 import static com.querydsl.core.types.dsl.Expressions.numberTemplate;
 
 @RequiredArgsConstructor
 @Slf4j
 public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
     private final JPAQueryFactory queryFactory;
-    private final QDog dog = QDog.dog;
-    private final QMember member = QMember.member;
-    private final QBoard board = QBoard.board;
-    private final QApply apply = QApply.apply;
-    private final QAddress address = QAddress.address;
     /**
      산책 지원시 지원서 내용 최종 확인하기
      */
     @Override
     public Optional<ApplyInfoDto> getApplyInfoResponse(Long boardId, Long memberId, String delYn) {
+        QDog dog = QDog.dog;
+        QMember member = QMember.member;
+        QBoard board = QBoard.board;
+        QApply apply = QApply.apply;
+        QAddress address = QAddress.address;
         Optional<ApplyInfoDto> applyInfoDto=
                 Optional.ofNullable(queryFactory.selectDistinct(
                                 Projections.constructor(ApplyInfoDto.class,
@@ -74,65 +77,100 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
      내가 지원한 산책 내역 확인하기
      */
     @Override
-    public List<AppliedInfoResponseDto> getApplyRecordResponse(Long memberId, MatchingStatus status,String delYn) {
+    public List<MatchingResponseDto> getApplyInfoResponses(Long memberId, WalkMatchingStatus status, String delYn) {
+        QDog dog = QDog.dog;
+        QMember member = QMember.member;
+        QBoard board = QBoard.board;
+        QApply apply = QApply.apply;
+        QAddress address = QAddress.address;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        LocalDateTime now = LocalDateTime.now();
+
+        // 매칭 전 : 지원 상태가 PENDING이고 산책 날짜 안 지남
+        if (status.equals(WalkMatchingStatus.PENDING)) {
+            builder.and(apply.matchingStatus.eq(MatchingStatus.PENDING))
+                    .and(board.startTime.after(now));
+        }
+        // 매칭 확정 : 지원 상태가 CONFIRMED이고 날짜 안 지남
+        else if (status.equals(WalkMatchingStatus.BEFORE)) {
+            System.out.println("hello");
+            builder.and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED))
+                    .and(board.startTime.after(now));
+        }
+        // 산책 완료 : 지원 상태가 CONFIRMED이고 날짜 지남
+        else if (status.equals(WalkMatchingStatus.AFTER)) {
+            System.out.println("hello??");
+            builder.and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED))
+                    .and(board.startTime.before(now));
+        }
+        // 매칭 취소 : 지원 상태가 REJECT이거나 지원 상태가 PENDING인데 날짜 지남
+        else if (status.equals(WalkMatchingStatus.REJECT)) {
+            builder.and(apply.matchingStatus.eq(MatchingStatus.REJECTED))
+                    .or(apply.matchingStatus.eq(MatchingStatus.PENDING)
+                            .and(board.startTime.before(now))
+                    );
+        }
+
         // 거리 계산
         NumberTemplate<Double> distanceExpression = numberTemplate(
                 Double.class,
                 "ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))",
                 //산책 지원자의 위도,경도
-                JPAExpressions.select(apply.longitude)
-                        .from(apply)
-                        .where(apply.memberId.eq(memberId)
-                                .and(apply.boardId.eq(board.boardId))
-                                .and(apply.delYn.eq(delYn))),
-                JPAExpressions.select(apply.latitude)
-                        .from(apply)
-                        .where(apply.memberId.eq(memberId)
-                                .and(apply.boardId.eq(board.boardId))
-                                .and(apply.delYn.eq(delYn))),
+                JPAExpressions.select(apply.longitude),
+                JPAExpressions.select(apply.latitude),
                 //산책 요청자의 위도, 경도
                 JPAExpressions.select(address.longitude)
                         .from(address)
-                        .where(address.addressId.eq(board.ownerAddressId)),
+                        .where(address.addressId.eq(board.ownerAddressId)
+                                .and(address.delYn.eq(delYn))),
                 JPAExpressions.select(address.latitude)
                         .from(address)
-                        .where(address.addressId.eq(board.ownerAddressId))
+                        .where(address.addressId.eq(board.ownerAddressId)
+                                .and(address.delYn.eq(delYn)))
         );
 
-        List<AppliedInfoResponseDto> appliedInfoDto=
-                queryFactory.selectDistinct(
-                                Projections.constructor(AppliedInfoResponseDto.class,
+        System.out.println("hello?");
+        return queryFactory.selectDistinct(
+                                Projections.constructor(MatchingResponseDto.class,
+                                        Expressions.constant(TabStatus.APPLY.name()),
                                         dog.name.as("dogName"),
                                         dog.gender.as("dogGender"),
                                         dog.profile.as("dogProfile"),
-                                        apply.dongAddress.as("dongAddress"),
-                                        apply.addressDetail.as("addressDetail"),
                                         board.startTime.as("startTime"),
                                         board.endTime.as("endTime"),
-                                        distanceExpression.as("distance")
+                                        apply.dongAddress.as("dongAddress"),
+                                        distanceExpression.as("distance"),
+                                        Expressions.nullExpression(String.class),
+                                        Expressions.nullExpression(String.class),
+                                        Expressions.asString(status.name()).as("walkMatchingStatus")
                                 ))
-                        .from(board)
-                        .join(dog).on(dog.dogId.eq(board.dogId)
-                                .and(dog.delYn.eq(delYn)))
-                        .join(apply)
-                        .on(apply.boardId.eq(board.boardId)
-                                .and(apply.memberId.eq(memberId))
-                                .and(apply.matchingStatus.eq(status))
-                                .and(apply.delYn.eq(delYn))
-                        )
-                        .where(board.delYn.eq(delYn))
-                        .fetch();
-            return appliedInfoDto;
+                .from(apply)
+                .leftJoin(board)
+                .on(board.boardId.eq(apply.boardId)
+                        .and(board.delYn.eq(delYn))
+                )
+                .leftJoin(dog)
+                .on(dog.dogId.eq(board.dogId)
+                        .and(dog.delYn.eq(delYn)))
+                .where(apply.memberId.eq(memberId)
+                        .and(apply.delYn.eq(delYn))
+                        .and(builder)
+                )
+                .fetch();
     }
 
     //지원한 산책의 채팅리스트 조회
     @Override
     public List<ChatRoomListResponseDto> getApplyChatList(Long memberId, MatchingStatus status) {
+        QDog dog = QDog.dog;
+        QMember member = QMember.member;
+        QBoard board = QBoard.board;
+        QApply apply = QApply.apply;
+        QAddress address = QAddress.address;
+
         QChatRoom chatRoom=QChatRoom.chatRoom;
         QChat chat= QChat.chat;
-        QDog dog= QDog.dog;
-        QBoard board=QBoard.board;
-        QApply apply= QApply.apply;
 
         //대화 상대의 마지막 메세지 가져오기: chat 테이블에서 Id의 최댓값을 가져온다
         SubQueryExpression<Long> lastMessageSubQuery = JPAExpressions.select(chat.chatId.max())
@@ -176,6 +214,12 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
      * 반려인이 산책 지원자들의 정보를 조회한다
      */
     public List<ApplicantInfoResponseDto> getApplicantList(Long boardId,String delYn){
+        QDog dog = QDog.dog;
+        QMember member = QMember.member;
+        QBoard board = QBoard.board;
+        QApply apply = QApply.apply;
+        QAddress address = QAddress.address;
+
         List<ApplicantInfoResponseDto> applicantList=
                 queryFactory.selectDistinct(
                                 Projections.constructor(ApplicantInfoResponseDto.class,
@@ -203,6 +247,12 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
      * 반려인이 특정 산책자 정보를 조회한다
      */
     public ApplicantInfoResponseDto getApplicant(Long boardId,Long applyId, String delYn){
+        QDog dog = QDog.dog;
+        QMember member = QMember.member;
+        QBoard board = QBoard.board;
+        QApply apply = QApply.apply;
+        QAddress address = QAddress.address;
+
         ApplicantInfoResponseDto applicant=
                 queryFactory.selectDistinct(
                                 Projections.constructor(ApplicantInfoResponseDto.class,
