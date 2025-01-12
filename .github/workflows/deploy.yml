@@ -31,7 +31,7 @@ jobs:
         
           mkdir -p src/main/resources/key
         
-          cat << EOF > src/main/resources/key/secret.p8
+          cat << EOF > src/main/resources/key/AuthKey_W2JJ96LFHN.p8
           ${{ secrets.APPLE_SECRET_KEY }}
           EOF
 
