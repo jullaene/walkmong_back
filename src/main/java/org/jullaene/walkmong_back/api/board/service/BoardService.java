@@ -3,14 +3,11 @@ package org.jullaene.walkmong_back.api.board.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
-import org.jullaene.walkmong_back.api.apply.dto.res.AppliedInfoResponseDto;
-import org.jullaene.walkmong_back.api.apply.dto.res.RecordResponseDto;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
-import org.jullaene.walkmong_back.api.board.dto.res.RequestedInfoResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.domain.Dog;
@@ -118,16 +115,6 @@ public class BoardService {
         return addressRepository.findByAddressIdAndDelYn(addressId, delYn)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_ADDRESS));
 
-    }
-
-    /**
-     * 요청한 산책 리스트 조회
-     * */
-    public List<RecordResponseDto> getAllRequestedInfoWithStatus(MatchingStatus status) {
-        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-        List<RequestedInfoResponseDto> requestedList= boardRepository.getRequestRecordResponse(memberId,status);
-
-        return requestedList.stream().map(dto-> (RecordResponseDto) dto).toList();
     }
 
     /**

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.Apply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.enums.WalkMatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
@@ -11,19 +12,19 @@ import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
-import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
 import org.jullaene.walkmong_back.api.member.domain.Member;
-import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
 import org.jullaene.walkmong_back.api.review.dto.res.HashtagResponseDto;
 import org.jullaene.walkmong_back.api.review.dto.res.RatingResponseDto;
 import org.jullaene.walkmong_back.api.review.service.ReviewToWalkerService;
+import org.jullaene.walkmong_back.common.enums.TabStatus;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,9 +33,7 @@ import java.util.List;
 public class ApplyService {
     private final ApplyRepository applyRepository;
     private final BoardRepository boardRepository;
-    private final DogRepository dogRepository;
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final ReviewToWalkerService reviewToWalkerService;
 
     @Transactional
@@ -75,11 +74,24 @@ public class ApplyService {
     }
 
     //전체 지원 내역 불러오기
-    public List<RecordResponseDto> getAllAppliedInfoWithStatus(MatchingStatus status) {
-        Long memberId=memberService.getMemberFromUserDetail().getMemberId();
-        List<AppliedInfoResponseDto> appliedLists=applyRepository.getApplyRecordResponse(memberId,status,"N");
+    public List<MatchingResponseDto> getAllAppliedInfoWithStatus(TabStatus tabStatus, WalkMatchingStatus walkMatchingStatus) {
+        Long memberId = memberService.getMemberFromUserDetail().getMemberId();
 
-        return appliedLists.stream().map(dto-> (RecordResponseDto) dto).toList();
+        List<MatchingResponseDto> matchingResponseDtos = new ArrayList<>();
+
+        if (tabStatus.equals(TabStatus.APPLY) || tabStatus.equals(TabStatus.ALL)) {
+            List<MatchingResponseDto> appliedLists = applyRepository.getApplyInfoResponses(memberId, walkMatchingStatus, "N");
+
+            matchingResponseDtos.addAll(appliedLists);
+        }
+
+        if (tabStatus.equals(TabStatus.BOARD) || tabStatus.equals(TabStatus.ALL)) {
+            List<MatchingResponseDto> boardLists = boardRepository.getBoardInfoResponse(memberId, walkMatchingStatus, "N");
+
+            matchingResponseDtos.addAll(boardLists);
+        }
+
+        return matchingResponseDtos;
 
     }
 
