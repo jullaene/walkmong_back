@@ -108,4 +108,14 @@ public class ApplyController {
 
     }
 
+    /**
+     * 매칭 확정 후 산책 정보 조회
+     * */
+    @GetMapping("/detail/{boardId}")
+    public ResponseEntity<BasicResponse<WalkingDtlRes>> getWalkingDtlRes (
+            @PathVariable("boardId") Long boardId
+    ) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(applyService.getWalkingDtlRes(boardId)));
+    }
+
 }

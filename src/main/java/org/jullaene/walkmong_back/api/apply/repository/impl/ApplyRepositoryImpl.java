@@ -1,10 +1,12 @@
 package org.jullaene.walkmong_back.api.apply.repository.impl;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import org.jullaene.walkmong_back.api.member.domain.QMember;
 import org.jullaene.walkmong_back.common.enums.TabStatus;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,11 +41,11 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
      */
     @Override
     public Optional<ApplyInfoDto> getApplyInfoResponse(Long boardId, Long memberId, String delYn) {
-        QDog dog = QDog.dog;
-        QMember member = QMember.member;
-        QBoard board = QBoard.board;
-        QApply apply = QApply.apply;
-        QAddress address = QAddress.address;
+        final QDog dog = QDog.dog;
+        final QMember member = QMember.member;
+        final QBoard board = QBoard.board;
+        final QApply apply = QApply.apply;
+
         Optional<ApplyInfoDto> applyInfoDto=
                 Optional.ofNullable(queryFactory.selectDistinct(
                                 Projections.constructor(ApplyInfoDto.class,
@@ -130,7 +133,6 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                 .and(address.delYn.eq(delYn)))
         );
 
-        System.out.println("hello?");
         return queryFactory.selectDistinct(
                                 Projections.constructor(MatchingResponseDto.class,
                                         Expressions.constant(TabStatus.APPLY.name()),
@@ -214,11 +216,10 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
      * 반려인이 산책 지원자들의 정보를 조회한다
      */
     public List<ApplicantInfoResponseDto> getApplicantList(Long boardId,String delYn){
-        QDog dog = QDog.dog;
-        QMember member = QMember.member;
-        QBoard board = QBoard.board;
-        QApply apply = QApply.apply;
-        QAddress address = QAddress.address;
+        final QMember member = QMember.member;
+        final QBoard board = QBoard.board;
+        final QApply apply = QApply.apply;
+        final QAddress address = QAddress.address;
 
         List<ApplicantInfoResponseDto> applicantList=
                 queryFactory.selectDistinct(
@@ -247,11 +248,10 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
      * 반려인이 특정 산책자 정보를 조회한다
      */
     public ApplicantInfoResponseDto getApplicant(Long boardId,Long applyId, String delYn){
-        QDog dog = QDog.dog;
-        QMember member = QMember.member;
-        QBoard board = QBoard.board;
-        QApply apply = QApply.apply;
-        QAddress address = QAddress.address;
+        final QMember member = QMember.member;
+        final QBoard board = QBoard.board;
+        final QApply apply = QApply.apply;
+        final QAddress address = QAddress.address;
 
         ApplicantInfoResponseDto applicant=
                 queryFactory.selectDistinct(
@@ -275,6 +275,84 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                         .fetchOne();
 
         return applicant;
+    }
+
+    @Override
+    public WalkingDtlRes getWalkingDtlRes(Long boardId, String delYn) {
+        final QDog dog = QDog.dog;
+        final QMember member = QMember.member;
+        final QBoard board = QBoard.board;
+        final QApply apply = QApply.apply;
+        final QAddress address = QAddress.address;
+
+        int currentYear = LocalDate.now().getYear() + 1;
+
+
+        StringTemplate startTimeExpression = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, '%H:%i')",
+                board.startTime
+        );
+        StringTemplate endTimeExpression = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, '%H:%i')",
+                board.endTime
+        );
+
+        StringTemplate dateExpression = Expressions.stringTemplate(
+                "DATE_FORMAT({0}, '%Y-%m-%d')",
+                board.startTime
+        );
+
+        // 숫자 형식의 생년월일에서 연도 추출
+        NumberTemplate<Integer> birthYearExpression = Expressions.numberTemplate(Integer.class,
+                "YEAR({0})",
+                member.birthDate
+        );
+
+        return queryFactory
+                .select(
+                        Projections.constructor(WalkingDtlRes.class,
+                            dateExpression.as("date"),
+                            startTimeExpression.as("startTime"),
+                            endTimeExpression.as("endTime"),
+                            dog.dogId,
+                            dog.name,
+                            dog.gender,
+                            board.content,
+                            address.dongAddress,
+                            member.memberId,
+                            member.nickname,
+                            member.gender,
+                            Expressions.numberOperation(Integer.class, Ops.SUB,
+                                    Expressions.constant(currentYear),
+                                    birthYearExpression).as("walkerAge"),
+                            dog.walkRequest,
+                            dog.walkNote,
+                            dog.additionalRequest,
+                            apply.latitude,
+                            apply.longitude,
+                            apply.roadAddress,
+                            apply.addressDetail,
+                            apply.addressMemo,
+                            apply.memoToOwner
+                        )
+                )
+                .from(board)
+                .join(dog)
+                .on(dog.dogId.eq(board.dogId)
+                        .and(dog.delYn.eq(delYn)))
+                .join(address)
+                .on(address.addressId.eq(board.ownerAddressId)
+                        .and(address.delYn.eq(delYn)))
+                .join(apply)
+                .on(apply.boardId.eq(board.boardId)
+                        .and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED))
+                        .and(apply.delYn.eq(delYn)))
+                .join(member)
+                .on(member.memberId.eq(apply.memberId)
+                        .and(member.delYn.eq(delYn)))
+                .where(board.boardId.eq(boardId)
+                        .and(board.delYn.eq(delYn)))
+                .fetchOne();
     }
 
 }
