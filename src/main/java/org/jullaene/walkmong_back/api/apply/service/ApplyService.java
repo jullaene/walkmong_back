@@ -182,4 +182,10 @@ public class ApplyService {
         Apply changedApply=apply.cancelMatching();
         applyRepository.save(changedApply);
     }
+
+    /**
+     * 매칭 확정 후 산책 정보 조회*/
+    public WalkingDtlRes getWalkingDtlRes(Long boardId) {
+        return applyRepository.getWalkingDtlRes(boardId, "N");
+    }
 }

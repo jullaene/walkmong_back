@@ -19,4 +19,6 @@ public interface ApplyRepositoryCustom {
     List<MatchingResponseDto> getApplyInfoResponses(Long memberId, WalkMatchingStatus status, String delYn);
    List<ApplicantInfoResponseDto> getApplicantList(Long boardId, String delYn);
     ApplicantInfoResponseDto getApplicant(Long boardId,Long applyId, String delYn);
+
+    WalkingDtlRes getWalkingDtlRes(Long boardId, String delYn);
 }

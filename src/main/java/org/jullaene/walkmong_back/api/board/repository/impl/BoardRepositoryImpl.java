@@ -67,10 +67,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         builder.and(board.startTime.between(startOfDay, endOfDay));
 
         if (dogSize != null && !matchingYn.isBlank()) {
-            builder.and(board.dogId.in(
-                    JPAExpressions.select(dog.dogId)
-                            .from(dog)
-                            .where(dog.dogSize.eq(dogSize))));
+            builder.and(dog.dogSize.eq(dogSize));
         }
 
         if (matchingYn != null && !matchingYn.isBlank()) {
@@ -87,10 +84,12 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 "ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))",
                 JPAExpressions.select(ownerAddress.longitude)
                         .from(ownerAddress)
-                        .where(ownerAddress.addressId.eq(board.ownerAddressId)),
+                        .where(ownerAddress.addressId.eq(board.ownerAddressId)
+                                .and(ownerAddress.delYn.eq("N"))),
                 JPAExpressions.select(ownerAddress.latitude)
                         .from(ownerAddress)
-                        .where(ownerAddress.addressId.eq(board.ownerAddressId)),
+                        .where(ownerAddress.addressId.eq(board.ownerAddressId)
+                                .and(ownerAddress.delYn.eq("N"))),
                 walkerAddress.getLongitude(),
                 walkerAddress.getLatitude()
         );
@@ -126,8 +125,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                         )
                 )
                 .from(board)
-                .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-                .leftJoin(ownerAddress).on(ownerAddress.addressId.eq(board.ownerAddressId))
+                .join(dog).on(dog.dogId.eq(board.dogId).and(dog.delYn.eq("N")))
+                .join(ownerAddress).on(ownerAddress.addressId.eq(board.ownerAddressId).and(ownerAddress.delYn.eq("N")))
                 .where(builder)
                 .where(isWithinRange)
                 .orderBy(board.startTime.asc())
