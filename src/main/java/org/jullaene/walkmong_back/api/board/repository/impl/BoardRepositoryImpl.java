@@ -324,7 +324,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 board.endTime
         );
 
-        BoardPreviewResponseDto previewDto=
+        BoardPreviewResponseDto previewDto =
                 queryFactory.selectDistinct(
                                 Projections.constructor(BoardPreviewResponseDto.class,
                                         dog.name.as("dogName"),
@@ -336,8 +336,10 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                         endTimeExpression.as("endTime")
                                 ))
                         .from(board)
-                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-                        .leftJoin(address).on(address.memberId.eq(memberId))
+                        .join(dog).on(dog.dogId.eq(board.dogId)
+                                .and(dog.delYn.eq(dog.delYn)))
+                        .join(address).on(address.addressId.eq(board.ownerAddressId)
+                                .and(address.delYn.eq(address.delYn)))
                         .where(board.boardId.eq(boardId)
                                 .and(board.delYn.eq(delYn)))
                         .fetchOne();

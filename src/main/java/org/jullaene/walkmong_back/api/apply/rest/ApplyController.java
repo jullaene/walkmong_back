@@ -65,7 +65,7 @@ public class ApplyController {
     @GetMapping("/form/{boardId}")
     public ResponseEntity<BasicResponse<ApplicationFormResponseDto>> getApplicantList(@PathVariable("boardId") Long boardId,
                                                                                       @RequestParam("applyId") Long applyId){
-        ApplicationFormResponseDto responseDto=applyService.getApplicationFormInfo(boardId,applyId);
+        ApplicationFormResponseDto responseDto = applyService.getApplicationFormInfo(boardId,applyId);
         return ResponseEntity.ok(BasicResponse.ofSuccess(responseDto));
     }
 
