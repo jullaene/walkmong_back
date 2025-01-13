@@ -253,7 +253,7 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         final QApply apply = QApply.apply;
         final QAddress address = QAddress.address;
 
-        ApplicantInfoResponseDto applicant=
+        ApplicantInfoResponseDto applicant =
                 queryFactory.selectDistinct(
                                 Projections.constructor(ApplicantInfoResponseDto.class,
                                         member.nickname.as("applicantName"),
@@ -265,12 +265,14 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                         Expressions.asNumber(100) //평점
                                 ))
                         .from(board)
-                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
-                        .leftJoin(member).on(apply.memberId.eq(member.memberId))
-                        .leftJoin(address).on(apply.memberId.eq(address.memberId))
-                        .where((apply.matchingStatus.eq(MatchingStatus.valueOf("PENDING")))
-                                .and(board.delYn.eq(delYn))
-                                .and(apply.applyId.eq(applyId))
+                        .join(apply).on(apply.applyId.eq(applyId)
+                                .and(apply.delYn.eq(delYn)))
+                        .join(member).on(member.memberId.eq(apply.memberId)
+                                .and(member.delYn.eq(delYn)))
+                        .join(address).on(address.memberId.eq(apply.memberId)
+                                .and(address.basicAddressYn.eq("Y"))
+                                .and(address.delYn.eq(delYn)))
+                        .where(board.delYn.eq(delYn)
                                 .and(board.boardId.eq(boardId)))
                         .fetchOne();
 

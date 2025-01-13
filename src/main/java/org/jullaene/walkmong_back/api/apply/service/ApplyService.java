@@ -114,13 +114,13 @@ public class ApplyService {
         Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.POST_NOT_FOUND));
         Long walkerId=apply.getMemberId(); //산책자의 아이디
 
-        BoardPreviewResponseDto boardDto=boardRepository.getBoardPreview(boardId,memberId,"N");
-        ApplicantInfoResponseDto applicantDto=applyRepository.getApplicant(boardId,applyId,"N");
-        ApplyInfoResponseDto applyDto=apply.toApplyInfoDto();
-        RatingResponseDto ratingDto=reviewToWalkerService.calculateAverage(walkerId);
-        List<HashtagResponseDto> hashtagDto=reviewToWalkerService.getTop3HashtagsByWalkerId(walkerId);
+        BoardPreviewResponseDto boardDto = boardRepository.getBoardPreview(boardId,memberId,"N");
+        ApplicantInfoResponseDto applicantDto = applyRepository.getApplicant(boardId,applyId,"N");
+        ApplyInfoResponseDto applyDto = apply.toApplyInfoDto();
+        RatingResponseDto ratingDto = reviewToWalkerService.calculateAverage(walkerId);
+        List<HashtagResponseDto> hashtagDto = reviewToWalkerService.getTop3HashtagsByWalkerId(walkerId);
 
-        ApplicationFormResponseDto responseDto= ApplicationFormResponseDto.builder()
+        ApplicationFormResponseDto responseDto = ApplicationFormResponseDto.builder()
                 .boardDto(boardDto)
                 .applicantDto(applicantDto)
                 .applyDto(applyDto)
