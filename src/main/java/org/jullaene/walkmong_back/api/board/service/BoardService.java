@@ -78,6 +78,12 @@ public class BoardService {
         Dog dog = dogRepository.findByDogIdAndDelYn(boardRequestDto.getDogId(), "N")
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.DOG_NOT_FOUND));
 
+        dog.updateWalkDetails(
+                boardRequestDto.getWalkRequest(),
+                boardRequestDto.getWalkNote(),
+                boardRequestDto.getAdditionalRequest()
+        );
+
         Board board = Board.builder()
                 .boardRequestDto(boardRequestDto)
                 .content(dog.getWalkRequestContent())

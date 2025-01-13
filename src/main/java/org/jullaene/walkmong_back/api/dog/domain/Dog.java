@@ -85,6 +85,7 @@ public class Dog extends BaseEntity {
     private String walkNote;
 
     @Comment("추가 안내 사항")
+    @Column()
     private String additionalRequest;
 
     @Builder
@@ -106,6 +107,18 @@ public class Dog extends BaseEntity {
         this.walkRequest = dogProfileReqDto.getWalkRequest();
         this.walkNote = dogProfileReqDto.getWalkNote();
         this.additionalRequest = dogProfileReqDto.getAdditionalRequest();
+    }
+
+    public void updateWalkDetails(String walkRequest, String walkNote, String additionalRequest) {
+        if (walkRequest != null) {
+            this.walkRequest = walkRequest;
+        }
+        if (walkNote != null) {
+            this.walkNote = walkNote;
+        }
+        if (additionalRequest != null) {
+            this.additionalRequest = additionalRequest;
+        }
     }
 
     public final String getWalkRequestContent() {

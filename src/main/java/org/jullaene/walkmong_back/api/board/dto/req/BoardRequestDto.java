@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -14,14 +13,20 @@ public class BoardRequestDto {
 
     private Long addressId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime startTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime endTime;
 
     private String locationNegotiationYn;
 
     private String preMeetAvailableYn;
+
+    private String walkRequest;
+
+    private String walkNote;
+
+    private String additionalRequest;
 }
 
