@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @Getter
 public class DogProfileReqDto {
-    private final Long memberId;
     private final String name;
     private final DogSize dogSize;
     private final MultipartFile profile;
