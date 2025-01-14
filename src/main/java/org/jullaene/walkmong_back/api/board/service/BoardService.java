@@ -2,9 +2,13 @@ package org.jullaene.walkmong_back.api.board.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jullaene.walkmong_back.api.apply.domain.Apply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
+import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
+import org.jullaene.walkmong_back.api.board.dto.req.MeetAddressReq;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
@@ -35,6 +39,7 @@ public class BoardService {
     private final AddressRepository addressRepository;
     private final MemberService memberService;
     private final DogRepository dogRepository;
+    private final ApplyRepository applyRepository;
 
     /**
      * 게시글 리스트 조회
@@ -138,5 +143,31 @@ public class BoardService {
     public BoardPreviewResponseDto getPreview(Long boardId){
         Long memberId=memberService.getMemberFromUserDetail().getMemberId();
         return boardRepository.getBoardPreview(boardId,memberId,"N");
+    }
+
+    /**
+     * 만남 장소 변경
+     * */
+    @Transactional
+    public String changeMeetAddress(Long boardId, MeetAddressReq meetAddressReq) {
+        Member member = memberService.getMemberFromUserDetail();
+
+        Board board = boardRepository.findByBoardIdAndDelYn(boardId, "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_BOARD));
+        log.info("board 검색 완료 : " + board.getBoardId());
+
+        Apply apply = applyRepository.findByBoardIdAndMatchingStatusAndDelYn(boardId, MatchingStatus.CONFIRMED, "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_APPLY));
+        log.info("apply 검색 완료 : " + apply.getApplyId());
+
+        if (!member.getMemberId().equals(board.getOwnerId()) && !member.getMemberId().equals(apply.getMemberId())) {
+            log.error("요청한 유저 아이디 : {}, 반려인 아이디 : {}, 산책자 아이디 : {}", member.getMemberId(), board.getOwnerId(), apply.getMemberId());
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.ACCESS_DENIED);
+        }
+        log.info("유저 접근 인증 완료");
+
+        apply.updateMeetAddress(meetAddressReq);
+
+        return "SUCCESS";
     }
 }

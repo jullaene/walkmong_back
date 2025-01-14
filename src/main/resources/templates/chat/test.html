@@ -1,60 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <title>WebSocket 채팅 테스트</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <style>
-        .chat-container {
-            width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .message-container {
-            height: 400px;
-            border: 1px solid #ccc;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            padding: 10px;
-        }
-        .input-container {
-            display: flex;
-            gap: 10px;
-        }
-        .input-container input {
-            flex: 1;
-            padding: 8px;
-        }
-        .input-container button {
-            padding: 8px 16px;
-        }
-        .connection-tabStatus {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .connected {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .disconnected {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .logout-btn {
-            padding: 8px 16px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+        /* 스타일 생략 */
     </style>
 </head>
 <body>
@@ -64,16 +13,24 @@
         <button onclick="logout()" class="logout-btn">로그아웃</button>
     </div>
 
-    <div class="connection-tabStatus" id="connectionStatus">연결 상태: 연결되지 않음</div>
+    <div class="connection-status" id="connectionStatus">연결 상태: 연결되지 않음</div>
 
     <div>
-        <label for="roomId">채팅방 ID:</label>
-        <input type="text" id="roomId" value="1"/>
-        <button onclick="connect()">채팅방 연결</button>
+        <button onclick="connect()">WebSocket 연결</button>
         <button onclick="disconnect()">연결 해제</button>
     </div>
 
-    <div class="message-container" id="messageContainer"></div>
+    <div style="margin-top: 10px;">
+        <label for="roomId">채팅방 ID:</label>
+        <input type="text" id="roomId" />
+        <button onclick="subscribeToRoom()">채팅방 구독</button>
+    </div>
+
+    <!-- 채팅 탭 컨테이너 -->
+    <div id="chatTabs" class="chat-tabs"></div>
+
+    <!-- 채팅 컨텐츠 컨테이너 -->
+    <div id="chatContents"></div>
 
     <div class="input-container">
         <input type="text" id="message" placeholder="메시지를 입력하세요"/>
@@ -81,157 +38,214 @@
     </div>
 </div>
 
-<script th:inline="javascript">
-    const websocketEndpoint = /*[[${websocketEndpoint}]]*/ "http://locahost:8080/ws";
+<!-- STOMP.js 포함 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    // 페이지 로드 시 토큰 체크
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("url : " + websocketEndpoint);
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const websocketEndpoint = /*[[${websocketEndpoint}]]*/ "ws://localhost:8080/ws"; // 'localhost' 오타 수정, ws:// 사용
+    let stompClient = null;
+    let currentRoom = null;
+    const subscribedRooms = new Set();
+    const roomMessages = new Map();
+
+    document.addEventListener("DOMContentLoaded", function () {
         checkAuth();
+        // connect(); // 필요에 따라 자동 연결 주석 처리
     });
 
+    // 인증 확인
     function checkAuth() {
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem("accessToken");
         if (!token) {
-            window.location.href = '/test/chat/login';
+            window.location.href = "/test/chat/login";
             return;
         }
     }
 
+    // 로그아웃
     function logout() {
-        localStorage.removeItem('accessToken');
-        window.location.href = '/test/chat/login';
+        localStorage.removeItem("accessToken");
+        window.location.href = "/test/chat/login";
     }
 
-    let stompClient = null;
-    const messageContainer = document.getElementById('messageContainer');
-    const connectionStatus = document.getElementById('connectionStatus');
-
+    // WebSocket 연결 및 STOMP 클라이언트 초기화
     function connect() {
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem("accessToken");
         if (!token) {
-            alert('로그인이 필요합니다.');
-            window.location.href = '/test/chat/login';
+            console.error("토큰이 없습니다.");
+            alert("로그인이 필요합니다.");
+            window.location.href = "/test/chat/login";
             return;
         }
 
-        const roomId = document.getElementById('roomId').value;
-        if (!roomId) {
-            alert('채팅방 ID를 입력해주세요.');
-            return;
-        }
+        const socket = new WebSocket(`${websocketEndpoint}`);
+        stompClient = new Stomp.Client({
+            webSocketFactory: () => socket,  // SockJS를 사용하지 않음
+            connectHeaders: { Authorization: `Bearer ${token}` },  // 토큰 헤더 추가
+            debug: function(str) {
+                console.log(str);
+            },
+            onConnect: function(frame) {
+                console.log('STOMP 연결 성공:', frame);
+                const connectionStatus = document.getElementById('connectionStatus');
+                connectionStatus.textContent = '연결 상태: 연결됨';
+                connectionStatus.className = 'connection-status connected';
 
-
-        const socket = new SockJS(websocketEndpoint);
-        stompClient = Stomp.over(socket);
-
-        // 연결 시 헤더에 토큰 추가
-        const headers = {
-            'Authorization': 'Bearer ' + token
-        };
-
-        stompClient.connect(headers, function(frame) {
-            connectionStatus.textContent = '연결 상태: 연결됨';
-            connectionStatus.className = 'connection-tabStatus connected';
-
-            // 채팅방 구독
-            stompClient.subscribe('/sub/chat/room/' + roomId, function(message) {
-                const receivedMessage = JSON.parse(message.body);
-                displayMessage(receivedMessage);
-            });
-
-            // 입장 메시지 전송
-            stompClient.send("/pub/message/enter", headers, JSON.stringify({
-                'roomId': roomId,
-                'type': 'ENTER',
-                'message': '입장했습니다.'
-            }));
-
-        }, function(error) {
-            connectionStatus.textContent = '연결 상태: 연결 실패';
-            connectionStatus.className = 'connection-tabStatus disconnected';
-            console.error('연결 실패:', error);
-
-            // 토큰 만료 등의 인증 에러 처리
-            if (error.headers && error.headers.message === 'Unauthorized') {
-                alert('인증이 만료되었습니다. 다시 로그인해주세요.');
-                logout();
+                // 필요한 재구독 로직
+                subscribedRooms.forEach((roomId) => subscribeToRoomInternal(roomId));
+            },
+            onStompError: function(error) {
+                console.error('STOMP 연결 실패:', error);
+                const connectionStatus = document.getElementById('connectionStatus');
+                connectionStatus.textContent = '연결 상태: 연결 실패';
+                connectionStatus.className = 'connection-status disconnected';
             }
+        });
+
+        stompClient.activate();
+    }
+
+    function createTab(roomId) {
+        const tabsContainer = document.getElementById('chatTabs');
+        const contentsContainer = document.getElementById('chatContents');
+
+        // 탭 생성
+        const tab = document.createElement('div');
+        tab.className = 'chat-tab';
+        tab.innerHTML = `Room ${roomId}`;
+        tab.onclick = () => switchRoom(roomId);
+        tabsContainer.appendChild(tab);
+
+        // 컨텐츠 영역 생성
+        const content = document.createElement('div');
+        content.className = 'chat-content';
+        content.id = `chat-content-${roomId}`;
+        contentsContainer.appendChild(content);
+
+        // 메시지 배열 초기화
+        roomMessages.set(roomId, []);
+
+        // 첫 번째 탭이면 활성화
+        if (subscribedRooms.size === 1) {
+            switchRoom(roomId);
+        }
+    }
+
+    function switchRoom(roomId) {
+        currentRoom = roomId;
+
+        // 모든 탭과 컨텐츠 비활성화
+        document.querySelectorAll('.chat-tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.chat-content').forEach(content => content.classList.remove('active'));
+
+        // 선택된 탭과 컨텐츠 활성화
+        const tab = Array.from(document.querySelectorAll('.chat-tab'))
+            .find(t => t.textContent.includes(`Room ${roomId}`));
+        const content = document.getElementById(`chat-content-${roomId}`);
+
+        if (tab) tab.classList.add('active');
+        if (content) content.classList.add('active');
+    }
+
+    // 채팅방 구독
+    function subscribeToRoom() {
+        const roomId = document.getElementById("roomId").value;
+        if (!roomId || subscribedRooms.has(roomId)) return;
+
+        subscribedRooms.add(roomId);
+        createTab(roomId);
+        subscribeToRoomInternal(roomId);
+        document.getElementById("roomId").value = "";
+    }
+
+    function subscribeToRoomInternal(roomId) {
+        if (!stompClient || !stompClient.active) { // 'connected' 속성 대신 'active' 사용
+            console.error("STOMP 클라이언트가 연결되어있지 않음");
+            return;
+        }
+
+        // STOMP로 메시지 구독
+        stompClient.subscribe(`/topic/room/${roomId}`, function (message) {
+            const parsedMessage = JSON.parse(message.body);
+            displayMessage(parsedMessage);
+        });
+
+        // 방 입장 메시지 발행
+        sendMessageInternal({
+            type: "ENTER",
+            roomId: roomId,
+            message: "입장했습니다.",
         });
     }
 
-    function disconnect() {
-        const token = localStorage.getItem('accessToken');
-        const roomId = document.getElementById('roomId').value;
 
-        if (!roomId) {
-            alert('채팅방 ID가 필요합니다.');
-            return;
-        }
-
-        if (stompClient !== null) {
-            const headers = {
-                'Authorization': 'Bearer ' + token
-            };
-
-            // 방을 나가는 메시지 전송
-            stompClient.send("/pub/message/leave", headers, JSON.stringify({
-                roomId: roomId,
-                type: 'LEAVE',
-                message: '방을 나갔습니다.'
-            }));
-
-            // 연결 해제
-            stompClient.disconnect();
-            connectionStatus.textContent = '연결 상태: 연결 해제됨';
-            connectionStatus.className = 'connection-tabStatus disconnected';
-        }
-    }
-
+    // 메시지 전송
     function sendMessage() {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert('로그인이 필요합니다.');
-            window.location.href = '/test/chat/login';
+        if (!currentRoom) {
+            alert("메시지를 보낼 채팅방을 선택해주세요.");
             return;
         }
 
-        const messageInput = document.getElementById('message');
-        const roomId = document.getElementById('roomId').value;
+        const messageInput = document.getElementById("message");
+        const message = messageInput.value.trim();
+        if (!message) return;
 
-        if (!messageInput.value.trim()) {
-            return;
-        }
+        sendMessageInternal({
+            type: "TALK",
+            roomId: currentRoom,
+            message: message,
+        });
 
-        const chatMessage = {
-            roomId: roomId,
-            type: 'TALK',
-            message: messageInput.value
-        };
-
-        // 메시지 전송 시 헤더에 토큰 추가
-        const headers = {
-            'Authorization': 'Bearer ' + token
-        };
-
-        stompClient.send("/pub/message/send", headers, JSON.stringify(chatMessage));
-        messageInput.value = '';
+        messageInput.value = "";
     }
 
-    function displayMessage(message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.style.margin = '5px';
-        messageDiv.style.padding = '5px';
-        messageDiv.style.borderBottom = '1px solid #eee';
 
-        if (message.type === 'ENTER') {
-            messageDiv.style.color = '#666';
-            messageDiv.style.fontStyle = 'italic';
+    function sendMessageInternal(message) {
+        if (!stompClient || !stompClient.active) { // 'connected' 속성 대신 'active' 사용
+            console.error("STOMP 클라이언트가 연결되어있지 않음");
+            return;
         }
 
-        messageDiv.textContent = `${message.type === 'ENTER' ? `📢 ${message.message}` : `💭 ${message.senderNm} :  ${message.message}`}`;
-        messageContainer.appendChild(messageDiv);
-        messageContainer.scrollTop = messageContainer.scrollHeight;
+        stompClient.publish({ destination: "/pub/message/send", body: JSON.stringify(message) });
+    }
+
+    // 메시지 출력
+    function displayMessage(message) {
+        const roomId = message.roomId;
+        const contentContainer = document.getElementById(`chat-content-${roomId}`);
+        if (!contentContainer) return;
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${
+            message.type === "ENTER" || message.type === "LEAVE" ? "enter-leave" : ""
+        }`;
+
+        let messageContent = "";
+        switch (message.type) {
+            case "ENTER":
+                messageContent = `📢 ${message.senderNm || "Unknown"} 님이 입장했습니다.`;
+                break;
+            case "LEAVE":
+                messageContent = `📢 ${message.senderNm || "Unknown"} 님이 퇴장했습니다.`;
+                break;
+            case "TALK":
+                messageContent = `💭 ${message.senderNm || "Unknown"}: ${message.message}`;
+                break;
+            default:
+                messageContent = message.message || "내용 없음";
+        }
+
+        messageDiv.textContent = `[Room ${roomId}] ${messageContent}`;
+        contentContainer.appendChild(messageDiv);
+        contentContainer.scrollTop = contentContainer.scrollHeight;
+    }
+
+    function disconnect() {
+        if (stompClient) {
+            stompClient.deactivate();
+        }
     }
 
     // Enter 키로 메시지 전송
@@ -240,6 +254,23 @@
             sendMessage();
         }
     });
+
+    // Enter 키로 메시지 전송
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            const messageInput = document.getElementById('message');
+            if (document.activeElement === messageInput) {
+                sendMessage();
+                event.preventDefault();
+            }
+        }
+    });
+
+    // 페이지 떠날 때 WebSocket 연결 해제
+    window.addEventListener('beforeunload', function() {
+        disconnect();
+    });
+    /*]]>*/
 </script>
 </body>
 </html>

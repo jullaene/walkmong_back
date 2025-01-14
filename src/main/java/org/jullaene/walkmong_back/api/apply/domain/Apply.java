@@ -16,6 +16,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.ApplyInfoResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.req.MeetAddressReq;
 import org.jullaene.walkmong_back.common.BaseEntity;
 
 @Table(name = "apply")
@@ -124,5 +125,14 @@ public class Apply extends BaseEntity {
                 .preMeetingYn(preMeetingYn)
                 .memoToOwner(memoToOwner)
                 .build();
+    }
+
+    public void updateMeetAddress(MeetAddressReq meetAddressReq) {
+        this.dongAddress = meetAddressReq.getDongAddress();
+        this.roadAddress = meetAddressReq.getRoadAddress();
+        this.latitude = meetAddressReq.getLatitude();
+        this.longitude = meetAddressReq.getLongitude();
+        this.addressDetail = meetAddressReq.getAddressDetail();
+        this.addressMemo = meetAddressReq.getAddressMemo();
     }
 }
