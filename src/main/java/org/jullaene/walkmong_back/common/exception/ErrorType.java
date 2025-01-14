@@ -37,7 +37,9 @@ public enum ErrorType {
     APPLE_PUBLIC_KEY_LOAD_ERROR("Apple 공개 키를 불러오는 중 오류가 발생했습니다."),
     TOKEN_PARSE_ERROR("ID 토큰을 파싱하는 중 오류가 발생했습니다."),
     EXPIRED_APPLE_ID_TOKEN("만료된 ID 토큰입니다."),
-    EMAIL_ALREADY_REGISTERED("이미 다른 소셜 계정으로 가입된 이메일입니다.");
+    EMAIL_ALREADY_REGISTERED("이미 다른 소셜 계정으로 가입된 이메일입니다."),
+    INVALID_BOARD("존재하지 않는 게시글입니다."),
+    INVALID_APPLY("존재하지 않는 지원서입니다.");
 
     private String message;
 

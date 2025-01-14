@@ -22,5 +22,6 @@ public class ChatRoomListResponseDto {
     private String targetName;
     private Integer notRead;
     private Long roomId;
+    private Long boardId;
 
 }

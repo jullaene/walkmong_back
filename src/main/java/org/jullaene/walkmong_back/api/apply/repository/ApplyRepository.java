@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ApplyRepository extends JpaRepository<Apply, Long>, ApplyRepositoryCustom {
     boolean existsByBoardIdAndMemberIdAndDelYn(Long boardId, Long memberId, String delYn);
@@ -22,4 +24,6 @@ public interface ApplyRepository extends JpaRepository<Apply, Long>, ApplyReposi
     Long findIdByApplicantId(Long applyId);
 
     Apply findByApplyIdAndBoardIdAndDelYn(Long applyId, Long boardId, String n);
+
+    Optional<Apply> findByBoardIdAndMatchingStatusAndDelYn(Long boardId, MatchingStatus matchingStatus, String delYn);
 }
