@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FCM 토큰 발급</title>
+</head>
+<body>
+<h1>FCM 토큰 발급</h1>
+<div id="token-display">FCM 토큰이 여기에 표시됩니다.</div>
+<button id="token-button">토큰 발급받기</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const firebaseConfig = {
+      apiKey: "[[${apiKey}]]",
+      authDomain: "[[${authDomain}]]",
+      projectId: "[[${projectId}]]",
+      storageBucket: "[[${storageBucket}]]",
+      messagingSenderId: "[[${messagingSenderId}]]",
+      appId: "[[${appId}]]"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    const button = document.getElementById("token-button");
+    button.addEventListener("click", async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          console.log("알림 권한이 허용되었습니다.");
+
+          // 기존 토큰이 있다면 삭제
+          try {
+            const existingToken = await messaging.getToken();
+            if (existingToken) {
+              await messaging.deleteToken(existingToken);
+            }
+          } catch (e) {
+            console.log("No existing token");
+          }
+
+          // 새 토큰 발급
+          const currentToken = await messaging.getToken({
+            vapidKey: "[[${vapidKey}]]"
+          });
+
+          if (currentToken) {
+            document.getElementById('token-display').innerText = `FCM 토큰: ${currentToken}`;
+            console.log('FCM 토큰:', currentToken);
+          } else {
+            document.getElementById('token-display').innerText = 'FCM 토큰을 가져올 수 없습니다.';
+          }
+        } else {
+          document.getElementById('token-display').innerText = '알림 권한이 거부되었습니다.';
+        }
+      } catch (err) {
+        document.getElementById('token-display').innerText = '오류 발생: ' + err.message;
+        console.error('오류:', err);
+      }
+    });
+  });
+</script>
+</body>
+</html>
