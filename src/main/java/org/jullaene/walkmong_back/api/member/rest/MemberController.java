@@ -44,7 +44,7 @@ public class MemberController {
 
     @Operation(summary = "사용자 정보 조회", description = "사용자 정보를 조회하는 API입니다.")
     @GetMapping("/{memberId}")
-    public ResponseEntity<BasicResponse<WalkingResponseDto>> getMemberInfo (
+    public ResponseEntity<BasicResponse<MemberResponseDto>> getMemberInfo (
             @PathVariable(name = "memberId") Long memberId
     ) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.getMemberInfo(memberId)));
