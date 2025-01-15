@@ -3,6 +3,10 @@ package org.jullaene.walkmong_back.api.member.service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jullaene.walkmong_back.api.dog.domain.Dog;
+import org.jullaene.walkmong_back.api.dog.dto.res.DogProfileResponseDto;
+import org.jullaene.walkmong_back.api.dog.repository.DogRepository;
+import org.jullaene.walkmong_back.api.dog.service.DogService;
 import org.jullaene.walkmong_back.api.member.domain.Address;
 import org.jullaene.walkmong_back.api.member.domain.Member;
 import org.jullaene.walkmong_back.api.member.dto.common.WalkingBasicInfo;
@@ -27,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jullaene.walkmong_back.common.exception.ErrorType.INVALID_USER;
 
@@ -38,6 +43,7 @@ public class MemberService {
     private final AddressRepository addressRepository;
     private final HashtagToWalkerRepository hashtagToWalkerRepository;
     private final FileService fileService;
+    private final DogRepository dogRepository;
 
     /**
      * CustomUserDetail에서 member 가져오기
@@ -118,8 +124,18 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public WalkingResponseDto getMemberInfo (Long memberId) {
-        return getWalkingResponseDto(memberId);
+    public MemberResponseDto getMemberInfo (Long memberId) {
+        WalkingResponseDto walkingResponseDto = getWalkingResponseDto(memberId);
+        List<Dog> dogs = dogRepository.findByMemberIdAndDelYn(memberId, "N");
+
+        List<DogProfileResponseDto> dogProfileResponseDtos =  dogs.stream()
+                .map(Dog::toDogProfileResponseDto)
+                .collect(Collectors.toList());
+
+        return MemberResponseDto.builder()
+                .walkingResponseDto(walkingResponseDto)
+                .dogs(dogProfileResponseDtos)
+                .build();
     }
 
     @Transactional
