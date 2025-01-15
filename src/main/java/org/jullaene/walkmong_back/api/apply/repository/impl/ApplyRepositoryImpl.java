@@ -229,14 +229,15 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                         member.profile.as("applicantProfile"),
                                         Expressions.numberTemplate(Integer.class,"YEAR(CURDATE()) - YEAR({0})", member.birthDate).as("applicantAge"),
                                         member.gender.as("applicantGender"),
-                                        address.dongAddress.as("applicantDongAddress"),
-                                        address.roadAddress.as("applicantRoadAddress"),
+                                        apply.dongAddress.as("applicantDongAddress"),
+                                        apply.roadAddress.as("applicantRoadAddress"),
                                         Expressions.asNumber(100) //평점
                                 ))
                         .from(board)
-                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
-                        .leftJoin(member).on(apply.memberId.eq(member.memberId))
-                        .leftJoin(address).on(apply.memberId.eq(address.memberId))
+                        .join(apply).on(apply.boardId.eq(board.boardId)
+                                .and(apply.delYn.eq(delYn)))
+                        .join(member).on(apply.memberId.eq(member.memberId)
+                                .and(member.delYn.eq(delYn)))
                         .where((apply.matchingStatus.eq(MatchingStatus.valueOf("PENDING")))
                                 .and(board.delYn.eq(delYn))
                                 .and(board.boardId.eq(boardId)))

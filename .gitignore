@@ -45,6 +45,7 @@ out/
 **/src/main/resources/application.yml
 **/src/main/resources/application*.yml
 **/src/main/resources/key/**
+**/src/main/resources/firebase-service-account.json
 
 ## querydsl ##
 **/src/main/generated/*
