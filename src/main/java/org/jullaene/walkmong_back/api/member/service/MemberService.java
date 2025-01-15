@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.jullaene.walkmong_back.common.exception.ErrorType.INVALID_USER;
@@ -164,5 +165,10 @@ public class MemberService {
                 .walkingBasicInfo(walkingBasicInfo)
                 .topHashtags(topHashtags)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Member> getMemberByMemberId(Long reviewerId) {
+        return memberRepository.findByMemberIdAndDelYn(reviewerId, "N");
     }
 }

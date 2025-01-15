@@ -21,6 +21,7 @@ import org.jullaene.walkmong_back.common.file.FileService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -122,11 +123,13 @@ public class ReviewToWalkerService {
     /**
      * 반려인이 산책자에 대해 작성한 후기 리스트 조회
      * */
-    public List<ReviewToWalkerRes> getReviewToWalkerList() {
-        Member member = memberService.getMemberFromUserDetail();
+    public List<ReviewToWalkerRes> getReviewToWalkerList(Long memberId, String ascYn) {
+        if (memberId == null || memberId <= 0) {
+            memberId = memberService.getMemberFromUserDetail().getMemberId();
+        }
 
         // 후기 기본 정보 조회
-        List<ReviewToWalkerBasicInfo> basicInfos = reviewToWalkerRepository.findAllByReviewTargetIdAndDelYn(member.getMemberId(), "N");
+        List<ReviewToWalkerBasicInfo> basicInfos = reviewToWalkerRepository.findAllByReviewTargetIdAndDelYn(memberId, "N");
 
         List<Long> reviewIds = basicInfos.stream()
                 .map(ReviewToWalkerBasicInfo::getReviewToWalkerId)
@@ -137,6 +140,11 @@ public class ReviewToWalkerService {
         Map<Long, List<HashtagWalkerNm>> hashtags = hashtagToWalkerRepository.findHashtagsByReviewToWalkerIdsAndDelYn(reviewIds, "N");
 
         return basicInfos.stream()
+                .sorted(
+                        "Y".equalsIgnoreCase(ascYn)
+                                ? Comparator.comparing(ReviewToWalkerBasicInfo::getWalkingDay).reversed()
+                                : Comparator.comparing(ReviewToWalkerBasicInfo::getWalkingDay)
+                )
                 .map(basicInfo -> {
                     return ReviewToWalkerRes.builder()
                             .reviewToWalkerBasicInfo(basicInfo)
