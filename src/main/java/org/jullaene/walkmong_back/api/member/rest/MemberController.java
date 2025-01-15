@@ -9,10 +9,12 @@ import org.jullaene.walkmong_back.api.member.dto.req.MemberAdditionalInfoRequest
 import org.jullaene.walkmong_back.api.member.dto.req.MemberReqDto;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.api.member.dto.res.MemberResponseDto;
+import org.jullaene.walkmong_back.api.member.dto.res.MyInfoResponseDto;
 import org.jullaene.walkmong_back.api.member.dto.res.WalkingResponseDto;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
 import org.jullaene.walkmong_back.common.BasicResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Member", description = "멤버 정보 관련 api 입니다.")
@@ -30,14 +32,22 @@ public class MemberController {
 
     @Operation(summary = "내 정보 조회", description = "내 정보를 조회하는 API입니다.")
     @GetMapping("/mypage")
-    public ResponseEntity<BasicResponse<MemberResponseDto>> getMemberInfo () {
-        return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.getMemberInfo()));
+    public ResponseEntity<BasicResponse<MyInfoResponseDto>> getMyInfo () {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.getMyInfo()));
     }
 
     @Operation(summary = "산책 관련 정보 조회", description = "산책 관련 정보를 조회하는 API입니다.")
     @GetMapping("/walking")
     public ResponseEntity<BasicResponse<WalkingResponseDto>> getWalkingInfo () {
         return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.getWalkingInfo()));
+    }
+
+    @Operation(summary = "사용자 정보 조회", description = "사용자 정보를 조회하는 API입니다.")
+    @GetMapping("/{memberId}")
+    public ResponseEntity<BasicResponse<WalkingResponseDto>> getMemberInfo (
+            @PathVariable(name = "memberId") Long memberId
+    ) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(memberService.getMemberInfo(memberId)));
     }
 
     @Operation(summary = "내 정보 수정", description = "내 정보를 수정하는 API입니다.")

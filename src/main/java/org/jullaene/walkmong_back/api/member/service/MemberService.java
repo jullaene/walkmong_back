@@ -1,6 +1,5 @@
 package org.jullaene.walkmong_back.api.member.service;
 
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +10,7 @@ import org.jullaene.walkmong_back.api.member.dto.req.MemberAdditionalInfoRequest
 import org.jullaene.walkmong_back.api.member.dto.req.MemberReqDto;
 import org.jullaene.walkmong_back.api.member.dto.req.WalkExperienceReq;
 import org.jullaene.walkmong_back.api.member.dto.res.MemberResponseDto;
+import org.jullaene.walkmong_back.api.member.dto.res.MyInfoResponseDto;
 import org.jullaene.walkmong_back.api.member.dto.res.WalkingResponseDto;
 import org.jullaene.walkmong_back.api.member.repository.AddressRepository;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepository;
@@ -24,11 +24,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.jullaene.walkmong_back.common.exception.ErrorType.INVALID_USER;
-import static org.jullaene.walkmong_back.common.exception.ErrorType.USER_NOT_AUTHENTICATED;
 
 @Slf4j
 @Service
@@ -68,8 +68,8 @@ public class MemberService {
     /**
      * 사용자의 기본 정보 조회
      * */
-    @Transactional
-    public MemberResponseDto getMemberInfo() {
+    @Transactional(readOnly = true)
+    public MyInfoResponseDto getMyInfo() {
         Member member = getMemberFromUserDetail();
 
         return memberRepository.getMemberInfo(member.getMemberId(), "N");
@@ -110,18 +110,16 @@ public class MemberService {
     /**
      * 유저의 산책 관련 정보 조회
      * */
+    @Transactional(readOnly = true)
     public WalkingResponseDto getWalkingInfo() {
         Member member = getMemberFromUserDetail();
 
-        WalkingBasicInfo walkingBasicInfo = memberRepository.getWalkingInfo(member.getMemberId(), "N");
+        return getWalkingResponseDto(member.getMemberId());
+    }
 
-        List<HashtagPercentageDto> topHashtags = hashtagToWalkerRepository.getTopHashtags(member.getMemberId(), "N");
-
-
-        return WalkingResponseDto.builder()
-                .walkingBasicInfo(walkingBasicInfo)
-                .topHashtags(topHashtags)
-                .build();
+    @Transactional(readOnly = true)
+    public WalkingResponseDto getMemberInfo (Long memberId) {
+        return getWalkingResponseDto(memberId);
     }
 
     @Transactional
@@ -137,5 +135,18 @@ public class MemberService {
 
         memberRepository.save(member);
         return member;
+    }
+
+    @Transactional(readOnly = true)
+    protected WalkingResponseDto getWalkingResponseDto (Long memberId) {
+        WalkingBasicInfo walkingBasicInfo = memberRepository.getWalkingInfo(memberId, "N");
+
+        List<HashtagPercentageDto> topHashtags = hashtagToWalkerRepository.getTopHashtags(memberId, "N");
+
+
+        return WalkingResponseDto.builder()
+                .walkingBasicInfo(walkingBasicInfo)
+                .topHashtags(topHashtags)
+                .build();
     }
 }
