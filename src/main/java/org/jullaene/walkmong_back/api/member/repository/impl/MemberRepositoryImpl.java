@@ -11,13 +11,10 @@ import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.member.domain.QAddress;
 import org.jullaene.walkmong_back.api.member.domain.QMember;
 import org.jullaene.walkmong_back.api.member.dto.common.WalkingBasicInfo;
-import org.jullaene.walkmong_back.api.member.dto.res.MemberResponseDto;
+import org.jullaene.walkmong_back.api.member.dto.res.MyInfoResponseDto;
 import org.jullaene.walkmong_back.api.member.repository.MemberRepositoryCustom;
 import org.jullaene.walkmong_back.api.review.domain.QReviewToOwner;
 import org.jullaene.walkmong_back.api.review.domain.QReviewToWalker;
-import org.jullaene.walkmong_back.api.review.dto.res.HashtagPercentageDto;
-
-import java.util.ArrayList;
 
 import static com.querydsl.core.types.ExpressionUtils.count;
 
@@ -26,13 +23,13 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public MemberResponseDto getMemberInfo(Long memberId, String delYn) {
+    public MyInfoResponseDto getMemberInfo(Long memberId, String delYn) {
         QMember member = QMember.member;
         QAddress address = QAddress.address;
 
         return queryFactory.select(
                 Projections.constructor(
-                        MemberResponseDto.class,
+                        MyInfoResponseDto.class,
                         member.nickname,
                         address.addressId,
                         address.dongAddress,
@@ -57,6 +54,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     @Override
     public WalkingBasicInfo getWalkingInfo(Long memberId, String delYn) {
         QMember member = QMember.member;
+        QAddress address = QAddress.address;
         QApply apply = QApply.apply;
         QReviewToOwner reviewToOwner = QReviewToOwner.reviewToOwner;
         QReviewToWalker reviewToWalker = QReviewToWalker.reviewToWalker;
@@ -65,7 +63,13 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .select(
                         Projections.constructor(
                                 WalkingBasicInfo.class,
+                                member.nickname,
+                                address.dongAddress,
+                                member.introduce,
                                 member.name,
+                                member.gender,
+                                member.birthDate,
+                                member.phone,
                                 member.profile,
                                 member.dogOwnership,
                                 count(apply),
@@ -93,10 +97,20 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .leftJoin(reviewToWalker)
                 .on(reviewToWalker.reviewTargetId.eq(memberId)
                         .and(reviewToWalker.delYn.eq(delYn)))
+                .join(address)
+                .on(address.memberId.eq(memberId)
+                        .and(address.basicAddressYn.eq("Y"))
+                        .and(address.delYn.eq(delYn)))
                 .where(member.memberId.eq(memberId)
                         .and(member.delYn.eq(delYn)))
                 .groupBy(
+                        member.nickname,
+                        address.dongAddress,
+                        member.introduce,
                         member.name,
+                        member.gender,
+                        member.birthDate,
+                        member.phone,
                         member.profile,
                         member.dogOwnership,
                         member.dogWalkingExperienceYn,
