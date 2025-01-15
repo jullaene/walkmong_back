@@ -127,7 +127,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .from(board)
                 .join(dog).on(dog.dogId.eq(board.dogId).and(dog.delYn.eq("N")))
                 .join(ownerAddress).on(ownerAddress.addressId.eq(board.ownerAddressId).and(ownerAddress.delYn.eq("N")))
-                .where(builder)
+                .where(builder
+                        .and(board.delYn.eq("N")))
                 .where(isWithinRange)
                 .orderBy(board.startTime.asc())
                 .fetch();
@@ -247,9 +248,12 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
                                 ))
                         .from(board)
-                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-                        .leftJoin(member).on(board.ownerId.eq(member.memberId))
-                        .leftJoin(address).on(address.addressId.eq(board.ownerAddressId))
+                        .join(dog).on(dog.dogId.eq(board.dogId)
+                                .and(dog.delYn.eq(delYn)))
+                        .join(member).on(board.ownerId.eq(member.memberId)
+                                .and(member.delYn.eq(delYn)))
+                        .join(address).on(address.addressId.eq(board.ownerAddressId)
+                                .and(address.delYn.eq(delYn)))
                         .where(board.boardId.eq(boardId)
                                 .and(board.delYn.eq(delYn)))
                         .fetchOne());
@@ -292,12 +296,17 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                                         board.boardId.as("boardId")
                                 ))
                         .from(board)
-                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
+                        .join(dog).on(dog.dogId.eq(board.dogId)
+                                .and(dog.delYn.eq("N")))
+                        .join(apply).on(apply.boardId.eq(board.boardId)
+                                .and(apply.delYn.eq(apply.delYn)))
                         //boardId와 chatParticipantId는 1:1 관계
-                        .leftJoin(chatRoom).on(chatRoom.boardId.eq(board.boardId))
-                        .leftJoin(chat).on(chat.roomId.eq(chatRoom.roomId))
-                        .leftJoin(member).on(apply.memberId.eq(member.memberId)) //산책 지원자
+                        .join(chatRoom).on(chatRoom.boardId.eq(board.boardId)
+                                .and(chatRoom.delYn.eq("N")))
+                        .leftJoin(chat).on(chat.roomId.eq(chatRoom.roomId)
+                                .and(chat.delYn.eq("N")))
+                        .join(member).on(apply.memberId.eq(member.memberId)
+                                .and(member.delYn.eq("N"))) //산책 지원자
                         .where(board.ownerId.eq(memberId)
                                 .and(apply.matchingStatus.eq(status))
                                 .and(chat.chatId.eq(lastMessageSubQuery)))
@@ -392,13 +401,13 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                         Expressions.asString(status.name()).as("walkMatchingStatus")
                 ))
                 .from(board)
-                .leftJoin(dog)
+                .join(dog)
                 .on(dog.dogId.eq(board.dogId)
                         .and(dog.delYn.eq(delYn)))
-                .leftJoin(apply)
+                .join(apply)
                 .on(apply.boardId.eq(board.boardId)
                         .and(apply.delYn.eq(delYn)))  // Apply와 Board를 연결하는 조건 추가
-                .leftJoin(member)
+                .join(member)
                 .on(member.memberId.eq(apply.memberId)
                         .and(member.delYn.eq(delYn))
                         .and(board.walkingStatus.ne(WalkingStatus.PENDING))  // board.walkingStatus가 PENDING이 아닌 경우
