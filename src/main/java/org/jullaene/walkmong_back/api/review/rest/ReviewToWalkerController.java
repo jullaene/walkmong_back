@@ -27,7 +27,10 @@ public class ReviewToWalkerController {
 
     @Operation(summary = "산책 후기 리스트 조회 (반려인 -> 산책자)", description = "반려인이 산책자에 대해 작성한 산책 후기 리스트를 조회하는 API입니다.")
     @GetMapping("/list")
-    public ResponseEntity<BasicResponse<List<ReviewToWalkerRes>>> getReviewToWalkerList () {
-        return ResponseEntity.ok(BasicResponse.ofSuccess(reviewToWalkerService.getReviewToWalkerList()));
+    public ResponseEntity<BasicResponse<List<ReviewToWalkerRes>>> getReviewToWalkerList (
+            @RequestParam(value = "memberId", required = false) Long memberId,
+            @RequestParam(value = "ascYn", defaultValue = "N") String ascYn
+    ) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(reviewToWalkerService.getReviewToWalkerList(memberId, ascYn)));
     }
 }

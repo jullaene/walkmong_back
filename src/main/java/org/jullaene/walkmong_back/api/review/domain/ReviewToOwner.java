@@ -9,7 +9,11 @@ import org.jullaene.walkmong_back.api.review.domain.enums.Activity;
 import org.jullaene.walkmong_back.api.review.domain.enums.Aggressiveness;
 import org.jullaene.walkmong_back.api.review.domain.enums.Sociality;
 import org.jullaene.walkmong_back.api.review.dto.req.ReviewToOwnerReqDto;
+import org.jullaene.walkmong_back.api.review.dto.res.ReviewToOwnerResponseDto;
 import org.jullaene.walkmong_back.common.BaseEntity;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "review_to_owner")
 @Entity
@@ -29,6 +33,9 @@ public class ReviewToOwner extends BaseEntity {
 
     @Comment("후기 대상자 아이디")
     private Long reviewTargetId;
+
+    @Comment("강아지 아이디")
+    private Long dogId;
 
     @Comment("후기")
     private String content;
@@ -67,5 +74,28 @@ public class ReviewToOwner extends BaseEntity {
 
     public Long getReviewToOwnerId () {
         return reviewToOwnerId;
+    }
+
+    public Long getBoardId() {
+        return this.boardId;
+    }
+
+    public Long getReviewerId() {
+        return this.reviewerId;
+    }
+
+    public ReviewToOwnerResponseDto toReviewToOwnerResponseDto(
+            LocalDateTime startTime,
+            String reviewerNm,
+            List<String> images) {
+        return ReviewToOwnerResponseDto.builder()
+                .reviewer(reviewerNm)
+                .walkingDay(startTime)
+                .sociality(this.sociality)
+                .activity(this.activity)
+                .aggressiveness(this.aggressiveness)
+                .content(this.content)
+                .images(images)
+                .build();
     }
 }
