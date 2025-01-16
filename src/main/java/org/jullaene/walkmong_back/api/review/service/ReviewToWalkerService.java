@@ -65,7 +65,7 @@ public class ReviewToWalkerService {
 
         List<ReviewToWalkerImage> images = reviewToWalkerReqDto.getImages().stream()
                         .map(image -> {
-                            String imageUrl = fileService.uploadFile(image, "/review/to/walker");
+                            String imageUrl = fileService.uploadFile(image, "review/to/walker");
                             return ReviewToWalkerImage.builder()
                                     .reviewToWalkerId(reviewToWalkerId)
                                     .imageUrl(imageUrl)

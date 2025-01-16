@@ -92,7 +92,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, INVALID_USER));
 
         // 멤버 정보 저장
-        String profileUrl = fileService.uploadFile(memberReqDto.getProfile(), "/member");
+        String profileUrl = fileService.uploadFile(memberReqDto.getProfile(), "member");
         member.update(memberReqDto, profileUrl);
 
         // 입력된 주소를 기본 주소로 저장
@@ -145,7 +145,7 @@ public class MemberService {
 
         String profileUrl = null;
         if (additionalInfoRequestDto.getProfile() != null && !additionalInfoRequestDto.getProfile().isEmpty()) {
-            profileUrl = fileService.uploadFile(additionalInfoRequestDto.getProfile(), "/member");
+            profileUrl = fileService.uploadFile(additionalInfoRequestDto.getProfile(), "member");
         }
 
         member.updateAdditionalInfo(additionalInfoRequestDto, profileUrl);

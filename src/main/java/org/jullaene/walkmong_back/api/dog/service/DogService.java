@@ -40,7 +40,7 @@ public class DogService {
             throw new CustomException(HttpStatus.FORBIDDEN,ErrorType.CANNOT_DUPLICATED_DOG_PROFILE);
         }
 
-        String imageUrl = fileService.uploadFile(dogProfileReqDto.getProfile(), "/dog");
+        String imageUrl = fileService.uploadFile(dogProfileReqDto.getProfile(), "dog");
 
         Dog dog=Dog.builder()
                 .memberId(member.getMemberId())
@@ -65,7 +65,7 @@ public class DogService {
             throw new CustomException(HttpStatus.FORBIDDEN, ErrorType.ACCESS_DENIED);
         }
 
-        String imageUrl = fileService.uploadFile(dogProfileReqDto.getProfile(), "/dog");
+        String imageUrl = fileService.uploadFile(dogProfileReqDto.getProfile(), "dog");
         dog.updateProfile(dogProfileReqDto, imageUrl);
         Dog updatedDog = dogRepository.save(dog);
 

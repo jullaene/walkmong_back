@@ -71,7 +71,7 @@ public class AuthService {
             throw new CustomException(HttpStatus.FORBIDDEN, ErrorType.ALREADY_EXIST_USER);
         }
 
-        String profileUrl = fileService.uploadFile(memberCreateReq.getProfile(), "/member");
+        String profileUrl = fileService.uploadFile(memberCreateReq.getProfile(), "member");
         String password = passwordEncoder.encode(memberCreateReq.getPassword());
         Member member = memberCreateReq.toEntity(profileUrl, password);
 
