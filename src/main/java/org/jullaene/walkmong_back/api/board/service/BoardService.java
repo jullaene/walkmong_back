@@ -224,10 +224,10 @@ public class BoardService {
     }
 
     /**
-     * 산책 완료 처리
+     * 산책 상태 변경
      * */
     @Transactional
-    public String completeWalking(Long boardId) {
+    public String changeWalkingStatus (Long boardId, WalkingStatus walkingStatus) {
         Member member = memberService.getMemberFromUserDetail();
         Board board = boardRepository.findByBoardIdAndDelYn(boardId, "N")
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_BOARD));
@@ -243,7 +243,7 @@ public class BoardService {
         }
         log.info("반려인 또는 산책자 인증 완료");
 
-        board.updateWalkingStatus(WalkingStatus.AFTER);
+        board.updateWalkingStatus(walkingStatus);
 
         return "SUCCESS";
     }
