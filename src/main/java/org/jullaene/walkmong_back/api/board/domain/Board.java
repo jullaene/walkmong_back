@@ -72,5 +72,7 @@ public class Board extends BaseEntity {
         this.ownerId = ownerId;
     }
 
-
+    public void updateWalkingStatus(WalkingStatus walkingStatus) {
+        this.walkingStatus = walkingStatus;
+    }
 }

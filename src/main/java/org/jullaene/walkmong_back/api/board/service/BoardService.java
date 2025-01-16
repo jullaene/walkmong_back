@@ -7,6 +7,7 @@ import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
 import org.jullaene.walkmong_back.api.board.domain.Board;
 import org.jullaene.walkmong_back.api.board.domain.GeoPost;
+import org.jullaene.walkmong_back.api.board.domain.enums.WalkingStatus;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.req.GeoReq;
 import org.jullaene.walkmong_back.api.board.dto.req.MeetAddressReq;
@@ -220,5 +221,30 @@ public class BoardService {
             throw new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_GEO);
         }
         return geoPost.toGeoRes();
+    }
+
+    /**
+     * 산책 완료 처리
+     * */
+    @Transactional
+    public String completeWalking(Long boardId) {
+        Member member = memberService.getMemberFromUserDetail();
+        Board board = boardRepository.findByBoardIdAndDelYn(boardId, "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_BOARD));
+
+        log.info("board Owner Id: " + board.getOwnerId());
+        boolean isOwner = board.getOwnerId().equals(member.getMemberId());
+        boolean isWalker = applyRepository.existsByBoardIdAndMemberIdAndMatchingStatusAndDelYn(boardId, member.getMemberId(), MatchingStatus.CONFIRMED, "N");
+        log.info("isOwner : {}, isWalker : {}", isOwner, isWalker);
+
+        // 해당 게시글의 산책자와 반려인 모두 아니라면 에러 반환
+        if (!isOwner && !isWalker) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED, ErrorType.ACCESS_DENIED);
+        }
+        log.info("반려인 또는 산책자 인증 완료");
+
+        board.updateWalkingStatus(WalkingStatus.AFTER);
+
+        return "SUCCESS";
     }
 }
