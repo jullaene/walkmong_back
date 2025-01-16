@@ -53,7 +53,7 @@ public class ReviewToOwnerService {
 
         List<ReviewToOwnerImage> images = reviewToOwnerReqDto.getImages().stream()
                 .map(image -> {
-                    String imageUrl = fileService.uploadFile(image, "/review/to/walker");
+                    String imageUrl = fileService.uploadFile(image, "review/to/walker");
                     return ReviewToOwnerImage.builder()
                             .reviewToOwnerId(reviewToOwnerId)
                             .imageUrl(imageUrl)

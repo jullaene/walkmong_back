@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,7 +46,11 @@ public class FileService {
             objectMetadata.setContentLength(multipartFile.getSize());
 
             // Construct file path
-            String filePath = dirPath + "/" + multipartFile.getOriginalFilename();
+            String cleanDirPath = dirPath.replaceAll("/+$", ""); // Remove trailing slashes
+            String cleanFileName = Objects.requireNonNull(multipartFile.getOriginalFilename()).replaceAll("%2F", "/");
+            String filePath = cleanDirPath + "/" + cleanFileName;
+
+            log.info("file Path : " + filePath);
 
             // Upload file to S3
             s3Client.putObject(new PutObjectRequest(bucket, filePath, multipartFile.getInputStream(), objectMetadata));
