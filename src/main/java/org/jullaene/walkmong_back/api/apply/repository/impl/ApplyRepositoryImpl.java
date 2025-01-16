@@ -136,7 +136,6 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         return queryFactory.selectDistinct(
                                 Projections.constructor(MatchingResponseDto.class,
                                         Expressions.constant(TabStatus.APPLY.name()),
-                                        apply.boardId.as("boardId"),
                                         dog.name.as("dogName"),
                                         dog.gender.as("dogGender"),
                                         dog.profile.as("dogProfile"),
@@ -146,7 +145,8 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                         distanceExpression.as("distance"),
                                         Expressions.nullExpression(String.class),
                                         Expressions.nullExpression(String.class),
-                                        Expressions.asString(status.name()).as("walkMatchingStatus")
+                                        Expressions.asString(status.name()).as("walkMatchingStatus"),
+                                        apply.boardId.as("boardId")
                                 ))
                 .from(apply)
                 .leftJoin(board)
