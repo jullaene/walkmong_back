@@ -389,6 +389,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         return queryFactory.selectDistinct(
                 Projections.constructor(MatchingResponseDto.class,
                         Expressions.constant(TabStatus.BOARD.name()),
+                        board.boardId.as("boardId"),
                         dog.name.as("dogName"),
                         dog.gender.as("dogGender"),
                         dog.profile.as("dogProfile"),
