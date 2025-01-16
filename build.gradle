@@ -70,6 +70,8 @@ dependencies {
 
     // Apple id_token signature verify
     implementation 'com.nimbusds:nimbus-jose-jwt:9.31'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {
