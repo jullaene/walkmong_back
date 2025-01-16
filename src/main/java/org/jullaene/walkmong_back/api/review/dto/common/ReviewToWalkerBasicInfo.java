@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class ReviewToWalkerBasicInfo {
     private final Long reviewToWalkerId;
     private final String ownerName;
+    private final String ownerProfile;
     private final String dogName;
     private final LocalDateTime walkingDay;
     private final Float photoSharing;

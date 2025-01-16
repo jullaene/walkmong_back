@@ -12,6 +12,7 @@ import java.util.List;
 public class ReviewToWalkerRes {
     private final Long reviewToWalkerId;
     private final String ownerName;
+    private final String ownerProfile;
     private final String dogName;
     private final LocalDateTime walkingDay;
     private final Float photoSharing;
@@ -31,6 +32,7 @@ public class ReviewToWalkerRes {
     ) {
         this.reviewToWalkerId = reviewToWalkerBasicInfo.getReviewToWalkerId();
         this.ownerName = reviewToWalkerBasicInfo.getOwnerName();
+        this.ownerProfile = reviewToWalkerBasicInfo.getOwnerProfile();
         this.dogName = reviewToWalkerBasicInfo.getDogName();
         this.walkingDay = reviewToWalkerBasicInfo.getWalkingDay();
         this.photoSharing = reviewToWalkerBasicInfo.getPhotoSharing();

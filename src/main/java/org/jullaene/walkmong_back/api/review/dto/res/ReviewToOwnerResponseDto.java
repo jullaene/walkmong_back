@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 public class ReviewToOwnerResponseDto {
     private final String reviewer;
+    private final String reviewerProfile;
     private final LocalDateTime walkingDay;
     private final Sociality sociality;
     private final Activity activity;
@@ -21,8 +22,9 @@ public class ReviewToOwnerResponseDto {
     private final List<String> images;
 
     @Builder
-    public ReviewToOwnerResponseDto(String reviewer, LocalDateTime walkingDay, Sociality sociality, Activity activity, Aggressiveness aggressiveness, String content, List<String> images) {
+    public ReviewToOwnerResponseDto(String reviewer, String reviewerProfile, LocalDateTime walkingDay, Sociality sociality, Activity activity, Aggressiveness aggressiveness, String content, List<String> images) {
         this.reviewer = reviewer;
+        this.reviewerProfile = reviewerProfile;
         this.walkingDay = walkingDay;
         this.sociality = sociality;
         this.activity = activity;

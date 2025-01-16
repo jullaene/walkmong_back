@@ -30,6 +30,7 @@ public class ReviewToWalkerRepositoryImpl implements ReviewToWalkerRepositoryCus
                                 ReviewToWalkerBasicInfo.class,
                                 reviewToWalker.reviewToWalkerId,
                                 member.nickname,
+                                member.profile,
                                 dog.name,
                                 board.startTime,
                                 reviewToWalker.photoSharing,

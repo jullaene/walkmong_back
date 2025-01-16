@@ -86,15 +86,17 @@ public class ReviewToOwnerService {
                     Board board = boardRepository.findByBoardIdAndDelYn(reviewToOwner.getBoardId(), "N")
                             .orElseThrow(() -> new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.INVALID_BOARD));
 
+                    // 리뷰어 정보 추가
                     Optional<Member> member = memberService.getMemberByMemberId(reviewToOwner.getReviewerId());
                     String reviewerNm = member.isPresent() ? member.get().getNickname() : "탈퇴한 사용자";
+                    String reviewerProfile = member.map(Member::getProfile).orElse(null);
 
                     List<ReviewToOwnerImage> reviewToOwnerImages = reviewToOwnerImageRepository.findAllByReviewToOwnerId(reviewToOwner.getReviewerId());
                     List<String> images = reviewToOwnerImages.stream()
                             .map(ReviewToOwnerImage::getImageUrl)
                             .toList();
 
-                    return reviewToOwner.toReviewToOwnerResponseDto(board.getStartTime(), reviewerNm, images);
+                    return reviewToOwner.toReviewToOwnerResponseDto(board.getStartTime(), reviewerNm, reviewerProfile, images);
                 })
                 .toList());
 
