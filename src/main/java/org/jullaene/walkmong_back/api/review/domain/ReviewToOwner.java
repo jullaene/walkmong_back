@@ -87,9 +87,11 @@ public class ReviewToOwner extends BaseEntity {
     public ReviewToOwnerResponseDto toReviewToOwnerResponseDto(
             LocalDateTime startTime,
             String reviewerNm,
+            String reviewerProfile,
             List<String> images) {
         return ReviewToOwnerResponseDto.builder()
                 .reviewer(reviewerNm)
+                .reviewerProfile(reviewerProfile)
                 .walkingDay(startTime)
                 .sociality(this.sociality)
                 .activity(this.activity)

@@ -135,7 +135,7 @@ public class ReviewToWalkerService {
                 .map(ReviewToWalkerBasicInfo::getReviewToWalkerId)
                 .toList();
 
-        Map<Long, List<String>> profiles = reviewToWalkerImageRepository.findProfilesByReviewToWalkerIdsAndDelYn(reviewIds, "N");
+        Map<Long, List<String>> images = reviewToWalkerImageRepository.findProfilesByReviewToWalkerIdsAndDelYn(reviewIds, "N");
 
         Map<Long, List<HashtagWalkerNm>> hashtags = hashtagToWalkerRepository.findHashtagsByReviewToWalkerIdsAndDelYn(reviewIds, "N");
 
@@ -148,7 +148,7 @@ public class ReviewToWalkerService {
                 .map(basicInfo -> {
                     return ReviewToWalkerRes.builder()
                             .reviewToWalkerBasicInfo(basicInfo)
-                            .profiles(profiles.get(basicInfo.getReviewToWalkerId()))
+                            .profiles(images.get(basicInfo.getReviewToWalkerId()))
                             .hashtags(hashtags.get(basicInfo.getReviewToWalkerId()))
                             .build();
                 }).toList();
