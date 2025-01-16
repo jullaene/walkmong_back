@@ -136,7 +136,7 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         return queryFactory.selectDistinct(
                                 Projections.constructor(MatchingResponseDto.class,
                                         Expressions.constant(TabStatus.APPLY.name()),
-                                        board.boardId.as("boardId"),
+                                        apply.boardId.as("boardId"),
                                         dog.name.as("dogName"),
                                         dog.gender.as("dogGender"),
                                         dog.profile.as("dogProfile"),
