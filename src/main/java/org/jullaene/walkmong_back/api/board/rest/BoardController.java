@@ -70,4 +70,14 @@ public class BoardController {
         return ResponseEntity.ok(BasicResponse.ofSuccess(boardService.getGeoPost(boardId)));
     }
 
+    /**
+     * 산책 완료
+     * */
+    @PatchMapping("/walk/complete/{boardId}")
+    public ResponseEntity<BasicResponse<String>> completeWalking (
+            @PathVariable("boardId") Long boardId
+    ) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(boardService.completeWalking(boardId)));
+    }
+
 }
