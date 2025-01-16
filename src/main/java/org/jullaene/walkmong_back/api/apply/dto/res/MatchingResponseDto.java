@@ -2,10 +2,7 @@ package org.jullaene.walkmong_back.api.apply.dto.res;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.jullaene.walkmong_back.api.apply.dto.enums.WalkMatchingStatus;
 import org.jullaene.walkmong_back.common.enums.Gender;
-import org.jullaene.walkmong_back.common.enums.TabStatus;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -23,6 +20,7 @@ public class MatchingResponseDto {
     private final String walkerName;
     private final String walkerProfile;
     private final String walkMatchingStatus;
+    private final Long boardId;
 
 
     public MatchingResponseDto() {
@@ -37,5 +35,6 @@ public class MatchingResponseDto {
         this.walkerName = null;
         this.walkerProfile = null;
         this.walkMatchingStatus = null;
+        this.boardId = null;
     }
 }
