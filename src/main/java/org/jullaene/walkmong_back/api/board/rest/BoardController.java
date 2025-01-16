@@ -2,6 +2,7 @@ package org.jullaene.walkmong_back.api.board.rest;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.jullaene.walkmong_back.api.board.domain.enums.WalkingStatus;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
 import org.jullaene.walkmong_back.api.board.dto.req.GeoReq;
 import org.jullaene.walkmong_back.api.board.dto.req.MeetAddressReq;
@@ -73,11 +74,12 @@ public class BoardController {
     /**
      * 산책 완료
      * */
-    @PatchMapping("/walk/complete/{boardId}")
+    @PatchMapping("/walk/status/{boardId}")
     public ResponseEntity<BasicResponse<String>> completeWalking (
-            @PathVariable("boardId") Long boardId
+            @PathVariable("boardId") Long boardId,
+            @RequestParam("status") WalkingStatus status
     ) {
-        return ResponseEntity.ok(BasicResponse.ofSuccess(boardService.completeWalking(boardId)));
+        return ResponseEntity.ok(BasicResponse.ofSuccess(boardService.changeWalkingStatus(boardId, status)));
     }
 
 }
