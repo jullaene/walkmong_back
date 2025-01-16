@@ -3,9 +3,11 @@ package org.jullaene.walkmong_back.api.board.rest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
+import org.jullaene.walkmong_back.api.board.dto.req.GeoReq;
 import org.jullaene.walkmong_back.api.board.dto.req.MeetAddressReq;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.GeoRes;
 import org.jullaene.walkmong_back.api.board.service.BoardService;
 import org.jullaene.walkmong_back.api.dog.domain.enums.DogSize;
 import org.jullaene.walkmong_back.api.member.domain.enums.DistanceRange;
@@ -50,6 +52,22 @@ public class BoardController {
     @PatchMapping("/meet/address/{boardId}")
     public ResponseEntity<BasicResponse<String>> changeMeetAddress (@PathVariable("boardId") Long boardId, @RequestBody MeetAddressReq meetAddressReq) {
         return ResponseEntity.ok(BasicResponse.ofSuccess(boardService.changeMeetAddress(boardId, meetAddressReq)));
+    }
+
+    /**
+     * 현재 위치 저장
+     * */
+    @PostMapping("/geo/{boardId}")
+    public ResponseEntity<BasicResponse<String>> updateCurrentGeo (@PathVariable("boardId") Long boardId, @RequestBody GeoReq geoReq) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(boardService.saveOrUpdateGeoPost(boardId, geoReq)));
+    }
+
+    /**
+     * 현재 위치 반환
+     * */
+    @GetMapping("/geo/{boardId}")
+    public ResponseEntity<BasicResponse<GeoRes>> getCurrentGeo (@PathVariable("boardId") Long boardId) {
+        return ResponseEntity.ok(BasicResponse.ofSuccess(boardService.getGeoPost(boardId)));
     }
 
 }

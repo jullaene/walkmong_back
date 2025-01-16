@@ -39,7 +39,8 @@ public enum ErrorType {
     EXPIRED_APPLE_ID_TOKEN("만료된 ID 토큰입니다."),
     EMAIL_ALREADY_REGISTERED("이미 다른 소셜 계정으로 가입된 이메일입니다."),
     INVALID_BOARD("존재하지 않는 게시글입니다."),
-    INVALID_APPLY("존재하지 않는 지원서입니다.");
+    INVALID_APPLY("존재하지 않는 지원서입니다."),
+    INVALID_GEO("현재 위치가 존재하지 않습니다.");
 
     private String message;
 

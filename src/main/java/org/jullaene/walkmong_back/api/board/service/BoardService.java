@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jullaene.walkmong_back.api.apply.domain.Apply;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
-import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
 import org.jullaene.walkmong_back.api.board.domain.Board;
+import org.jullaene.walkmong_back.api.board.domain.GeoPost;
 import org.jullaene.walkmong_back.api.board.dto.req.BoardRequestDto;
+import org.jullaene.walkmong_back.api.board.dto.req.GeoReq;
 import org.jullaene.walkmong_back.api.board.dto.req.MeetAddressReq;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardDetailResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardResponseDto;
+import org.jullaene.walkmong_back.api.board.dto.res.GeoRes;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
 import org.jullaene.walkmong_back.api.dog.domain.Dog;
@@ -24,6 +26,8 @@ import org.jullaene.walkmong_back.api.member.repository.AddressRepository;
 import org.jullaene.walkmong_back.api.member.service.MemberService;
 import org.jullaene.walkmong_back.common.exception.CustomException;
 import org.jullaene.walkmong_back.common.exception.ErrorType;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +37,28 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final AddressRepository addressRepository;
     private final MemberService memberService;
     private final DogRepository dogRepository;
     private final ApplyRepository applyRepository;
+
+    private final RedisTemplate<String, GeoPost> geoPostRedisTemplate;
+
+    public BoardService(BoardRepository boardRepository,
+                        AddressRepository addressRepository,
+                        MemberService memberService,
+                        DogRepository dogRepository,
+                        ApplyRepository applyRepository,
+                        @Qualifier("geoPostRedisTemplate") RedisTemplate<String, GeoPost> geoPostRedisTemplate) {
+        this.boardRepository = boardRepository;
+        this.addressRepository = addressRepository;
+        this.memberService = memberService;
+        this.dogRepository = dogRepository;
+        this.applyRepository = applyRepository;
+        this.geoPostRedisTemplate = geoPostRedisTemplate;
+    }
 
     /**
      * 게시글 리스트 조회
@@ -169,5 +188,37 @@ public class BoardService {
         apply.updateMeetAddress(meetAddressReq);
 
         return "SUCCESS";
+    }
+
+    /**
+     * 게시글의 위치 정보 저장 또는 업데이트
+     */
+    public String saveOrUpdateGeoPost(Long boardId, GeoReq geoReq) {
+        if (boardId == null || boardId <= 0) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_BOARD);
+        }
+
+        GeoPost geoPost = geoReq.toEntity();
+
+        String key = "geo:" + boardId;
+        geoPostRedisTemplate.opsForValue().set(key, geoPost);
+
+        return "SUCCESS";
+    }
+
+    /**
+     * 게시글의 위치 정보 조회
+     */
+    public GeoRes getGeoPost(Long boardId) {
+        if (boardId == null || boardId <= 0) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorType.INVALID_BOARD);
+        }
+
+        String key = "geo:" + boardId;
+        GeoPost geoPost = geoPostRedisTemplate.opsForValue().get(key);
+        if (geoPost == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_GEO);
+        }
+        return geoPost.toGeoRes();
     }
 }
