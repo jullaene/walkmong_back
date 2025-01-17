@@ -9,6 +9,7 @@ import org.jullaene.walkmong_back.api.apply.dto.req.ApplyRequestDto;
 import org.jullaene.walkmong_back.api.apply.dto.res.*;
 import org.jullaene.walkmong_back.api.apply.repository.ApplyRepository;
 import org.jullaene.walkmong_back.api.board.domain.Board;
+import org.jullaene.walkmong_back.api.board.domain.enums.WalkingStatus;
 import org.jullaene.walkmong_back.api.board.dto.res.BoardPreviewResponseDto;
 import org.jullaene.walkmong_back.api.board.repository.BoardRepository;
 import org.jullaene.walkmong_back.api.chat.dto.res.ChatRoomListResponseDto;
@@ -136,10 +137,16 @@ public class ApplyService {
      */
     @Transactional
     public void confirmMatching(Long boardId, Long applyId) {
-        Apply matchApply=applyRepository.findByApplyIdAndBoardIdAndDelYn(applyId,boardId,"N");
+        Apply matchApply = applyRepository.findByApplyIdAndBoardIdAndDelYn(applyId,boardId,"N");
         log.info("진입");
         matchApply.changeState(); //매칭 완료 상태로 바꾼다
         applyRepository.save(matchApply);
+
+        Board board = boardRepository.findByBoardIdAndDelYn(matchApply.getBoardId(), "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_BOARD));
+
+        board.updateWalkingStatus(WalkingStatus.BEFORE);
+
         //나머지 지원을 취소처리
         applyRepository.cancelOtherApplications(boardId,applyId);
     }
@@ -178,9 +185,14 @@ public class ApplyService {
      *매칭 취소: status를 PENDING으로 바꾼다
      */
     public void cancelMatching(Long applyId) {
-        Apply apply=applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
-        Apply changedApply=apply.cancelMatching();
+        Apply apply = applyRepository.findById(applyId).orElseThrow(()->new CustomException(HttpStatus.BAD_REQUEST,ErrorType.INVALID_USER));
+        Apply changedApply = apply.cancelMatching();
         applyRepository.save(changedApply);
+
+        Board board = boardRepository.findByBoardIdAndDelYn(apply.getBoardId(), "N")
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_BOARD));
+
+        board.updateWalkingStatus(WalkingStatus.PENDING);
     }
 
     /**
