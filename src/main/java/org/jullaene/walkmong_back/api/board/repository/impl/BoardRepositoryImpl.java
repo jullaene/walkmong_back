@@ -40,6 +40,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.querydsl.core.types.ExpressionUtils.count;
+import static com.querydsl.jpa.JPAExpressions.min;
+
 @Slf4j
 public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
@@ -390,37 +393,53 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         }
 
         return queryFactory.selectDistinct(
-                Projections.constructor(MatchingResponseDto.class,
-                        Expressions.constant(TabStatus.BOARD.name()),
-                        dog.name.as("dogName"),
-                        dog.gender.as("dogGender"),
-                        dog.profile.as("dogProfile"),
-                        board.startTime.as("startTime"),
-                        board.endTime.as("endTime"),
-                        Expressions.nullExpression(String.class),
-                        Expressions.nullExpression(Double.class),
-                        member.name.as("walkerName"), // member와의 조인을 통해 walkerName 설정
-                        member.profile.as("walkerProfile"), // member와의 조인을 통해 walkerProfile 설정
-                        Expressions.asString(status.name()).as("walkMatchingStatus"),
-                        board.boardId.as("boardId"),
-                        board.content.as("content")
-                ))
+                        Projections.constructor(MatchingResponseDto.class,
+                                Expressions.constant(TabStatus.BOARD.name()),
+                                dog.name,                    // String
+                                dog.gender,                  // Gender (Enum type 그대로 전달)
+                                dog.profile,                 // String
+                                board.startTime,             // LocalDateTime
+                                board.endTime,               // LocalDateTime
+                                Expressions.nullExpression(String.class),
+                                Expressions.nullExpression(Double.class),
+                                member.name,                 // String
+                                member.profile,              // String
+                                Expressions.asString(status.name()),  // String
+                                board.boardId,               // Long
+                                board.content,               // String
+                                Expressions.nullExpression(Long.class),
+                                count(apply)                 // Long
+                        ))
                 .from(board)
                 .join(dog)
                 .on(dog.dogId.eq(board.dogId)
                         .and(dog.delYn.eq(delYn)))
                 .join(apply)
                 .on(apply.boardId.eq(board.boardId)
-                        .and(apply.delYn.eq(delYn)))  // Apply와 Board를 연결하는 조건 추가
+                        .and(apply.delYn.eq(delYn))
+                        .and(board.walkingStatus.eq(WalkingStatus.PENDING))
+                )
                 .leftJoin(member)
                 .on(member.memberId.eq(apply.memberId)
                         .and(member.delYn.eq(delYn))
-                        .and(board.walkingStatus.ne(WalkingStatus.PENDING))  // board.walkingStatus가 PENDING이 아닌 경우
-                        .and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED))) // apply.matchingStatus가 CONFIRMED인 경우)
+                        .and(board.walkingStatus.ne(WalkingStatus.PENDING))
+                        .and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED)))
                 .where(board.ownerId.eq(memberId)
                         .and(board.delYn.eq(delYn))
                 )
                 .where(builder)
+                .groupBy(
+                        dog.name,
+                        dog.gender,
+                        dog.profile,
+                        board.startTime,
+                        board.endTime,
+                        member.name,
+                        member.profile,
+                        board.boardId,
+                        board.content,
+                        Expressions.asString(status.name())
+                )
                 .fetch();
     }
 
