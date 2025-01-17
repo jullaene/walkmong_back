@@ -21,6 +21,7 @@ public class MatchingResponseDto {
     private final String walkerProfile;
     private final String walkMatchingStatus;
     private final Long boardId;
+    private final String content;
 
 
     public MatchingResponseDto() {
@@ -36,5 +37,6 @@ public class MatchingResponseDto {
         this.walkerProfile = null;
         this.walkMatchingStatus = null;
         this.boardId = null;
+        this.content = null;
     }
 }
