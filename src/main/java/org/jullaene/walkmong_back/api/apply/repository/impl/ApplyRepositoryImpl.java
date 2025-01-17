@@ -144,7 +144,9 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                         Expressions.nullExpression(String.class),
                                         Expressions.asString(status.name()).as("walkMatchingStatus"),
                                         board.boardId.as("boardId"),
-                                        board.content.as("content")
+                                        board.content.as("content"),
+                                        apply.applyId.as("applyId"),
+                                        Expressions.nullExpression(Long.class)
                                 ))
                 .from(apply)
                 .join(board)
