@@ -82,7 +82,6 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
     @Override
     public List<MatchingResponseDto> getApplyInfoResponses(Long memberId, WalkMatchingStatus status, String delYn) {
         QDog dog = QDog.dog;
-        QMember member = QMember.member;
         QBoard board = QBoard.board;
         QApply apply = QApply.apply;
         QAddress address = QAddress.address;
@@ -97,13 +96,11 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         }
         // 매칭 확정 : 지원 상태가 CONFIRMED이고 날짜 안 지남
         else if (status.equals(WalkMatchingStatus.BEFORE)) {
-            System.out.println("hello");
             builder.and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED))
                     .and(board.startTime.after(now));
         }
         // 산책 완료 : 지원 상태가 CONFIRMED이고 날짜 지남
         else if (status.equals(WalkMatchingStatus.AFTER)) {
-            System.out.println("hello??");
             builder.and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED))
                     .and(board.startTime.before(now));
         }
@@ -146,14 +143,15 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                                         Expressions.nullExpression(String.class),
                                         Expressions.nullExpression(String.class),
                                         Expressions.asString(status.name()).as("walkMatchingStatus"),
-                                        apply.boardId.as("boardId")
+                                        board.boardId.as("boardId"),
+                                        board.content.as("content")
                                 ))
                 .from(apply)
-                .leftJoin(board)
+                .join(board)
                 .on(board.boardId.eq(apply.boardId)
                         .and(board.delYn.eq(delYn))
                 )
-                .leftJoin(dog)
+                .join(dog)
                 .on(dog.dogId.eq(board.dogId)
                         .and(dog.delYn.eq(delYn)))
                 .where(apply.memberId.eq(memberId)

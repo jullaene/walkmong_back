@@ -399,7 +399,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                         member.name.as("walkerName"), // member와의 조인을 통해 walkerName 설정
                         member.profile.as("walkerProfile"), // member와의 조인을 통해 walkerProfile 설정
                         Expressions.asString(status.name()).as("walkMatchingStatus"),
-                        board.boardId.as("boardId")
+                        board.boardId.as("boardId"),
+                        board.content.as("content")
                 ))
                 .from(board)
                 .join(dog)
