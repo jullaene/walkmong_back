@@ -29,7 +29,8 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/ws/**",
             "/test/**",
-            "/css/**", "/js/**", "/images/**"
+            "/css/**", "/js/**", "/images/**",
+            "/fcm", "/firebase-messaging-sw.js"
     };
 
     @Bean
