@@ -68,11 +68,19 @@ public class Board extends BaseEntity {
         this.endTime = boardRequestDto.getEndTime();
         this.locationNegotiationYn = boardRequestDto.getLocationNegotiationYn();
         this.preMeetAvailableYn = boardRequestDto.getPreMeetAvailableYn();
-        this.walkingStatus = WalkingStatus.BEFORE;
+        this.walkingStatus = WalkingStatus.PENDING;
         this.ownerId = ownerId;
     }
 
     public void updateWalkingStatus(WalkingStatus walkingStatus) {
         this.walkingStatus = walkingStatus;
+
+        if (walkingStatus.equals(WalkingStatus.PENDING) && this.matchingYn.equals("Y")) {
+            this.matchingYn = "N";
+        }
+        else if (this.matchingYn.equals("N")) {
+            this.matchingYn = "Y";
+        }
     }
+
 }

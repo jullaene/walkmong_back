@@ -366,6 +366,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         BooleanBuilder builder = new BooleanBuilder();
         LocalDateTime now = LocalDateTime.now();
 
+        log.info("memberId : " + memberId);
+
         // 매칭 전 : 지원 상태가 PENDING이고 산책 날짜 안 지남
         if (status.equals(WalkMatchingStatus.PENDING)) {
             builder.and(board.walkingStatus.eq(WalkingStatus.PENDING))
@@ -382,8 +384,9 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         }
         // 매칭 취소 : 지원 상태가 REJECT이거나 지원 상태가 PENDING인데 날짜 지남
         else if (status.equals(WalkMatchingStatus.REJECT)) {
+            log.info("매칭 취소 조건 추가");
             builder.and(board.walkingStatus.eq(WalkingStatus.PENDING))
-                    .and(board.startTime.after(now));
+                    .and(board.startTime.before(now));
         }
 
         return queryFactory.selectDistinct(
@@ -409,15 +412,15 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .join(apply)
                 .on(apply.boardId.eq(board.boardId)
                         .and(apply.delYn.eq(delYn)))  // Apply와 Board를 연결하는 조건 추가
-                .join(member)
+                .leftJoin(member)
                 .on(member.memberId.eq(apply.memberId)
                         .and(member.delYn.eq(delYn))
                         .and(board.walkingStatus.ne(WalkingStatus.PENDING))  // board.walkingStatus가 PENDING이 아닌 경우
                         .and(apply.matchingStatus.eq(MatchingStatus.CONFIRMED))) // apply.matchingStatus가 CONFIRMED인 경우)
                 .where(board.ownerId.eq(memberId)
                         .and(board.delYn.eq(delYn))
-                        .and(builder)
                 )
+                .where(builder)
                 .fetch();
     }
 
