@@ -71,13 +71,10 @@ dependencies {
     // Apple id_token signature verify
     implementation 'com.nimbusds:nimbus-jose-jwt:9.31'
 
-<<<<<<< HEAD
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-=======
 
     // fcm
     implementation 'com.google.firebase:firebase-admin:9.2.0'
->>>>>>> 7451396 (feat: fcm 연결)
 }
 
 tasks.named('test') {
