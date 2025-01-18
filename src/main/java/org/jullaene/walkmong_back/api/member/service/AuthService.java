@@ -59,7 +59,7 @@ public class AuthService {
                 TimeUnit.MILLISECONDS
         );
 
-        return new LoginRes(accessToken, refreshToken);
+        return new LoginRes(accessToken, refreshToken, member.getMemberId());
     }
 
     /**
@@ -146,9 +146,10 @@ public class AuthService {
         // 새로운 Access Token 생성
         String newAccessToken = jwtTokenUtil.createToken(email);
 
+        Member member = findByAccountEmail(email);
 
         // 반환
-        return new LoginRes(newAccessToken, refreshToken);
+        return new LoginRes(newAccessToken, refreshToken, member.getMemberId());
     }
 
 }
