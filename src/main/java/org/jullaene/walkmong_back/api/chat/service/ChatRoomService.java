@@ -227,7 +227,7 @@ public class ChatRoomService {
                         .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, ErrorType.INVALID_DOG));
 
                 Chat chat = chatRepository.findFirstByRoomIdAndDelYnOrderByCreatedAtDesc(chatRoom.getRoomId(), "N")
-                        .orElseThrow(null);
+                        .orElse(null);
 
                 ChatRoomListResponseDto chatRoomListResponseDto = ChatRoomListResponseDto.builder()
                         .tabStatus(TabStatus.BOARD)
