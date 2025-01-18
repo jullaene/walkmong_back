@@ -42,8 +42,8 @@ public enum ErrorType {
     INVALID_APPLY("존재하지 않는 지원서입니다."),
     INVALID_GEO("현재 위치가 존재하지 않습니다."),
     INVALID_FCM_TOKEN("존재하지 않는 FCM 토큰입니다."),
-    FAIL_FCM_SEND("FCM 발송에 실패했습니다.")
-    ;
+    FAIL_FCM_SEND("FCM 발송에 실패했습니다."),
+    INVALID_DOG("존재하지 않는 강아지입니다.");
 
     private String message;
 

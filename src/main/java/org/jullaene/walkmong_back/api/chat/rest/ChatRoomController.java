@@ -1,7 +1,9 @@
 package org.jullaene.walkmong_back.api.chat.rest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jullaene.walkmong_back.WalkmongBackApplication;
 import org.jullaene.walkmong_back.api.apply.domain.enums.MatchingStatus;
+import org.jullaene.walkmong_back.api.apply.dto.enums.WalkMatchingStatus;
 import org.jullaene.walkmong_back.api.apply.service.ApplyService;
 import org.jullaene.walkmong_back.api.board.service.BoardService;
 import org.jullaene.walkmong_back.api.chat.dto.req.ChatMessageRequestDto;
@@ -53,42 +55,8 @@ public class ChatRoomController {
     //지원|의뢰 && 매칭상태에 따른 채팅방 리스트 조회
     @GetMapping("/list")
     public ResponseEntity<BasicResponse<List<ChatRoomListResponseDto>>> getChatRoomList(@RequestParam("record") String record,
-                                                                                        @RequestParam("status")MatchingStatus status){
-         /*
-        record
-        applied: 지원한 산책
-        requested: 의뢰한 산책
-        all: 전체
-        */
-
-         /*
-        <status>
-        PENDING: 매칭중
-        CONFIRMED: 매칭확정
-        REJECTED: 매칭취소
-         */
-        List<ChatRoomListResponseDto> chatRoomListResponseDto=null;
-        if (record.equals("applied")){
-            chatRoomListResponseDto=applyService.getAllChatListWithStatus(status);
-
-        }else if (record.equals("requested")) {
-            chatRoomListResponseDto = boardService.getAllChatListWithStatus(status);
-        }else if (record.equals("all")){
-            List<ChatRoomListResponseDto> appliedList = applyService.getAllChatListWithStatus(status);
-            List<ChatRoomListResponseDto> requestedList = boardService.getAllChatListWithStatus(status);
-
-            chatRoomListResponseDto = new ArrayList<>();
-            chatRoomListResponseDto.addAll(appliedList);
-            chatRoomListResponseDto.addAll(requestedList);
-            
-        }
-
-        //공백으로 설정한 상대방 이름을 실명으로 전환
-        for (ChatRoomListResponseDto dto:chatRoomListResponseDto){
-            Long memberId=dto.getChatTarget();
-            log.info("상대방 아이디 {}",memberId);
-            dto.setTargetName(memberRepository.findNickNameByMemberId(memberId));
-        }
+                                                                                        @RequestParam("status") WalkMatchingStatus status){
+         List<ChatRoomListResponseDto> chatRoomListResponseDto = chatRoomService.getChatRoomList(record, status);
 
         return ResponseEntity.ok(BasicResponse.ofSuccess(chatRoomListResponseDto));
     }

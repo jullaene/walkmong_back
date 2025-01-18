@@ -96,13 +96,6 @@ public class ApplyService {
 
     }
 
-    //지원한 산책의 채팅방 조회
-    public List<ChatRoomListResponseDto> getAllChatListWithStatus(MatchingStatus status) {
-        Long memberId = memberService.getMemberFromUserDetail().getMemberId();
-        log.info("사용자 id {}", memberId);
-        List<ChatRoomListResponseDto> chatList = applyRepository.getApplyChatList(memberId, status);
-        return chatList;
-    }
 
     public List<ApplicantInfoResponseDto> getApplicantList(Long boardId) {
         return applyRepository.getApplicantList(boardId,"N");

@@ -129,6 +129,14 @@ public class Dog extends BaseEntity {
         return this.memberId;
     }
 
+    public String getName () {
+        return this.name;
+    }
+
+    public String getProfile () {
+        return this.profile;
+    }
+
     public final DogProfileResponseDto toDogProfileResponseDto() {
         int currentYear = LocalDate.now().getYear();
         int dogAge = currentYear - this.birthYear + 1; // 나이 계산
