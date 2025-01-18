@@ -12,9 +12,6 @@ import java.util.Optional;
 public interface ApplyRepositoryCustom {
     Optional<ApplyInfoDto> getApplyInfoResponse(Long boardId, Long memberId, String delYn);
 
-    //지원한 산책의 채팅방 조회
-    List<ChatRoomListResponseDto> getApplyChatList(Long memberId, MatchingStatus status);
-
     //내가 지원한 산책 리스트 조회
     List<MatchingResponseDto> getApplyInfoResponses(Long memberId, WalkMatchingStatus status, String delYn);
    List<ApplicantInfoResponseDto> getApplicantList(Long boardId, String delYn);

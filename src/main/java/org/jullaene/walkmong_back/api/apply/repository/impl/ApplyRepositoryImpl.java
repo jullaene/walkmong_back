@@ -163,57 +163,6 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
                 .fetch();
     }
 
-    //지원한 산책의 채팅리스트 조회
-    @Override
-    public List<ChatRoomListResponseDto> getApplyChatList(Long memberId, MatchingStatus status) {
-        QDog dog = QDog.dog;
-        QMember member = QMember.member;
-        QBoard board = QBoard.board;
-        QApply apply = QApply.apply;
-        QAddress address = QAddress.address;
-
-        QChatRoom chatRoom=QChatRoom.chatRoom;
-        QChat chat= QChat.chat;
-
-        //대화 상대의 마지막 메세지 가져오기: chat 테이블에서 Id의 최댓값을 가져온다
-        SubQueryExpression<Long> lastMessageSubQuery = JPAExpressions.select(chat.chatId.max())
-                .from(chat)
-                .leftJoin(chatRoom).on(chat.roomId.eq(chatRoom.roomId))
-                .where(chat.roomId.eq(chatRoom.roomId)
-                        .and(chat.senderId.ne(memberId)));
-
-
-
-        List<ChatRoomListResponseDto> chatRoomListResponseDtos=
-                queryFactory.selectDistinct(
-                                Projections.constructor(ChatRoomListResponseDto.class,
-                                        dog.name.as("dogName"),
-                                        dog.profile.as("dogProfile"),
-                                        board.startTime.as("startTime"),
-                                        board.endTime.as("endTime"),
-                                        chatRoom.chatOwnerId.as("chatTarget"), //채팅 대상
-                                        chat.message.as("lastChat"), //상대의 마지막 채팅
-                                        chat.createdAt.as("lastChatTime"),  // 상대의 마지막 채팅 내용
-                                        Expressions.asString("").as("targetName"),// 상대방 이름을 공백으로 지정
-                                        Expressions.asNumber(10).as("notRead"),
-                                        chat.roomId.as("roomId"),
-                                        board.boardId.as("boardId")
-
-                                ))
-                        .from(board)
-                        .leftJoin(dog).on(dog.dogId.eq(board.dogId))
-                        .leftJoin(apply).on(apply.boardId.eq(board.boardId))
-                        //boardId와 chatParticipantId는 1:1 관계
-                        .leftJoin(chatRoom).on(chatRoom.boardId.eq(board.boardId))
-                        .leftJoin(chat).on(chat.roomId.eq(chatRoom.roomId))
-                        .where(apply.memberId.eq(memberId)
-                                .and(apply.matchingStatus.eq(status))
-                                .and(chat.chatId.eq(lastMessageSubQuery)))
-                        .fetch();
-
-        return chatRoomListResponseDtos;
-    }
-
     /**
      * 반려인이 산책 지원자들의 정보를 조회한다
      */
